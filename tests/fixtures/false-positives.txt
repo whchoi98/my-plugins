@@ -1,0 +1,10 @@
+dGhpcyBpcyBhIHRlc3Q=
+password = ""
+CLAUDE_NOTIFY_WEBHOOK=
+aws_secret_access_key="testing"
+akiaiosfodnn7example
+AKIA_PREFIX_IS_NOT_A_KEY
+secret_name = os.environ["SECRET_NAME"]
+api_key: ${API_KEY}
+| A-7 | S1 | "가지고 있다", have, make, take, give와 명사 직역 | 동사나 형용사로 |
+비밀번호를 코드에 넣지 않는다
