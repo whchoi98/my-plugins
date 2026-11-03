@@ -9,7 +9,7 @@ skill checks and installs the external tools and fonts the other skills need.
 
 The repo root **is** the shipped plugin and its marketplace (`.claude-plugin/marketplace.json`,
 `"source": "./"`). Users install it as `my-plugins@my-plugins` and invoke `/my-plugins:<skill>`.
-Planned public repo: `github.com/whchoi98/my-plugins`.
+Public repo `github.com/whchoi98/my-plugins`, MIT (bundled third-party files keep their own terms, `NOTICE.md`).
 
 ## Tech Stack
 - **Content** — Markdown skills (`skills/<name>/SKILL.md`) with on-demand references, templates and assets

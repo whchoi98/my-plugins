@@ -160,10 +160,10 @@ claude plugin validate .          # Claude Code manifest and skill validation (I
 
 ## License
 
-The bundled work keeps the licenses of the plugins it came from; see [NOTICE.md](NOTICE.md). aws-blog-skills
-and kor-deslop are MIT ([LICENSE](LICENSE)); aws-diagram-design is MIT from its upstream
+MIT ([LICENSE](LICENSE)) for the plugin's own work: aws-blog-skills, kor-deslop, the aws-deck skills and setup.
+Details per part are in [NOTICE.md](NOTICE.md). aws-diagram-design is MIT from its upstream
 ([third_party/LICENSE-aws-diagram-design](third_party/LICENSE-aws-diagram-design)); AWS icons, Amazon Ember and
-the deck fonts follow their own terms. The aws-deck skills had no license chosen in their source repository.
+the AWS PowerPoint templates and deck fonts follow their own terms and are not covered by the MIT license.
 
 ## Contact
 
@@ -322,10 +322,10 @@ claude plugin validate .          # Claude Code manifest와 skill 검증(ICON_MI
 
 ## 라이선스
 
-묶은 저작물은 원래 플러그인의 라이선스를 그대로 따릅니다. 자세한 내용은 [NOTICE.md](NOTICE.md)에 있습니다.
-aws-blog-skills와 kor-deslop은 MIT([LICENSE](LICENSE)), aws-diagram-design은 원 저작물의 MIT
+플러그인 자체 저작물(aws-blog-skills, kor-deslop, aws-deck skill, setup)은 MIT([LICENSE](LICENSE))입니다.
+부분별 내용은 [NOTICE.md](NOTICE.md)에 있습니다. aws-diagram-design은 원 저작물의 MIT
 ([third_party/LICENSE-aws-diagram-design](third_party/LICENSE-aws-diagram-design))이고, AWS 아이콘, Amazon Ember,
-덱 폰트는 각자의 이용 조건을 따릅니다. aws-deck skill들은 원 저장소에서 라이선스를 정하지 않았습니다.
+AWS PowerPoint 템플릿, 덱 폰트는 MIT 대상이 아니며 각자의 이용 조건을 따릅니다.
 
 ## 연락처
 

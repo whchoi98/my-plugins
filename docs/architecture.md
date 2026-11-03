@@ -21,9 +21,9 @@ Output goes to the user's current directory, never into the plugin cache.
 
 ### Distribution Layer
 - `.claude-plugin/marketplace.json` — marketplace `my-plugins` with one plugin entry, `"source": "./"`
-- `.claude-plugin/plugin.json` — name and `version`, the update key for installed copies (no `license` field;
-  each part keeps its own license, see `NOTICE.md`)
-- GitHub `whchoi98/my-plugins` (planned public repo) — installers get the repo root in
+- `.claude-plugin/plugin.json` — name, `version` (the update key for installed copies) and `license: MIT`;
+  upstream parts and bundled templates, fonts and icons keep their own terms, see `NOTICE.md`
+- GitHub `whchoi98/my-plugins` (public repo) — installers get the repo root in
   `~/.claude/plugins/cache/my-plugins/my-plugins/<version>/` and call skills as `/my-plugins:<skill>`
 
 ### AI/ML Layer: skills and commands
@@ -180,8 +180,8 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 
 ### Distribution Layer
 - `.claude-plugin/marketplace.json` — 마켓플레이스 `my-plugins`, 플러그인 항목 하나, `"source": "./"`
-- `.claude-plugin/plugin.json` — 이름과 `version`(설치본 갱신 기준). `license` 필드는 없고, 부분마다 원래 라이선스를 따릅니다(`NOTICE.md` 참고)
-- GitHub `whchoi98/my-plugins`(공개 예정) — 설치하면 저장소 루트가 `~/.claude/plugins/cache/my-plugins/my-plugins/<version>/`에 들어가고, skill은 `/my-plugins:<skill>`로 부릅니다
+- `.claude-plugin/plugin.json` — 이름과 `version`(설치본 갱신 기준). `license`는 MIT이고, 원 저작물과 함께 든 템플릿, 폰트, 아이콘은 각자의 조건을 따릅니다(`NOTICE.md` 참고)
+- GitHub `whchoi98/my-plugins`(공개 저장소) — 설치하면 저장소 루트가 `~/.claude/plugins/cache/my-plugins/my-plugins/<version>/`에 들어가고, skill은 `/my-plugins:<skill>`로 부릅니다
 
 ### AI/ML Layer: skill과 command
 | skill / command | 출처 | 역할 |

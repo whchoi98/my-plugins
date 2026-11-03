@@ -37,8 +37,8 @@ tracked file reaches every user.
    material (blogs, PDFs, slides, templates, diagrams), send content to third-party services, or run network
    commands beyond reading official docs and the setup downloads. The aws-blog-skills step 0 rule stays intact.
 6. **License compliance** — `NOTICE.md` lists every bundled part with its license; `third_party/` holds the
-   upstream texts; bundled AWS icons, Amazon Ember, NanumSquareOTF and D2Coding follow their own terms; the
-   aws-deck parts have no license chosen yet (report it as a release blocker for a public push, not a defect).
+   upstream texts; bundled AWS icons, Amazon Ember, NanumSquareOTF and D2Coding follow their own terms; `plugin.json`
+   `license` is MIT and must not be read as covering those bundled third-party files.
 7. **Harness** — `.claude/settings.json` deny list intact; PreToolUse `secret-scan.sh` has no `|| true`
    and exits 2; git `pre-commit` and `commit-msg` hooks come from `scripts/install-hooks.sh`.
 

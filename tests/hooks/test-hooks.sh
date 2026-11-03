@@ -86,6 +86,36 @@ rm -f "$SYNC_REPO/skills/CLAUDE.md"
 OUTPUT=$(CLAUDE_PROJECT_DIR="$SYNC_REPO" bash .claude/hooks/check-doc-sync.sh "skills/demo/SKILL.md" 2>&1 || true)
 assert_contains "check-doc-sync: missing module doc is reported" "$OUTPUT" "skills/CLAUDE.md is missing"
 
+# Hook mode reminds once per session: a message already sent under the same session_id is dropped.
+# State lives in $TMPDIR, so each call points TMPDIR at a scratch folder.
+HK_SYNC_TMP="$TEST_TMP/doc-sync-state"
+mkdir -p "$HK_SYNC_TMP"
+hk_sync_hook() {  # $1 = session_id JSON fragment ('' omits it), $2 = repo-relative path; prints additionalContext
+    printf '{%s"tool_input":{"file_path":"%s/%s"}}' "$1" "$PROJECT_ROOT" "$2" \
+        | TMPDIR="$HK_SYNC_TMP" bash .claude/hooks/check-doc-sync.sh 2>/dev/null \
+        | jq -r '.hookSpecificOutput.additionalContext // empty' 2>/dev/null || true
+}
+assert_contains "check-doc-sync: first reminder in a session is sent" \
+    "$(hk_sync_hook '"session_id":"hk-s1",' .claude-plugin/plugin.json)" "claude plugin validate"
+assert_eq "check-doc-sync: same reminder in the same session is not repeated" "" \
+    "$(hk_sync_hook '"session_id":"hk-s1",' .claude-plugin/plugin.json)"
+assert_eq "check-doc-sync: same message from another file is not repeated" "" \
+    "$(hk_sync_hook '"session_id":"hk-s1",' .mcp.json)"
+assert_contains "check-doc-sync: a new message in the same session is still sent" \
+    "$(hk_sync_hook '"session_id":"hk-s1",' tests/hooks/test-hooks.sh)" "Harness changed"
+assert_contains "check-doc-sync: another session gets the reminder again" \
+    "$(hk_sync_hook '"session_id":"hk-s2",' .claude-plugin/plugin.json)" "claude plugin validate"
+hk_sync_hook '' .claude-plugin/plugin.json >/dev/null
+assert_contains "check-doc-sync: no session_id means no dedupe" \
+    "$(hk_sync_hook '' .claude-plugin/plugin.json)" "claude plugin validate"
+hk_sync_hook '"session_id":"../../hk-escape",' .claude-plugin/plugin.json >/dev/null
+assert_eq "check-doc-sync: session_id with path characters still dedupes" "" \
+    "$(hk_sync_hook '"session_id":"../../hk-escape",' .claude-plugin/plugin.json)"
+assert_eq "check-doc-sync: state file stays inside TMPDIR" "" \
+    "$(find "$TEST_TMP" -name '*hk-escape*' -not -path "$HK_SYNC_TMP/*" 2>/dev/null)"
+OUTPUT=$(bash .claude/hooks/check-doc-sync.sh ".claude-plugin/plugin.json" 2>&1 || true)
+assert_contains "check-doc-sync: manual runs are never deduped" "$OUTPUT" "claude plugin validate"
+
 # --- secret-scan behavior (PreToolUse mode, isolated git repo) ---
 OUTPUT=$(echo '{"tool_input":{"command":"ls -la"}}' | bash .claude/hooks/secret-scan.sh 2>&1; echo "exit=$?")
 assert_eq "secret-scan: non-commit command passes silently" "exit=0" "$OUTPUT"

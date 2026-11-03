@@ -1,6 +1,6 @@
 # Onboarding — generate your skin from a design source
 
-**Goal:** point the skill at a design source — a website, an installed skill, or a local folder — and have it extract the palette + typography, then rewrite `style-guide.md` so every future diagram inherits that skin.
+**Goal:** point the skill at a design source — a website, an installed skill, or a local folder — and have it extract the palette + typography, then write a project skin, `.aws-diagram-design/style-guide.md` (a copy of `references/style-guide.md` with the new tokens), so every future diagram in that project inherits it. Never edit the skill's own `references/style-guide.md`: in an installed plugin it is the plugin cache and is replaced on update.
 
 Takes about 60 seconds.
 
@@ -146,7 +146,7 @@ The receipt is required when the user says “match this site,” “use their b
 
 ## Step 5 — apply
 
-Write the new tokens to `style-guide.md`. Suggest running the `/regenerate-examples` flow (if it exists) or rebuilding one example to verify the new skin reads cleanly.
+Copy `references/style-guide.md` to `.aws-diagram-design/style-guide.md` in the user's project if it is not there yet, and write the new tokens into that copy. Suggest running the `/regenerate-examples` flow (if it exists) or rebuilding one example to verify the new skin reads cleanly.
 
 After onboarding, the user should:
 
@@ -294,4 +294,4 @@ Same as the URL method: run contrast checks, show the full diff against current 
 
 ## Future: per-project skins
 
-If the user wants multiple skins (one per project), duplicate `style-guide.md` as `style-guides/<project>.md` and add a header comment pointing the build to the active one. That's a v5.2 feature — for now, one skin per skill install.
+If the user wants multiple skins (one per project), duplicate `style-guide.md` as `style-guides/<project>.md` and add a header comment pointing the build to the active one. That's a v5.2 feature — for now, one skin per project (`.aws-diagram-design/style-guide.md`).

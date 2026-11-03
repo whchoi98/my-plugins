@@ -3,12 +3,19 @@
 # Triggered by PostToolUse (Write|Edit). Claude Code passes the event as JSON on
 # stdin; a path argument is accepted for manual runs and tests.
 # Walks parent directories (module root included) to find CLAUDE.md before warning.
+# Hook mode sends each message once per session: messages already sent under the event's
+# session_id are listed in ${TMPDIR:-/tmp}/claude-doc-sync-<session_id>.seen and dropped.
+# Manual runs and events without a session_id always print every message.
 
+SESSION_ID=""
 if [ "$#" -ge 1 ]; then
     FILE_PATH="$1"
     FROM_HOOK=false
 else
-    FILE_PATH=$(jq -r '.tool_input.file_path // empty' 2>/dev/null)
+    INPUT=$(cat)
+    FILE_PATH=$(jq -r '.tool_input.file_path // empty' <<<"$INPUT" 2>/dev/null)
+    # Keep only [A-Za-z0-9_-] so the id cannot point the state file outside TMPDIR
+    SESSION_ID=$(jq -r '.session_id // empty' <<<"$INPUT" 2>/dev/null | tr -cd 'A-Za-z0-9_-')
     FROM_HOOK=true
 fi
 [ -z "$FILE_PATH" ] && exit 0
@@ -141,6 +148,19 @@ if [[ "$FILE_PATH" == .claude/* || "$FILE_PATH" == tests/* || "$FILE_PATH" == sc
 fi
 
 [ "${#MESSAGES[@]}" -eq 0 ] && exit 0
+
+# Once per session: drop messages already sent, record the rest
+if $FROM_HOOK && [ -n "$SESSION_ID" ]; then
+    SEEN_FILE="${TMPDIR:-/tmp}/claude-doc-sync-$SESSION_ID.seen"
+    UNSENT=()
+    for MSG in "${MESSAGES[@]}"; do
+        grep -qxF -- "$MSG" "$SEEN_FILE" 2>/dev/null && continue
+        UNSENT+=("$MSG")
+        printf '%s\n' "$MSG" >> "$SEEN_FILE" 2>/dev/null
+    done
+    MESSAGES=("${UNSENT[@]}")
+    [ "${#MESSAGES[@]}" -eq 0 ] && exit 0
+fi
 
 if $FROM_HOOK; then
     # additionalContext reaches Claude without blocking the completed tool call

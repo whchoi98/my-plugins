@@ -14,6 +14,8 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   directory, `scripts`, `integration`, `kor-deslop`, `plugin-structure` select one file.
 - `hooks/test-hooks.sh` — hook files, settings registration, stdin-JSON behavior, exit codes
   (PreToolUse exit 2, `--staged` exit 1), commit-msg trailer removal, all in throwaway git repos;
+  check-doc-sync sends each reminder once per `session_id` (state under a scratch `TMPDIR`; no dedupe
+  without a session_id or in manual runs; a path-like id stays inside `TMPDIR`);
   session-context shows the plugin name, version and install id from the manifests.
 - `hooks/test-secret-patterns.sh` — true/false positives against the real scanner, skip and
   forbidden-path rules, PCRE compile regression, and the whole repo scanning clean (git-tracked and new

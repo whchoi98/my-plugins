@@ -18,6 +18,7 @@ the dev harness cannot be bypassed silently.
 |---|---|---|
 | Secret scanner | `.claude/hooks/secret-scan.sh` | PreToolUse on `git commit` (exit 2), git pre-commit (`--staged`, exit 1), manual `--files` |
 | Git hook installer | `scripts/install-hooks.sh` | Installs `pre-commit` (secret scan) and `commit-msg` (strips `Co-Authored-By`) |
+| Doc-sync reminder | `.claude/hooks/check-doc-sync.sh` | PostToolUse on Write/Edit; sends each reminder once per session and records it in `${TMPDIR:-/tmp}/claude-doc-sync-<session_id>.seen` (`session_id` reduced to `[A-Za-z0-9_-]`) |
 | Claude settings | `.claude/settings.json` | Deny list, `Read(./.env)` denied, empty commit/PR attribution, hook registration |
 | Ignore rules | `.gitignore` | `.env`, `.claude/settings.local.json`, archives, `__pycache__/`, blog work folders `<YYYY-MM-DD>-<slug>/` |
 | Shipped MCP config | `.mcp.json` | Must stay `{"mcpServers": {}}`; installers read it as the plugin's MCP config |
@@ -93,6 +94,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 
 ### 4. Code Pointers
 - `.claude/hooks/secret-scan.sh`
+- `.claude/hooks/check-doc-sync.sh`
 - `.claude/settings.json`
 - `scripts/install-hooks.sh`
 - `skills/setup/scripts/setup.sh`
@@ -103,6 +105,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 - `skills/aws-blog-skills/scripts/check_urls.py`
 - `skills/aws-diagram-design/scripts/mermaid_extract.py`
 - `skills/aws-diagram-design/scripts/self_check.py`
+- `tests/hooks/test-hooks.sh`
 - `tests/hooks/test-secret-patterns.sh`
 - `tests/structure/test-plugin-structure.sh`
 - `tests/structure/test-integration.sh`
@@ -125,6 +128,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 |---|---|---|
 | 시크릿 스캐너 | `.claude/hooks/secret-scan.sh` | `git commit` PreToolUse(exit 2), git pre-commit(`--staged`, exit 1), 수동 `--files` |
 | Git 훅 설치기 | `scripts/install-hooks.sh` | `pre-commit`(시크릿 스캔)과 `commit-msg`(`Co-Authored-By` 제거) 설치 |
+| 문서 동기화 리마인더 | `.claude/hooks/check-doc-sync.sh` | Write/Edit PostToolUse. 같은 리마인더는 세션당 한 번만 보내고 `${TMPDIR:-/tmp}/claude-doc-sync-<session_id>.seen`에 기록(`session_id`는 `[A-Za-z0-9_-]`만 남김) |
 | Claude 설정 | `.claude/settings.json` | deny 목록, `Read(./.env)` 차단, 커밋과 PR attribution 비움, 훅 등록 |
 | 무시 규칙 | `.gitignore` | `.env`, `.claude/settings.local.json`, 압축 파일, `__pycache__/`, 블로그 작업 폴더 `<YYYY-MM-DD>-<slug>/` |
 | 배포되는 MCP 설정 | `.mcp.json` | `{"mcpServers": {}}` 유지. 설치자에게는 플러그인 MCP 설정으로 읽힘 |
@@ -181,6 +185,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 
 ### 4. 코드 포인터
 - `.claude/hooks/secret-scan.sh`
+- `.claude/hooks/check-doc-sync.sh`
 - `.claude/settings.json`
 - `scripts/install-hooks.sh`
 - `skills/setup/scripts/setup.sh`
@@ -191,6 +196,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 - `skills/aws-blog-skills/scripts/check_urls.py`
 - `skills/aws-diagram-design/scripts/mermaid_extract.py`
 - `skills/aws-diagram-design/scripts/self_check.py`
+- `tests/hooks/test-hooks.sh`
 - `tests/hooks/test-secret-patterns.sh`
 - `tests/structure/test-plugin-structure.sh`
 - `tests/structure/test-integration.sh`

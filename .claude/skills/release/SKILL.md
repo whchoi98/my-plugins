@@ -37,8 +37,7 @@ Full procedure: `docs/runbooks/release-plugin.md`.
   `commit-msg` hook strips it)
 - `git tag -a vX.Y.Z -m "Release vX.Y.Z"`
 - Pushing `main` and the tag is outward-facing (public repo): ask the user before
-  `git push origin main --follow-tags`. Before the first public push, the aws-deck license has to be settled
-  (`docs/decisions/ADR-002-merge-four-plugins-into-one.md`)
+  `git push origin main --follow-tags`
 
 ### 5. Refresh and Summarize
 - `claude plugin marketplace update my-plugins`

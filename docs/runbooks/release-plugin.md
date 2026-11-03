@@ -81,8 +81,6 @@ Never reuse or delete a published version number.
 ## Notes
 - Copies synced from claude.ai (`anthropic-skills:aws-blog-skills`, `aws-diagrams@synced`, `kor-writing@synced`,
   `aws-deck@synced`) are separate; this runbook does not update them.
-- Before the first public push, settle the license of the aws-deck parts
-  ([ADR-002](../decisions/ADR-002-merge-four-plugins-into-one.md)).
 
 ---
 
@@ -154,4 +152,3 @@ git revert <sha>
 
 ## 참고
 - claude.ai에서 동기화되는 사본(`anthropic-skills:aws-blog-skills`, `aws-diagrams@synced`, `kor-writing@synced`, `aws-deck@synced`)은 별도 사본이며, 이 런북으로 갱신되지 않습니다.
-- 처음 공개 push하기 전에 aws-deck 부분의 라이선스를 정합니다([ADR-002](../decisions/ADR-002-merge-four-plugins-into-one.md)).

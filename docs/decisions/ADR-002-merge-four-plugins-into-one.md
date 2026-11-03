@@ -77,8 +77,8 @@ Ship one plugin, `my-plugins@my-plugins`, whose repo root is both the plugin and
 - Once the same-named local plugins are uninstalled, Claude Code loads the copies synced from the user's
   claude.ai account (`aws-diagrams@synced`, `kor-writing@synced`, `aws-deck@synced`); they come back until they
   are removed from the account or turned off with `skillOverrides` in `~/.claude/settings.json`
-- The aws-deck parts have no license chosen in their source repository, so `plugin.json` carries no `license`
-  field; this has to be settled before the public release
+- The aws-deck parts had no license in their source repository; the author chose MIT for them when merging
+  (`plugin.json` `license: MIT`). The bundled AWS templates and deck fonts stay under their own terms (`NOTICE.md`)
 - The plugin is about 26 MB, mostly deck templates, fonts and icon sets, and every installer downloads all of it
 - Always-on cost is the sum of every skill and command description, about 3.1k tokens per session
   (`claude --plugin-dir . plugin details my-plugins`, 2026-11-03), paid even by users of a single skill
@@ -139,7 +139,7 @@ skill들은 사용자가 하나씩 설치하는 플러그인 네 개(`aws-blog-s
 ### 부정적
 - 사용자는 단독 플러그인 네 개를 제거해야 합니다. 그렇지 않으면 같은 skill이 예전 이름으로 두 번 로드됩니다
 - 이름이 같은 로컬 플러그인을 제거하면 Claude Code가 사용자의 claude.ai 계정에서 동기화된 사본(`aws-diagrams@synced`, `kor-writing@synced`, `aws-deck@synced`)을 불러옵니다. 계정에서 제거하거나 `~/.claude/settings.json`의 `skillOverrides`로 끄기 전까지 다시 나타납니다
-- aws-deck 부분은 원 저장소에서 라이선스를 정하지 않았으므로 `plugin.json`에 `license` 필드가 없습니다. 공개 배포 전에 정해야 합니다
+- aws-deck 부분은 원 저장소에 라이선스가 없었고, 통합하면서 저작자가 MIT로 정했습니다(`plugin.json` `license: MIT`). 함께 든 AWS 템플릿과 덱 폰트는 각자의 이용 조건을 따릅니다(`NOTICE.md`)
 - 플러그인 크기가 약 26 MB이고 대부분 덱 템플릿, 폰트, 아이콘 묶음입니다. 설치하는 사람은 모두 전부를 내려받습니다
 - 항상 로드되는 비용은 모든 skill과 command description의 합으로 세션마다 약 3.1k 토큰입니다(`claude --plugin-dir . plugin details my-plugins`, 2026-11-03 측정). skill 하나만 쓰는 사용자도 이 비용을 냅니다
 
