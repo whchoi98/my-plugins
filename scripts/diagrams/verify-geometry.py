@@ -23,8 +23,8 @@ Shape heuristics follow the shipped templates:
   is legal.
 
 Usage:
-    python3 scripts/verify-geometry.py --all
-    python3 scripts/verify-geometry.py skills/aws-diagram-design/assets/example-x.html
+    python3 scripts/diagrams/verify-geometry.py --all
+    python3 scripts/diagrams/verify-geometry.py skills/aws-diagram-design/assets/example-x.html
 """
 
 from __future__ import annotations
@@ -34,7 +34,7 @@ import re
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]  # scripts/diagrams/ -> repo root
 ASSET_DIR = ROOT / "skills/aws-diagram-design/assets"
 
 RECT_RE = re.compile(

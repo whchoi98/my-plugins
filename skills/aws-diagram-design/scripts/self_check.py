@@ -5,7 +5,8 @@ Ships inside the skill so an installed agent can verify its own output:
 
     python3 <skill-dir>/scripts/self_check.py my-diagram.html
 
-Checks the accessible-SVG contract, the single-file safety rules (no remote
+Checks the accessible-SVG contract, the separator rule (no middle dot in visible
+SVG text), the single-file safety rules (no remote
 assets beyond the approved Google Fonts stylesheet, no executable attributes,
 no scripts other than the one canonical motion controller), and — when motion
 markup is present — the structural motion contract. This is a distilled
@@ -244,6 +245,20 @@ def check_svgs(parser: DiagramParser, errors: list[str]) -> None:
             errors.append(f"svg {number} aria-labelledby must name title then desc")
 
 
+SVG_BLOCK_RE = re.compile(r"<svg\b.*?</svg>", re.IGNORECASE | re.DOTALL)
+SVG_TEXT_RE = re.compile(r"<text\b[^>]*>(.*?)</text>", re.IGNORECASE | re.DOTALL)
+TAG_RE = re.compile(r"<[^>]+>")
+
+
+def check_separators(source: str, errors: list[str]) -> None:
+    """Visible SVG text must not use the middle dot as a separator (style-guide.md § Separators)."""
+    for svg in SVG_BLOCK_RE.findall(source):
+        for raw in SVG_TEXT_RE.findall(svg):
+            text = " ".join(TAG_RE.sub("", raw).split())
+            if "\u00b7" in text or "&middot;" in raw or "&#183;" in raw or "&#xb7;" in raw.lower():
+                errors.append(f"middle dot in SVG text {text[:60]!r}: use '/' for a pair, commas for a list")
+
+
 def check_scripts(parser: DiagramParser, errors: list[str]) -> None:
     if not parser.scripts:
         return
@@ -360,6 +375,7 @@ def verify(path: Path) -> list[str]:
         if finding:
             errors.append(finding)
     check_svgs(parser, errors)
+    check_separators(source, errors)
     check_scripts(parser, errors)
     check_motion(parser, source, errors)
     return errors

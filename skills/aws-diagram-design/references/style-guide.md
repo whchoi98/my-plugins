@@ -72,11 +72,17 @@ A self-contained palette for the terminal-window primitive (see [primitive-termi
 | Role | Family | Size | Weight | Usage |
 |---|---|---|---|---|
 | `title` | Amazon Ember | 1.75rem | 700 | Page H1 |
-| `node-name` | Amazon Ember | 12px | 600 | Human-readable labels |
-| `sublabel` | Amazon Ember Mono | 9px | 400 | Port, protocol, URL, field type |
+| `node-name` | Amazon Ember | 13px | 600 | Human-readable labels |
+| `sublabel` | Amazon Ember Mono | 11px | 400 | Port, protocol, URL, field type |
 | `eyebrow` | Amazon Ember Mono | 7–8px | 500, tracked 0.18em, uppercase | Type tags, axis labels |
-| `arrow-label` | Amazon Ember Mono | 8px | 400, tracked 0.06em | Arrow annotations |
+| `arrow-label` | Amazon Ember Mono | 10px | 400, tracked 0.04em | Arrow annotations, legend text, notes |
 | `callout` | Amazon Ember *italic* | 14px | 400 | Editorial asides only |
+
+These sizes hold up when a 1280-wide diagram is exported to PNG and scaled to a README column; the earlier 12 / 9 / 8px set did not. Some `assets/example-*.html` files still use the earlier sizes: take sizes from this table, layout from the examples.
+
+**Size boxes from their text.** Amazon Ember Mono advances about 0.63em per Latin glyph in Chromium (≈6.9px at 11px), and Hangul falls back to a CJK face at about 1em. Keep 12px clear between the longest sublabel and the box's right edge; shorten the text or widen the box rather than let a line touch the border. A label mask for 10px text is 14px tall (baseline −11 to +3).
+
+**Separators.** Never use the middle dot `·` (U+00B7) in visible text: labels, sublabels, chips, legends, notes, captions, zone titles. It reads as generated filler. Use `/` for a pair or alternative (`401 / 429`, `CloudWatch / X-Ray`, `CLAUDE / 1P`), commas for a list (`Guardrail, claude-auto, EMF`), and a plain space between a path and its subject (`llm-gateway /inference`). In Mermaid, a label that starts with `1. ` renders as an "Unsupported markdown: list"; number steps as `1: ` instead.
 
 ### Font stack
 

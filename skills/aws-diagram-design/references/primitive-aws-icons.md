@@ -117,7 +117,7 @@ Scale factors for a 24px render: service `24/64 = 0.375`, resource `24/48 = 0.5`
 
 ### Node pattern with a service icon
 
-The icon replaces the rectangular type tag from SKILL.md §6 — don't stack both:
+The icon replaces the rectangular type tag from SKILL.md §6 — don't stack both. **The icon sits on the title row at `Y+16` whatever the node height.** In an 80px or 96px node with two or three sublabels, do not center the icon vertically: it then floats beside the sublabels instead of the name it identifies, and nodes of different heights in one diagram stop lining up.
 
 ```svg
 <rect x="X" y="Y" width="176" height="56" rx="6" fill="#ffffff"/>          <!-- opaque mask -->
@@ -125,10 +125,11 @@ The icon replaces the rectangular type tag from SKILL.md §6 — don't stack bot
 <g transform="translate(X+12, Y+16) scale(0.375)" aria-hidden="true">      <!-- 24px icon, left -->
   …inlined icon group…
 </g>
-<text x="X+48" y="Y+26" fill="#232F3E" font-size="12" font-weight="600"
+<text x="X+48" y="Y+28" fill="#232F3E" font-size="13" font-weight="600"
       font-family="'Amazon Ember', 'Helvetica Neue', Arial, sans-serif">Order API</text>
-<text x="X+48" y="Y+42" fill="#545B64" font-size="9"
-      font-family="'Amazon Ember Mono', ui-monospace, monospace">Lambda · python3.13</text>
+<text x="X+48" y="Y+46" fill="#545B64" font-size="11"
+      font-family="'Amazon Ember Mono', ui-monospace, monospace">Lambda, python3.13</text>
+<!-- more sublabels: y = Y+46+16*i; node height 56 (one line), 80 (two), 96 (three) -->
 ```
 
 ### Compact nodes (non-architecture types)
@@ -148,7 +149,7 @@ Rules for the corner slot:
 
 - **16px is the floor** (rule 2 below) — never render smaller to squeeze a tight cell; drop the icon from secondary nodes instead.
 - Scale factors at 16px: service `16/64 = 0.25`, resource `16/48 ≈ 0.333`, group badge `16/40 = 0.4`.
-- **One icon per node** — the node's primary service. A node listing two tools (`Kinesis · DMS`) shows the dominant one; the sublabel already names the rest.
+- **One icon per node** — the node's primary service. A node listing two tools (`Kinesis, DMS`) shows the dominant one; the sublabel already names the rest.
 - **Keep the title clear of the icon.** With a centered title and a 16px top-right icon on a 100px-wide node, cap the title at ~13 characters; if the title can't shrink, move to the icon-left pattern or a wider node.
 - Nodes for non-AWS subjects (roles, generic actors, on-prem tools) take no AWS icon — mixing generic monochrome marks ([primitive-icons.md](primitive-icons.md)) in the same diagram is fine.
 
@@ -177,7 +178,7 @@ AWS zone containers follow the official convention: **border in the group color,
 <rect x="X" y="Y" width="W" height="H" fill="none" stroke="#8C4FFF" stroke-width="1"/>
 <g transform="translate(X,Y) scale(0.6)" aria-hidden="true">…group/Virtual-private-cloud-VPC_32.svg inner g…</g>
 <text x="X+32" y="Y+16" fill="#232F3E" font-size="12" font-weight="600"
-      font-family="'Amazon Ember', 'Helvetica Neue', Arial, sans-serif">VPC · 10.0.0.0/16</text>
+      font-family="'Amazon Ember', 'Helvetica Neue', Arial, sans-serif">VPC, 10.0.0.0/16</text>
 ```
 
 Zone dashes use `stroke-dasharray="4,4"`; nested zones inset by ≥16px. These zone borders are *identity colors* and don't count against the accent budget — but the §6 connector rules and §7 complexity budget still apply unchanged.

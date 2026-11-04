@@ -191,3 +191,31 @@ assert_eq "aws-diagram-design: no instruction writes the bare style-guide.md" ""
 # --- License: MIT in the manifest, third-party terms called out in NOTICE.md ---
 assert_eq "plugin.json license is MIT" "MIT" "$(jq -r '.license' .claude-plugin/plugin.json)"
 assert_contains "NOTICE.md: aws-deck templates and fonts are outside MIT" "$(cat NOTICE.md)" "are not covered by the MIT license"
+
+# --- Repo diagram gates resolve the repo root from scripts/diagrams/, whatever the working directory ---
+IT_REPO=$(pwd -P)
+IT_OUT=$(cd "$TEST_TMP" && python3 -I "$IT_REPO/scripts/diagrams/verify-motion.py" \
+    "$IT_REPO/skills/aws-diagram-design/assets/template-motion.html" 2>&1); IT_RC=$?
+assert_eq "verify-motion: finds template-motion.html from another directory (exit 0)" "0" "$IT_RC"
+assert_contains "verify-motion: reports the template OK" "$IT_OUT" "OK "
+IT_OUT=$(cd "$TEST_TMP" && python3 -I "$IT_REPO/scripts/diagrams/verify-geometry.py" --all 2>&1); IT_RC=$?
+assert_eq "verify-geometry --all: exits 0 from another directory" "0" "$IT_RC"
+case "$IT_OUT" in
+    *"Summary: 0 file(s)"*|*"pass one or more files"*) fail "verify-geometry --all: checks the shipped examples" "$IT_OUT" ;;
+    *"file(s) checked"*) pass "verify-geometry --all: checks the shipped examples" ;;
+    *) fail "verify-geometry --all: checks the shipped examples" "$IT_OUT" ;;
+esac
+
+# --- self_check.py rejects the middle dot in visible SVG text (style-guide.md § Separators) ---
+IT_SC=skills/aws-diagram-design/scripts/self_check.py
+it_svg_page() {
+    printf '<!DOCTYPE html><html><body><svg viewBox="0 0 80 40" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="t-title t-desc"><title id="t-title">t</title><desc id="t-desc">d</desc><text x="4" y="20">%s</text></svg></body></html>\n' "$1" > "$2"
+}
+it_svg_page "401 · 429" "$TEST_TMP/it-dot.html"
+it_svg_page "401 / 429" "$TEST_TMP/it-slash.html"
+IT_OUT=$(python3 -I "$IT_SC" "$TEST_TMP/it-dot.html" 2>&1); IT_RC=$?
+[ "$IT_RC" -ne 0 ] && pass "self_check: fails on a middle dot in SVG text (exit $IT_RC)" \
+    || fail "self_check: fails on a middle dot in SVG text" "exit 0, printed '$IT_OUT'"
+assert_contains "self_check: names the middle dot" "$IT_OUT" "middle dot in SVG text"
+IT_OUT=$(python3 -I "$IT_SC" "$TEST_TMP/it-slash.html" 2>&1); IT_RC=$?
+assert_eq "self_check: passes the same text with a slash" "0" "$IT_RC"

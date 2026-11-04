@@ -10,7 +10,7 @@ from collections import Counter
 from html.parser import HTMLParser
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]  # scripts/diagrams/ -> repo root
 ASSET_DIR = ROOT / "skills/aws-diagram-design/assets"
 MOTION_TEMPLATE = ASSET_DIR / "template-motion.html"
 MODES = {"none", "reveal", "step", "loop"}

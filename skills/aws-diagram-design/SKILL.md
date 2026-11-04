@@ -157,6 +157,10 @@ These mark "AI slop" schematics of any type:
 | Two connectors overlapping or running on the same path | Each connection must be independently traceable — bridge crossings, offset parallels |
 | Two connectors sharing a single attach point on a box | Fan attach points along the edge (≥12px apart) so every arrow is clearly distinct — see §6 rule 4 |
 | Connector routed behind a non-endpoint box without need | Reroute around intervening boxes; the dashed-transit exception (§6 rule 5) only applies when an unavoidable intervening box sits on the direct path |
+| Middle dot `·` as a separator in any visible text | Reads as generated filler. Use `/` for a pair or alternative, commas for a list (style-guide.md § Separators); `self_check.py` fails on it |
+| Service icon vertically centered in a tall node | The icon drifts away from the name it identifies. Keep it on the title row (`Y+16`) at every node height, as in [primitive-aws-icons.md](references/primitive-aws-icons.md) |
+| 8–9px arrow labels or sublabels in a diagram that ships as PNG | Unreadable once a README scales the image to its column. Use the style-guide sizes (10px labels, 11px sublabels, 13px names) |
+| Sublabel touching or crossing its box edge | Mono text is wider than it looks: about 0.63em per Latin glyph and 1em per Hangul glyph. Keep 12px clear on the right; shorten or widen |
 
 Type-specific anti-patterns live in each `references/type-*.md`.
 
@@ -196,10 +200,12 @@ Type-specific anti-patterns live in each `references/type-*.md`.
 ### Typography (summary — full spec in style-guide.md)
 
 - **Title** — Amazon Ember, 1.75rem, 700 — H1 only
-- **Node name** — Amazon Ember, 12px, 600 — human-readable labels
-- **Sublabel** — Amazon Ember Mono, 9px — ports, URLs, field types
+- **Node name** — Amazon Ember, 13px, 600 — human-readable labels
+- **Sublabel** — Amazon Ember Mono, 11px — ports, URLs, field types
 - **Eyebrow / tag** — Amazon Ember Mono, 7–8px, uppercase, tracked — type tags, axis labels
-- **Arrow label** — Amazon Ember Mono, 8px — annotation on arrows
+- **Arrow label** — Amazon Ember Mono, 10px — annotation on arrows, legend text, notes
+
+Some examples in `assets/` predate these sizes; style-guide.md wins over an example. Size each box from its longest sublabel (style-guide.md § Typography).
 - **Editorial aside** — Amazon Ember *italic*, 14px — callouts only
 
 **Mono is for technical content.** Names, titles, and callouts are Amazon Ember; sublabels, eyebrows, and arrow labels are **Amazon Ember Mono** — the entire type system is one brand family. Never JetBrains Mono as a blanket "dev" font. Neither face is on Google Fonts, but this skill **bundles both** at [`assets/fonts/`](assets/fonts/) — include the `@font-face` block from [`assets/fonts/README.md`](assets/fonts/README.md) in generated HTML (`local()` first, so installed copies win), or install the TTFs once via `./install.sh fonts`. Always ship the fallback stacks; no external font CDN is referenced:
@@ -292,7 +298,7 @@ These six rules are **non-negotiable**. Run the pre-output checklist (§9) to ve
 
    When in doubt, reroute. The exception exists for the narrow case where rerouting is geometrically impossible, not as a shortcut to avoid layout work.
 
-6. **A label mask must not overlap a node drawn after it.** Rule 2 keeps the label off its own connector; this one keeps it off the boxes. Because nodes are painted after labels, a mask that lands partly inside a node is covered by the node fill and the text renders as a fragment sitting on the node border. Place the label on a segment of the connector that runs through open canvas — for a connector leaving a node's right edge, that means clearing the node's `x + width` before the mask starts. A mask fully *inside* a node is a badge chip and is fine; a mask overlapping a zone container is fine too, since zones are painted first. Verify with `python3 <skill-dir>/scripts/verify-geometry.py <file>` (ships with the skill; also at `scripts/verify-geometry.py` in this repository).
+6. **A label mask must not overlap a node drawn after it.** Rule 2 keeps the label off its own connector; this one keeps it off the boxes. Because nodes are painted after labels, a mask that lands partly inside a node is covered by the node fill and the text renders as a fragment sitting on the node border. Place the label on a segment of the connector that runs through open canvas — for a connector leaving a node's right edge, that means clearing the node's `x + width` before the mask starts. A mask fully *inside* a node is a badge chip and is fine; a mask overlapping a zone container is fine too, since zones are painted first. Verify with `python3 <skill-dir>/scripts/verify-geometry.py <file>` (ships with the skill; also at `scripts/diagrams/verify-geometry.py` in this repository).
 
 ### Node box — full pattern
 
@@ -306,10 +312,10 @@ These six rules are **non-negotiable**. Run the pre-output checklist (§9) to ve
 <text x="X+22" y="Y+15" fill="STROKE@0.8" font-size="7" font-family="'Amazon Ember Mono', ui-monospace, monospace"
       text-anchor="middle" letter-spacing="0.08em">API</text>
 <!-- 4. Node name (Amazon Ember — human-readable) -->
-<text x="CX" y="CY+2" fill="#232F3E" font-size="12" font-weight="600"
+<text x="CX" y="CY+2" fill="#232F3E" font-size="13" font-weight="600"
       font-family="'Amazon Ember', 'Helvetica Neue', Helvetica, Arial, sans-serif" text-anchor="middle">Node Name</text>
 <!-- 5. Technical sublabel (Amazon Ember Mono) -->
-<text x="CX" y="CY+18" fill="#545B64" font-size="9"
+<text x="CX" y="CY+18" fill="#545B64" font-size="11"
       font-family="'Amazon Ember Mono', ui-monospace, monospace" text-anchor="middle">tech:port</text>
 ```
 
@@ -320,10 +326,10 @@ For a node representing a named AWS service, use the icon-node pattern in [primi
 Every arrow label needs an opaque rect behind it. Without one it bleeds through the line. **And the label must sit with a visible gap above the connector — never on top of it.**
 
 ```svg
-<!-- Mask spans ARROW_Y-20 to ARROW_Y-8: 12px plate + 8px visible gap above the stroke at ARROW_Y. -->
-<rect x="MID_X-18" y="ARROW_Y-20" width="36" height="12" rx="2" fill="#ffffff"/>
-<text x="MID_X" y="ARROW_Y-11" fill="#7D8998" font-size="8"
-      font-family="'Amazon Ember Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.06em">WRITE</text>
+<!-- Mask spans ARROW_Y-23 to ARROW_Y-9: 14px plate + 9px visible gap above the stroke at ARROW_Y. -->
+<rect x="MID_X-24" y="ARROW_Y-23" width="48" height="14" rx="2" fill="#ffffff"/>
+<text x="MID_X" y="ARROW_Y-12" fill="#545B64" font-size="10"
+      font-family="'Amazon Ember Mono', ui-monospace, monospace" text-anchor="middle" letter-spacing="0.04em">WRITE</text>
 ```
 
 Rules:
@@ -364,7 +370,7 @@ Expand SVG `viewBox` height by ~60px.
 | Padding inside boxes | 8, 12, 16 |
 | Border radius | 4, 6, 8 |
 
-Exempt: stroke widths (0.8, 1, 1.2), opacity values, the 22×22 dot-pattern, and the 7–9px mono sizes fixed by style-guide.md (sublabels, eyebrows, arrow labels).
+Exempt: stroke widths (0.8, 1, 1.2), opacity values, the 22×22 dot-pattern, and the type sizes fixed by style-guide.md (13px names, 7–11px mono sublabels, eyebrows and arrow labels).
 
 Quick check: if a coordinate ends in 1, 2, 3, 5, 6, 7, 9 — fix it.
 
@@ -481,13 +487,16 @@ Run before producing any diagram.
 - [ ] `viewBox` expanded for the legend strip (~60px)?
 - [ ] Every font size, coord, width, height, gap divisible by 4?
 - [ ] Ran the packaged self-check — `python3 <skill-dir>/scripts/self_check.py <file>` — clean? (Accessible-SVG contract, single-file safety, motion basics; ships with the skill.)
-- [ ] If animated, does the complete static/no-JS frame work, does reduced motion hide/disable playback, and is the controller copied verbatim from `template-motion.html`? In this repository, also run `python3 scripts/verify-motion.py path/to/generated.html`; from an installed skill, manually check print and static-query states on top of the self-check.
+- [ ] If animated, does the complete static/no-JS frame work, does reduced motion hide/disable playback, and is the controller copied verbatim from `template-motion.html`? In this repository, also run `python3 scripts/diagrams/verify-motion.py path/to/generated.html`; from an installed skill, manually check print and static-query states on top of the self-check.
 
 **Typography:**
 
 - [ ] Brand match uses exact public families/weights, verified via `getComputedStyle`; fallbacks disclosed?
 - [ ] Human-readable names in Amazon Ember (sans), not mono?
 - [ ] Technical sublabels (ports, commands, URLs) in Amazon Ember Mono?
+- [ ] Sizes from style-guide.md (13px names, 11px sublabels, 10px arrow labels), and every sublabel 12px clear of its box edge?
+- [ ] No middle dot `·` in any visible text; `/` for pairs, commas for lists?
+- [ ] Every service icon on its node's title row (`Y+16`), not centered in a tall node?
 - [ ] Page title in Amazon Ember 700?
 - [ ] Annotation callouts (if any) in *italic* Amazon Ember? (see [primitive-annotation.md](references/primitive-annotation.md))
 - [ ] Amazon Ember declared with its full fallback stack (`'Helvetica Neue', Helvetica, Arial, sans-serif`) — it's not on Google Fonts?
