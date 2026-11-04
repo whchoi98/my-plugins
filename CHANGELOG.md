@@ -15,6 +15,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2026-11-04
+
+### Changed
+- aws-diagram-design type sizes: node names 13px, sublabels 11px, arrow labels, legend text and notes 10px (were 12 / 9 / 8px), so labels stay readable when a README scales the exported PNG; label masks are 14px tall
+- aws-diagram-design service icons sit on the title row (`Y+16`) at every node height instead of being centered in tall nodes
+- Replace the middle dot `·` inside SVG `<text>` in 77 aws-diagram-design examples and references with commas (412 places), so the examples no longer teach it
+
+### Added
+- aws-diagram-design separator rule (style-guide.md § Separators): no `·` in visible text; `/` for pairs, commas for lists; Mermaid steps numbered `1: ` because `1. ` renders as a Markdown list
+- aws-diagram-design text-fit rule: size boxes from the longest sublabel (Amazon Ember Mono about 0.63em per Latin glyph, Hangul about 1em) with 12px clear on the right
+- Four universal anti-patterns and three checklist items for the rules above
+- `self_check.py` fails on a middle dot in visible SVG text
+
+### Fixed
+- `scripts/diagrams/verify-motion.py` and `scripts/diagrams/verify-geometry.py` resolved the repo root one level too low after the merge moved them into `scripts/diagrams/`: verify-motion could not find `template-motion.html` and `verify-geometry --all` checked no files. Both now resolve it from `scripts/diagrams/`, and integration tests cover them from another working directory
+- SKILL.md and `references/animation.md` point to `scripts/diagrams/verify-*.py` instead of the old `scripts/verify-*.py`
+
 ## [1.0.0] - 2026-11-03
 
 ### Added
@@ -36,7 +53,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/whchoi98/my-plugins/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/whchoi98/my-plugins/releases/tag/v1.0.0
 
 ---
@@ -50,6 +68,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.1.0] - 2026-11-04
+
+### Changed
+- aws-diagram-design 글자 크기: 노드 이름 13px, sublabel 11px, 화살표 라벨, 범례, 노트 10px(기존 12 / 9 / 8px). README가 내보낸 PNG를 줄여 보여 줘도 읽을 수 있습니다. 라벨 마스크 높이는 14px입니다.
+- aws-diagram-design 서비스 아이콘을 노드 높이와 관계없이 제목 줄(`Y+16`)에 둡니다. 높은 노드에서 세로 가운데로 두지 않습니다.
+- aws-diagram-design 예제와 reference 77개 파일의 SVG `<text>` 안 가운데 점 `·`을 쉼표로 바꿨습니다(412곳). 예제가 이 패턴을 다시 가르치지 않도록 하기 위해서입니다.
+
+### Added
+- aws-diagram-design 구분자 규칙(style-guide.md § Separators): 보이는 텍스트에 `·`를 쓰지 않고, 짝이나 대안은 `/`, 목록은 쉼표로 씁니다. Mermaid 단계 번호는 `1. `이 Markdown 목록으로 렌더링되므로 `1: `로 씁니다.
+- aws-diagram-design 텍스트 폭 규칙: 가장 긴 sublabel 기준으로 박스 크기를 정합니다(Amazon Ember Mono는 라틴 글자당 약 0.63em, 한글은 약 1em). 오른쪽에 12px 여백을 둡니다.
+- 위 규칙에 대한 공통 anti-pattern 4개와 체크리스트 항목 3개
+- `self_check.py`가 보이는 SVG 텍스트에서 가운데 점을 찾으면 실패합니다.
+
+### Fixed
+- 통합 과정에서 `scripts/diagrams/`로 옮긴 `verify-motion.py`와 `verify-geometry.py`가 repo 루트를 한 단계 아래로 잡던 문제를 고쳤습니다. verify-motion은 `template-motion.html`을 찾지 못했고 `verify-geometry --all`은 파일을 하나도 검사하지 않았습니다. 이제 `scripts/diagrams/` 기준으로 루트를 찾으며, 다른 작업 디렉터리에서 실행하는 통합 테스트를 추가했습니다.
+- SKILL.md와 `references/animation.md`가 옛 경로 `scripts/verify-*.py` 대신 `scripts/diagrams/verify-*.py`를 안내합니다.
 
 ## [1.0.0] - 2026-11-03
 
@@ -72,5 +107,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/whchoi98/my-plugins/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/whchoi98/my-plugins/releases/tag/v1.0.0
