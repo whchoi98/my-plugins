@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-05
+
 ### Added
 - `aws-reports` skill, merged from github.com/whchoi98/aws-reports 1.0.0 as one skill with two report types: benchmark reports (setup and method first, overall verdict and recommendations last) and PoC result reports (success criteria with the fixed verdict words 충족 / 부분 충족 / 미충족 / 측정하지 않음, an overall decision 진행 / 조건부 진행 / 보류, issues, cost and next steps). One Markdown draft builds an MS Word file and a standalone HTML file in the same style
 - `scripts/check_report.py --profile benchmark|poc`: page, font, caption, box, table-header and caption-note checks, wording terms from `style_terms.json`, and per-profile structure and verdict checks
@@ -64,7 +66,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/whchoi98/my-plugins/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/whchoi98/my-plugins/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/whchoi98/my-plugins/releases/tag/v1.0.0
 
@@ -79,6 +82,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.2.0] - 2026-11-05
 
 ### Added
 - `aws-reports` skill 추가. github.com/whchoi98/aws-reports 1.0.0을 보고서 유형 둘을 담은 skill 하나로 합침: 벤치마크 보고서(측정 환경과 방법이 먼저, 종합 평가와 권고가 마지막)와 PoC 결과 보고서(고정된 판정 단어 충족 / 부분 충족 / 미충족 / 측정하지 않음을 쓰는 성공 기준, 전체 판정 진행 / 조건부 진행 / 보류, 이슈, 비용, 다음 단계). Markdown 원고 하나로 MS Word 파일과 단일 HTML 파일을 같은 스타일로 생성
@@ -129,6 +134,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.1.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.2.0...HEAD
+[1.2.0]: https://github.com/whchoi98/my-plugins/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/whchoi98/my-plugins/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/whchoi98/my-plugins/releases/tag/v1.0.0
