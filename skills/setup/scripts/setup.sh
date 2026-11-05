@@ -8,7 +8,8 @@
 #                            # 암호가 필요하면 실행할 명령만 출력한다
 #
 # 사용자 영역 설치 위치: ~/.local/bin(uv, soffice 링크), ~/.local/opt/libreoffice,
-# ~/.local/share/fonts(Linux) 또는 ~/Library/Fonts(macOS), ~/.cache/ms-playwright, pip --user, npm -g.
+# ~/.local/share/fonts(Linux) 또는 ~/Library/Fonts(macOS), ~/.cache/ms-playwright, pip --user,
+# npm -g(pptxgenjs, aws-reports의 docx, marked, docx-preview, jszip).
 # 마지막 줄의 "missing: N"이 0이면 모든 skill을 쓸 수 있다.
 set -uo pipefail
 
@@ -43,6 +44,12 @@ have() { command -v "$1" >/dev/null 2>&1; }
 # grep -q가 먼저 끝나면 pipefail 아래에서 fc-list의 SIGPIPE가 실패로 잡히므로 -q를 쓰지 않는다
 font_has() { fc-list : family 2>/dev/null | grep -i -- "$1" >/dev/null; }
 nanum_ok() { fc-match "NanumSquareOTF Bold" 2>/dev/null | grep "NanumSquareOTF_ac" >/dev/null; }
+# aws-reports 본문은 NanumSquareOTF Regular(@kfonts 패키지의 NanumSquareR.otf)를 쓴다. 덱 폰트(NanumSquareOTF_acB)는 Bold 하나뿐이다
+report_nanum_ok() { fc-list : file 2>/dev/null | grep -E "NanumSquare(OTF)?R\.otf" >/dev/null; }
+# aws-reports의 Word·HTML 빌드가 쓰는 npm 패키지. report.mjs가 npm root -g에서 찾는다
+REPORT_NPM=(docx@9.15.1 marked@18.1.1 docx-preview@0.4.1 jszip@3.10.1)
+REPORT_FONT_PKG="@kfonts/nanum-square-otf@0.2.0"
+npm_global_has() { local root; root=$(npm root -g 2>/dev/null) && [ -f "$root/$1/package.json" ]; }
 
 # --------------------------------------------------------------------------- 점검 항목
 
@@ -99,11 +106,25 @@ check_deck() {
   done
 }
 
+check_reports() {
+  if have fc-list && report_nanum_ok; then ok "NanumSquareOTF Regular"; else miss "NanumSquareOTF Regular" "보고서 본문 폰트(npm $REPORT_FONT_PKG, OFL-1.1)"; fi
+  local p name ver root
+  root=$(npm root -g 2>/dev/null || true)
+  for p in "${REPORT_NPM[@]}"; do
+    name=${p%@*}
+    if have npm && npm_global_has "$name"; then
+      ver=$(sed -n 's/^  "version": "\(.*\)",$/\1/p' "$root/$name/package.json" | head -1)
+      ok "$name" "$ver"
+    else miss "$name" "보고서 Word·HTML 빌드(npm -g)"; fi
+  done
+}
+
 run_checks() {
   echo "== 기본 도구"; check_base
   echo "== 다이어그램 렌더 (aws-blog-skills, aws-diagram-design export)"; check_render
   echo "== 폰트"; check_fonts
   echo "== 덱 (aws-ppt-skills, consulting-ppt-white-ppt, pptx-template-fill)"; check_deck
+  echo "== 보고서 (aws-reports)"; check_reports
 }
 
 # --------------------------------------------------------------------------- 설치
@@ -160,6 +181,28 @@ install_deck_user() {
   if [ ${#need[@]} -gt 0 ]; then
     echo "-> pip --user ${need[*]}"
     python3 -m pip install --user -q "${need[@]}" 2>&1 | tail -2
+  fi
+}
+
+install_reports_user() {
+  have npm || { echo "   npm이 없어 aws-reports 의존 패키지를 건너뜁니다"; return; }
+  local need=() p tmp
+  for p in "${REPORT_NPM[@]}"; do npm_global_has "${p%@*}" || need+=("$p"); done
+  if [ ${#need[@]} -gt 0 ]; then
+    echo "-> ${need[*]} 설치(npm -g)"
+    npm install -g --no-fund --no-audit "${need[@]}" >/dev/null 2>&1 || echo "   실패: npm 전역 폴더에 쓸 수 없으면 nvm 등 사용자 Node를 쓰세요"
+  fi
+  if ! report_nanum_ok; then
+    # npm pack은 레지스트리의 integrity(sha512)를 확인한 뒤 tgz를 받는다. 글꼴 파일(src/*.otf)만 복사한다
+    echo "-> NanumSquareOTF 설치($REPORT_FONT_PKG, OFL-1.1, $FONT_HOME/nanumsquare-otf)"
+    tmp=$(mktemp -d)
+    if (cd "$tmp" && npm pack --silent "$REPORT_FONT_PKG" >/dev/null 2>&1) && tar xzf "$tmp"/*.tgz -C "$tmp" 2>/dev/null; then
+      mkdir -p "$FONT_HOME/nanumsquare-otf" && cp "$tmp"/package/src/*.otf "$FONT_HOME/nanumsquare-otf/"
+      have fc-cache && fc-cache -f "$FONT_HOME/nanumsquare-otf" >/dev/null 2>&1
+    else
+      echo "   실패: npm pack $REPORT_FONT_PKG"
+    fi
+    rm -rf "$tmp"
   fi
 }
 
@@ -246,6 +289,7 @@ if [ "$MODE" = "install" ]; then
   install_chromium
   install_fonts
   install_deck_user
+  install_reports_user
   install_deck_system
   install_system_pkgs
   echo

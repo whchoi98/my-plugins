@@ -40,7 +40,8 @@ bash skills/setup/scripts/setup.sh
 ```
 The groups are base tools, diagram render (uv, Playwright Chromium headless launch), fonts (Amazon Ember, Noto
 Sans CJK KR, NanumSquareOTF Bold, D2Coding) and decks (pptxgenjs, python-pptx, lxml, Pillow, cairosvg,
-`soffice`, `pdftoppm`, `pdftotext`, `rsvg-convert`). When Chromium does not launch, the check lists the shared
+`soffice`, `pdftoppm`, `pdftotext`, `rsvg-convert`) and reports (NanumSquareOTF Regular, docx, marked, docx-preview,
+jszip). When Chromium does not launch, the check lists the shared
 libraries `ldd` cannot find.
 
 ### 2. Install user-level items
@@ -55,6 +56,8 @@ bash skills/setup/scripts/setup.sh install
 | Noto Sans CJK KR | Regular, Medium, Bold OTF from github.com/notofonts/noto-cjk to `~/.local/share/fonts/noto-cjk` |
 | NanumSquareOTF, D2Coding | `skills/aws-ppt-skills/scripts/install_fonts.sh`: `~/.fonts` plus a fontconfig alias in `~/.config/fontconfig/conf.d/` |
 | pptxgenjs | `npm install -g` |
+| docx, marked, docx-preview, jszip (aws-reports) | `npm install -g` at fixed versions (`REPORT_NPM` in `setup.sh`) |
+| NanumSquareOTF Regular and Bold (aws-reports) | npm `@kfonts/nanum-square-otf` 0.2.0 (OFL-1.1) through `npm pack`, `src/*.otf` copied to `~/.local/share/fonts/nanumsquare-otf` |
 | python-pptx, lxml, Pillow, cairosvg | `pip install --user` |
 | LibreOffice (dnf without a package) | official RPM bundle, SHA-256 checked, unpacked to `~/.local/opt/libreoffice`, linked as `~/.local/bin/soffice` |
 
@@ -94,15 +97,17 @@ Run step 1 again and report `missing:`.
 ## Verification
 - [ ] `bash skills/setup/scripts/setup.sh` ends with `missing: 0`
 - [ ] `fc-match "NanumSquareOTF Bold"` names `NanumSquareOTF_ac`
+- [ ] `fc-list : file | grep NanumSquareR.otf` lists the aws-reports body font
 - [ ] `soffice --headless --version` prints a version
 
 ## Rollback
 Everything except system packages lives in the user's home. Remove what is no longer wanted:
 ```bash
 rm -rf ~/.local/opt/libreoffice ~/.local/share/fonts/ember ~/.local/share/fonts/noto-cjk ~/.cache/ms-playwright
+rm -rf ~/.local/share/fonts/nanumsquare-otf
 rm -f ~/.local/bin/soffice ~/.config/fontconfig/conf.d/60-aws-ppt-fonts.conf
 rm -f ~/.fonts/NanumSquareOTF_acB.otf ~/.fonts/D2Coding-*.ttf && fc-cache -f
-npm uninstall -g pptxgenjs
+npm uninstall -g pptxgenjs docx marked docx-preview jszip
 python3 -m pip uninstall python-pptx lxml Pillow cairosvg
 ```
 `install_fonts.sh` also writes `~/.config/fontconfig/fonts.conf` when it did not exist and the `conf.d` alias was
@@ -146,7 +151,7 @@ manager (`sudo dnf remove ...`, `sudo apt-get remove ...`).
 ```bash
 bash skills/setup/scripts/setup.sh
 ```
-항목은 기본 도구, 다이어그램 렌더(uv, Playwright Chromium headless 실행), 폰트(Amazon Ember, Noto Sans CJK KR, NanumSquareOTF Bold, D2Coding), 덱(pptxgenjs, python-pptx, lxml, Pillow, cairosvg, `soffice`, `pdftoppm`, `pdftotext`, `rsvg-convert`)으로 나뉩니다. Chromium이 실행되지 않으면 `ldd`가 찾지 못한 공유 라이브러리를 함께 보여 줍니다.
+항목은 기본 도구, 다이어그램 렌더(uv, Playwright Chromium headless 실행), 폰트(Amazon Ember, Noto Sans CJK KR, NanumSquareOTF Bold, D2Coding), 덱(pptxgenjs, python-pptx, lxml, Pillow, cairosvg, `soffice`, `pdftoppm`, `pdftotext`, `rsvg-convert`), 보고서(NanumSquareOTF Regular, docx, marked, docx-preview, jszip)로 나뉩니다. Chromium이 실행되지 않으면 `ldd`가 찾지 못한 공유 라이브러리를 함께 보여 줍니다.
 
 ### 2. 사용자 영역 설치
 ```bash
@@ -160,6 +165,8 @@ bash skills/setup/scripts/setup.sh install
 | Noto Sans CJK KR | github.com/notofonts/noto-cjk의 Regular, Medium, Bold OTF를 `~/.local/share/fonts/noto-cjk`로 |
 | NanumSquareOTF, D2Coding | `skills/aws-ppt-skills/scripts/install_fonts.sh`: `~/.fonts`와 `~/.config/fontconfig/conf.d/`의 fontconfig 별칭 |
 | pptxgenjs | `npm install -g` |
+| docx, marked, docx-preview, jszip(aws-reports) | `npm install -g`, 버전 고정(`setup.sh`의 `REPORT_NPM`) |
+| NanumSquareOTF Regular·Bold(aws-reports) | npm `@kfonts/nanum-square-otf` 0.2.0(OFL-1.1)을 `npm pack`으로 받아 `src/*.otf`를 `~/.local/share/fonts/nanumsquare-otf`로 복사 |
 | python-pptx, lxml, Pillow, cairosvg | `pip install --user` |
 | LibreOffice(패키지가 없는 dnf) | 공식 RPM 묶음을 SHA-256으로 확인한 뒤 `~/.local/opt/libreoffice`에 풀고 `~/.local/bin/soffice`로 연결 |
 
@@ -190,19 +197,21 @@ bash skills/setup/scripts/setup.sh install --sudo
 ## 검증
 - [ ] `bash skills/setup/scripts/setup.sh`가 `missing: 0`으로 끝납니다
 - [ ] `fc-match "NanumSquareOTF Bold"`가 `NanumSquareOTF_ac`를 가리킵니다
+- [ ] `fc-list : file | grep NanumSquareR.otf`가 aws-reports 본문 폰트를 보여 줍니다
 - [ ] `soffice --headless --version`이 버전을 출력합니다
 
 ## 롤백
 시스템 패키지를 뺀 나머지는 모두 사용자 홈에 있습니다. 필요 없는 것을 지웁니다.
 ```bash
 rm -rf ~/.local/opt/libreoffice ~/.local/share/fonts/ember ~/.local/share/fonts/noto-cjk ~/.cache/ms-playwright
+rm -rf ~/.local/share/fonts/nanumsquare-otf
 rm -f ~/.local/bin/soffice ~/.config/fontconfig/conf.d/60-aws-ppt-fonts.conf
 rm -f ~/.fonts/NanumSquareOTF_acB.otf ~/.fonts/D2Coding-*.ttf && fc-cache -f
-npm uninstall -g pptxgenjs
+npm uninstall -g pptxgenjs docx marked docx-preview jszip
 python3 -m pip uninstall python-pptx lxml Pillow cairosvg
 ```
 `install_fonts.sh`는 `conf.d` 별칭이 읽히지 않을 때 없던 `~/.config/fontconfig/fonts.conf`도 만듭니다. 이 별칭만 들어 있을 때만 지웁니다. 시스템 패키지는 패키지 관리자로 제거합니다(`sudo dnf remove ...`, `sudo apt-get remove ...`).
 
 ## 참고
 - 새 외부 프로그램이나 폰트는 `skills/setup/scripts/setup.sh`(점검과 설치), `skills/setup/SKILL.md`, README 두 언어 섹션에 추가합니다.
-- 최종 검증일: 2026-11-03 (점검 모드, Amazon Linux 2023 aarch64, `missing: 0`)
+- 최종 검증일: 2026-11-03 (점검 모드, Amazon Linux 2023 aarch64, `missing: 0`). aws-reports 항목은 2026-11-05에 점검 모드와, 격리된 `HOME`과 npm prefix에서 `install_reports_user`를 확인했습니다

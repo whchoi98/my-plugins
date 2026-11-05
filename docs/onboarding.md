@@ -80,7 +80,7 @@ bash tests/run-all.sh                      # all harness tests
 ```bash
 claude --plugin-dir .        # loads this checkout as a plugin for one session
 ```
-세션 안에서는 `/my-plugins:aws-blog-skills`나 `/my-plugins:aws-diagram-design`처럼 skill을 직접 호출합니다. `my-plugins@my-plugins`가 설치되어 있거나, 단독 플러그인 네 개(`aws-blog-skills@aws-blog-skills`, `aws-diagrams@aws-diagrams`, `kor-writing@kor-writing`, `aws-deck@whchoi`) 또는 claude.ai에서 동기화된 사본이 있으면, 원하는 사본이 실행되도록 시험하는 동안 비활성화합니다.
+세션 안에서는 `/my-plugins:aws-blog-skills`나 `/my-plugins:aws-diagram-design`처럼 skill을 직접 호출합니다. `my-plugins@my-plugins`가 설치되어 있거나, 단독 플러그인 다섯 개(`aws-blog-skills@aws-blog-skills`, `aws-diagrams@aws-diagrams`, `kor-writing@kor-writing`, `aws-deck@whchoi`, `aws-reports@aws-reports`) 또는 claude.ai에서 동기화된 사본이 있으면, 원하는 사본이 실행되도록 시험하는 동안 비활성화합니다.
 
 ## 파일 위치
 | 필요한 것 | 파일 |

@@ -4,7 +4,7 @@
 <a href="#english"><img src="https://img.shields.io/badge/lang-English-blue.svg" alt="English"></a>
 <a href="#korean"><img src="https://img.shields.io/badge/lang-한국어-red.svg" alt="Korean"></a>
 
-One Claude Code plugin that bundles aws-blog-skills, aws-diagrams, kor-writing and aws-deck | aws-blog-skills, aws-diagrams, kor-writing, aws-deck을 하나로 묶은 Claude Code 플러그인
+One Claude Code plugin that bundles aws-blog-skills, aws-diagrams, kor-writing, aws-deck and aws-reports | aws-blog-skills, aws-diagrams, kor-writing, aws-deck, aws-reports를 하나로 묶은 Claude Code 플러그인
 
 ---
 
@@ -14,8 +14,9 @@ One Claude Code plugin that bundles aws-blog-skills, aws-diagrams, kor-writing a
 
 ## Overview
 
-`my-plugins` merges four plugins into one install: the AWS Korea Tech Blog drafting workflow, AWS architecture
-and structure diagrams, Korean AI-tell removal, and AWS PowerPoint decks. The skills call each other inside
+`my-plugins` merges five plugins into one install: the AWS Korea Tech Blog drafting workflow, AWS architecture
+and structure diagrams, Korean AI-tell removal, AWS PowerPoint decks, and customer reports as MS Word + HTML
+(benchmarks and PoC results). The skills call each other inside
 the same plugin, so a blog post can draw its diagrams and run the 윤문 check without a second plugin, and a
 deck can embed the same diagrams. A `setup` skill checks and installs every external tool and font the skills
 need, including the cases that broke on Amazon Linux 2023.
@@ -32,6 +33,7 @@ need, including the cases that broke on Amazon Linux 2023.
 | `/my-plugins:aws-ppt-skills` | aws-deck 1.0.0 | AWS Korea 2026 black or white template decks with pptxgenjs and Korean speaker notes |
 | `/my-plugins:consulting-ppt-white-ppt` | aws-deck 1.0.0 | Dense consulting-report decks with a customer brand accent |
 | `/my-plugins:pptx-template-fill` | aws-deck 1.0.0 | Fills an existing .pptx template in place, keeping its layout |
+| `/my-plugins:aws-reports` | aws-reports 1.0.0 | Customer reports as MS Word + standalone HTML from one Markdown draft: benchmarks, and PoC results with success criteria, verdicts and next steps |
 | `/my-plugins:setup` | new | Checks and installs the external tools and fonts above |
 
 ## What Changed from the Four Plugins
@@ -71,7 +73,7 @@ claude plugin marketplace add /path/to/my-plugins
 claude plugin install my-plugins@my-plugins
 ```
 
-### Moving from the four plugins
+### Moving from the standalone plugins
 
 The standalone plugins load the same skills under their old names, so remove them after installing:
 
@@ -80,10 +82,12 @@ claude plugin uninstall aws-blog-skills@aws-blog-skills
 claude plugin uninstall aws-diagrams@aws-diagrams
 claude plugin uninstall kor-writing@kor-writing
 claude plugin uninstall aws-deck@whchoi
+claude plugin uninstall aws-reports@aws-reports
 claude plugin marketplace remove aws-blog-skills
 claude plugin marketplace remove aws-diagrams
 claude plugin marketplace remove kor-writing
 claude plugin marketplace remove whchoi
+claude plugin marketplace remove aws-reports
 ```
 
 If the same plugins are also attached to your claude.ai account, Claude Code loads those synced copies
@@ -112,6 +116,9 @@ The skill runs `skills/setup/scripts/setup.sh`: without arguments it only checks
 that needs no sudo; `install --sudo` also installs system packages with `sudo -n` and prints the command when
 sudo needs a password. Claude asks before running the sudo step.
 
+aws-reports builds its Word and HTML files with the npm packages docx, marked, docx-preview and jszip and the
+NanumSquareOTF font; `setup` installs them (`npm install -g` at fixed versions, the font from npm `@kfonts`).
+
 Then ask in plain Korean, or call a skill directly:
 
 ```text
@@ -119,6 +126,8 @@ Then ask in plain Korean, or call a skill directly:
 이 구성을 AWS 아키텍처 다이어그램으로 그려줘
 이 글 AI 티 빼줘
 화이트 테마로 50명 미만 기술 세미나 덱 만들어줘
+이 CSV로 Graviton vs Intel 벤치마크 보고서 Word랑 HTML로 만들어줘
+PoC 결과를 성공 기준별 판정으로 정리해서 보고서로 만들어줘
 /my-plugins:pptx-template-fill
 ```
 
@@ -128,7 +137,7 @@ Then ask in plain Korean, or call a skill directly:
 |---|---|---|
 | `AWS_DIAGRAM_ASSETS` | aws-diagram-design `assets` folder for `diagram_lib.py`, when auto-detection fails | `.aws-diagram-assets` next to the file, then the sibling skill, then the plugin cache |
 | `BLOG_IMAGES` | Output folder for the blog diagram generator and `render_diagrams.py` | None (required) |
-| `NODE_PATH` | Set to `$(npm root -g)` so deck build scripts find the global pptxgenjs | Unset |
+| `NODE_PATH` | Set to `$(npm root -g)` so deck build scripts find the global pptxgenjs (aws-reports also asks `npm root -g` itself) | Unset |
 | `CLAUDE_NOTIFY_WEBHOOK` | Dev harness only: webhook for Claude Code notifications | Unset |
 
 ## Project Structure
@@ -143,6 +152,7 @@ skills/
 ├── aws-ppt-skills/      # AWS template decks, bundled templates and fonts
 ├── consulting-ppt-white-ppt/  # consulting-report decks
 ├── pptx-template-fill/  # fill an existing template
+├── aws-reports/         # benchmark and PoC reports: Word + HTML engine, references, examples
 └── setup/               # dependency check and install (scripts/setup.sh)
 commands/                # export-diagram, import-drawio, import-mermaid
 third_party/             # upstream licenses and notices
@@ -160,7 +170,7 @@ claude plugin validate .          # Claude Code manifest and skill validation (I
 
 ## License
 
-MIT ([LICENSE](LICENSE)) for the plugin's own work: aws-blog-skills, kor-deslop, the aws-deck skills and setup.
+MIT ([LICENSE](LICENSE)) for the plugin's own work: aws-blog-skills, kor-deslop, the aws-deck skills, aws-reports and setup.
 Details per part are in [NOTICE.md](NOTICE.md). aws-diagram-design is MIT from its upstream
 ([third_party/LICENSE-aws-diagram-design](third_party/LICENSE-aws-diagram-design)); AWS icons, Amazon Ember and
 the AWS PowerPoint templates and deck fonts follow their own terms and are not covered by the MIT license.
@@ -177,8 +187,9 @@ WooHyung Choi, [github.com/whchoi98](https://github.com/whchoi98)
 
 ## 개요
 
-`my-plugins`는 플러그인 네 개를 하나로 합친 Claude Code 플러그인입니다. AWS Korea Tech Blog 원고 작성, AWS
-아키텍처와 구조 다이어그램, 한국어 AI 티 제거 윤문, AWS PowerPoint 덱 제작을 한 번에 설치합니다. skill끼리 같은
+`my-plugins`는 플러그인 다섯 개를 하나로 합친 Claude Code 플러그인입니다. AWS Korea Tech Blog 원고 작성, AWS
+아키텍처와 구조 다이어그램, 한국어 AI 티 제거 윤문, AWS PowerPoint 덱 제작, 벤치마크·PoC 결과 보고서(MS Word +
+HTML)를 한 번에 설치합니다. skill끼리 같은
 플러그인 안에서 서로를 부르므로 블로그 원고가 다른 플러그인 없이 다이어그램을 그리고 윤문 점검을 하며, 덱도 같은
 다이어그램을 넣습니다. `setup` skill은 skill들이 쓰는 외부 프로그램과 폰트를 점검하고 설치하며, Amazon Linux
 2023에서 막혔던 경우도 처리합니다.
@@ -195,6 +206,7 @@ WooHyung Choi, [github.com/whchoi98](https://github.com/whchoi98)
 | `/my-plugins:aws-ppt-skills` | aws-deck 1.0.0 | 2026 AWS Korea 블랙·화이트 템플릿 덱(pptxgenjs, 한국어 발표 대본) |
 | `/my-plugins:consulting-ppt-white-ppt` | aws-deck 1.0.0 | 고객 브랜드 색을 쓰는 고밀도 컨설팅 리포트 덱 |
 | `/my-plugins:pptx-template-fill` | aws-deck 1.0.0 | 기존 .pptx 템플릿의 레이아웃을 유지하며 내용 채우기 |
+| `/my-plugins:aws-reports` | aws-reports 1.0.0 | Markdown 원고 하나로 만드는 고객 공유용 Word + 단일 HTML 보고서: 벤치마크, 성공 기준별 판정과 다음 단계를 담은 PoC 결과 |
 | `/my-plugins:setup` | 신규 | 위 skill들의 외부 프로그램과 폰트 점검·설치 |
 
 ## 네 플러그인에서 달라진 점
@@ -234,7 +246,7 @@ claude plugin marketplace add /path/to/my-plugins
 claude plugin install my-plugins@my-plugins
 ```
 
-### 네 플러그인에서 옮겨 올 때
+### 단독 플러그인에서 옮겨 올 때
 
 단독 플러그인은 같은 skill을 예전 이름으로 불러오므로 설치 후 제거합니다.
 
@@ -243,10 +255,12 @@ claude plugin uninstall aws-blog-skills@aws-blog-skills
 claude plugin uninstall aws-diagrams@aws-diagrams
 claude plugin uninstall kor-writing@kor-writing
 claude plugin uninstall aws-deck@whchoi
+claude plugin uninstall aws-reports@aws-reports
 claude plugin marketplace remove aws-blog-skills
 claude plugin marketplace remove aws-diagrams
 claude plugin marketplace remove kor-writing
 claude plugin marketplace remove whchoi
+claude plugin marketplace remove aws-reports
 ```
 
 같은 플러그인이 claude.ai 계정에도 연결되어 있으면, 이름이 같은 로컬 플러그인이 사라진 뒤 Claude Code가 동기화
@@ -274,6 +288,9 @@ claude plugin update my-plugins@my-plugins
 없는 것을 설치하며, `install --sudo`는 시스템 패키지까지 `sudo -n`으로 설치하고 sudo에 암호가 필요하면 명령만
 출력합니다. sudo 단계는 Claude가 실행 전에 묻습니다.
 
+aws-reports는 npm 패키지 docx, marked, docx-preview, jszip과 NanumSquareOTF 폰트로 Word와 HTML을 만듭니다.
+`setup`이 이들을 설치합니다(`npm install -g` 고정 버전, 폰트는 npm `@kfonts`).
+
 그다음 한국어로 요청하거나 skill을 직접 부릅니다.
 
 ```text
@@ -281,6 +298,8 @@ claude plugin update my-plugins@my-plugins
 이 구성을 AWS 아키텍처 다이어그램으로 그려줘
 이 글 AI 티 빼줘
 화이트 테마로 50명 미만 기술 세미나 덱 만들어줘
+이 CSV로 Graviton vs Intel 벤치마크 보고서 Word랑 HTML로 만들어줘
+PoC 결과를 성공 기준별 판정으로 정리해서 보고서로 만들어줘
 /my-plugins:pptx-template-fill
 ```
 
@@ -290,7 +309,7 @@ claude plugin update my-plugins@my-plugins
 |---|---|---|
 | `AWS_DIAGRAM_ASSETS` | 자동 탐색이 실패할 때 `diagram_lib.py`가 쓸 aws-diagram-design `assets` 폴더 | 파일 옆 `.aws-diagram-assets`, 옆 skill, 플러그인 캐시 순으로 탐색 |
 | `BLOG_IMAGES` | 블로그 다이어그램 생성기와 `render_diagrams.py`의 출력 폴더 | 없음(필수) |
-| `NODE_PATH` | 덱 빌드 스크립트가 전역 pptxgenjs를 찾도록 `$(npm root -g)`로 설정 | 없음 |
+| `NODE_PATH` | 덱 빌드 스크립트가 전역 pptxgenjs를 찾도록 `$(npm root -g)`로 설정(aws-reports는 `npm root -g`를 직접 찾습니다) | 없음 |
 | `CLAUDE_NOTIFY_WEBHOOK` | 개발 하네스 전용: Claude Code 알림 웹훅 | 없음 |
 
 ## 프로젝트 구조
@@ -305,6 +324,7 @@ skills/
 ├── aws-ppt-skills/      # AWS 템플릿 덱, 템플릿과 폰트 포함
 ├── consulting-ppt-white-ppt/  # 컨설팅 리포트 덱
 ├── pptx-template-fill/  # 기존 템플릿 채우기
+├── aws-reports/         # 벤치마크·PoC 보고서: Word + HTML 변환기, references, 예제
 └── setup/               # 의존 프로그램 점검과 설치(scripts/setup.sh)
 commands/                # export-diagram, import-drawio, import-mermaid
 third_party/             # 원 저작물의 라이선스와 고지
@@ -322,7 +342,7 @@ claude plugin validate .          # Claude Code manifest와 skill 검증(ICON_MI
 
 ## 라이선스
 
-플러그인 자체 저작물(aws-blog-skills, kor-deslop, aws-deck skill, setup)은 MIT([LICENSE](LICENSE))입니다.
+플러그인 자체 저작물(aws-blog-skills, kor-deslop, aws-deck skill, aws-reports, setup)은 MIT([LICENSE](LICENSE))입니다.
 부분별 내용은 [NOTICE.md](NOTICE.md)에 있습니다. aws-diagram-design은 원 저작물의 MIT
 ([third_party/LICENSE-aws-diagram-design](third_party/LICENSE-aws-diagram-design))이고, AWS 아이콘, Amazon Ember,
 AWS PowerPoint 템플릿, 덱 폰트는 MIT 대상이 아니며 각자의 이용 조건을 따릅니다.

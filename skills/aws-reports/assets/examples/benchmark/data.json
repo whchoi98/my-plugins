@@ -1,0 +1,139 @@
+{
+ "_source": "graviton-performance lab, 2026-11-02, Seoul On-Demand, C2-only profile (rounded)",
+ "score": [
+  {
+   "instance": "c7g.2xlarge",
+   "vendor": "Graviton",
+   "cpu": "Graviton3",
+   "gen": 7,
+   "score": 45873,
+   "price_usd_h": 0.3264,
+   "rel_ppd": 0.785
+  },
+  {
+   "instance": "c7i.2xlarge",
+   "vendor": "Intel",
+   "cpu": "Sapphire Rapids",
+   "gen": 7,
+   "score": 72168,
+   "price_usd_h": 0.4032,
+   "rel_ppd": 1
+  },
+  {
+   "instance": "c8g.2xlarge",
+   "vendor": "Graviton",
+   "cpu": "Graviton4",
+   "gen": 8,
+   "score": 74721,
+   "price_usd_h": 0.35904,
+   "rel_ppd": 1.163
+  },
+  {
+   "instance": "c8i.2xlarge",
+   "vendor": "Intel",
+   "cpu": "Granite Rapids",
+   "gen": 8,
+   "score": 92976,
+   "price_usd_h": 0.42336,
+   "rel_ppd": 1.227
+  },
+  {
+   "instance": "m7g.2xlarge",
+   "vendor": "Graviton",
+   "cpu": "Graviton3",
+   "gen": 7,
+   "score": 45819,
+   "price_usd_h": 0.4012,
+   "rel_ppd": 0.638
+  },
+  {
+   "instance": "m7i.2xlarge",
+   "vendor": "Intel",
+   "cpu": "Sapphire Rapids",
+   "gen": 7,
+   "score": 82417,
+   "price_usd_h": 0.4956,
+   "rel_ppd": 0.929
+  },
+  {
+   "instance": "m8g.2xlarge",
+   "vendor": "Graviton",
+   "cpu": "Graviton4",
+   "gen": 8,
+   "score": 75655,
+   "price_usd_h": 0.44136,
+   "rel_ppd": 0.958
+  },
+  {
+   "instance": "m8i.2xlarge",
+   "vendor": "Intel",
+   "cpu": "Granite Rapids",
+   "gen": 8,
+   "score": 92521,
+   "price_usd_h": 0.52036,
+   "rel_ppd": 0.993
+  }
+ ],
+ "gen": [
+  {
+   "from": "c7g.2xlarge",
+   "to": "c8g.2xlarge",
+   "vendor": "Graviton",
+   "score_from": 45873,
+   "score_to": 74721
+  },
+  {
+   "from": "m7g.2xlarge",
+   "to": "m8g.2xlarge",
+   "vendor": "Graviton",
+   "score_from": 45819,
+   "score_to": 75655
+  },
+  {
+   "from": "c7i.2xlarge",
+   "to": "c8i.2xlarge",
+   "vendor": "Intel",
+   "score_from": 72168,
+   "score_to": 92976
+  },
+  {
+   "from": "m7i.2xlarge",
+   "to": "m8i.2xlarge",
+   "vendor": "Intel",
+   "score_from": 82417,
+   "score_to": 92521
+  }
+ ],
+ "verdict": [
+  {
+   "scenario": "벤치마크 앱, C2 전용 (참고 저장소 플래그)",
+   "pair": "c8g / c8i",
+   "ppd_ratio": 0.948,
+   "verdict": "Intel 우위"
+  },
+  {
+   "scenario": "벤치마크 앱, JVM 기본값",
+   "pair": "c8g / c8i",
+   "ppd_ratio": 0.853,
+   "verdict": "Intel 우위"
+  },
+  {
+   "scenario": "계산 위주 요청, CPU 포화 (진단 측정)",
+   "pair": "m8g / m8i",
+   "ppd_ratio": 1.045,
+   "verdict": "비슷"
+  },
+  {
+   "scenario": "PetClinic, 추출 레이아웃 (락 경합 있음)",
+   "pair": "c8g / c8i",
+   "ppd_ratio": 0.843,
+   "verdict": "Intel 우위"
+  },
+  {
+   "scenario": "7세대, 벤치마크 앱 C2 전용",
+   "pair": "c7g / c7i",
+   "ppd_ratio": 0.785,
+   "verdict": "Intel 우위"
+  }
+ ]
+}

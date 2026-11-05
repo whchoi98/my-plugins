@@ -15,7 +15,7 @@ claude plugin install my-plugins@my-plugins
 
 Claude Code 세션 안에서는 `/plugin marketplace add whchoi98/my-plugins`, `/plugin install my-plugins@my-plugins`로 같은 일을 한다. 설치 후 `/reload-plugins`를 실행하거나 세션을 재시작한다. 로컬 클론에서 설치할 때는 `whchoi98/my-plugins` 대신 클론 경로를 준다.
 
-예전 단독 플러그인 `aws-diagrams@aws-diagrams`를 설치했다면 제거한다. 남겨두면 같은 스킬이 예전 이름으로 한 번 더 로드된다. 제거 명령과 claude.ai 동기화 사본 정리는 README의 "네 플러그인에서 옮겨 올 때" 절에 있다. 갱신은 `claude plugin marketplace update my-plugins` 뒤 `claude plugin update my-plugins@my-plugins`다.
+예전 단독 플러그인 `aws-diagrams@aws-diagrams`를 설치했다면 제거한다. 남겨두면 같은 스킬이 예전 이름으로 한 번 더 로드된다. 제거 명령과 claude.ai 동기화 사본 정리는 README의 "단독 플러그인에서 옮겨 올 때" 절에 있다. 갱신은 `claude plugin marketplace update my-plugins` 뒤 `claude plugin update my-plugins@my-plugins`다.
 
 ### 방법 2 — 스킬 단독
 

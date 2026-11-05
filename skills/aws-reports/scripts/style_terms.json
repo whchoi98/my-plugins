@@ -1,0 +1,77 @@
+{
+ "_comment": "Wording the user corrected in earlier reports. check_report.py flags these in the finished .docx/.html. A term without \"profiles\" applies to every report; \"profiles\": [\"poc\"] limits it to --profile poc. Explanations: ../references/style-rules.md, poc-verdict-rules.md",
+ "terms": [
+  {
+   "pattern": "쌍(?!방|둥|꺼풀|안경|용)",
+   "use": "페어",
+   "example": "여덟 쌍 → 8개 페어, 노드 쌍 → 노드 페어"
+  },
+  {
+   "pattern": "잠금",
+   "use": "락(lock), 락 경합",
+   "example": "캐시 잠금을 기다림 → 캐시의 락(lock)을 기다림"
+  },
+  {
+   "pattern": "직렬화",
+   "use": "한 번에 한 스레드씩 지나간다 / 락 경합",
+   "example": "요청이 직렬화된다 → 요청이 락이 걸린 구간을 한 번에 한 스레드씩 지나간다"
+  },
+  {
+   "pattern": "수의사",
+   "use": "Vet (도메인 엔터티 이름은 영문 그대로)",
+   "example": "수의사 목록 → Vet 목록"
+  },
+  {
+   "pattern": "대화형 대시보드|claude\\.ai/artifact|출처 패널",
+   "use": "(삭제) 보고서 밖의 화면이나 링크를 가리키지 않는다",
+   "example": "원시 로그와 CSV는 출처 패널에서 내려받을 수 있습니다 → 삭제"
+  },
+  {
+   "pattern": "앞서",
+   "use": "앞에서 본",
+   "example": "앞서 설명한 → 앞에서 설명한"
+  },
+  {
+   "pattern": "(?<![그림표] )\\b\\d+(\\.\\d+)*\\s*(절|장)(에서|의|을|를|과|와)",
+   "use": "가리키는 내용을 말로",
+   "example": "3.1절의 도구 → 앞에서 본 측정 조건"
+  },
+  {
+   "pattern": "고객\\s*권고",
+   "use": "권고 (보고서를 읽는 사람이 고객이다)",
+   "example": "> **고객 권고** → > **권고**"
+  },
+  {
+   "pattern": "(?<![A-Za-z])(PASS|FAIL|Pass|Fail|Passed|Failed)(?![A-Za-z])",
+   "use": "충족 / 미충족",
+   "example": "응답 지연 PASS → 응답 지연 충족",
+   "profiles": [
+    "poc"
+   ]
+  },
+  {
+   "pattern": "[✅❌⭕✔✖☑]",
+   "use": "판정 단어(충족 / 부분 충족 / 미충족 / 측정하지 않음)",
+   "example": "✅ → 충족",
+   "profiles": [
+    "poc"
+   ]
+  },
+  {
+   "pattern": "성공적으로",
+   "use": "(삭제) 무엇을 확인했는지 숫자로",
+   "example": "PoC를 성공적으로 완료했습니다 → 성공 기준 5개 중 4개를 충족했습니다",
+   "profiles": [
+    "poc"
+   ]
+  },
+  {
+   "pattern": "모든 (목표|기준)을 (달성|충족)",
+   "use": "충족한 기준 수를 그대로 (N개 중 M개)",
+   "example": "모든 목표를 달성했습니다 → 필수 기준 4개를 모두 충족했습니다",
+   "profiles": [
+    "poc"
+   ]
+  }
+ ]
+}

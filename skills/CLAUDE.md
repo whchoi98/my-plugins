@@ -12,12 +12,15 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 | `aws-ppt-skills/` | aws-deck 1.0.0 | SKILL.md, `scripts/` (apply_template, check_deck, svg_to_png, install_fonts.sh), `assets/templates/`, `assets/fonts/` |
 | `consulting-ppt-white-ppt/` | aws-deck 1.0.0 | SKILL.md, `lib/consult_helpers.js`, `tools/` (fix_pptx, fix_notes, extract_brand_color), `examples/` |
 | `pptx-template-fill/` | aws-deck 1.0.0 | SKILL.md, `scripts/` (tfill, inventory, qa_check, swap_font) |
+| `aws-reports/` | aws-reports 1.0.0 | SKILL.md (report type, then one procedure), `references/` (markdown-spec, style-rules, benchmark-structure, poc-structure, poc-verdict-rules), `scripts/` (report.mjs, check_report.py, chart_style.py, fonts.py, preview.py, svg2png.py, style_terms.json), `assets/examples/` (benchmark, poc) |
 | `setup/` | new | SKILL.md, `scripts/setup.sh` (check, install, install --sudo) |
 
 ## Cross-skill links
 - aws-blog-skills → `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design`, `my-plugins:kor-deslop`,
   `my-plugins:setup`; `scripts/diagram_lib.py` reads `../aws-diagram-design/assets` (fonts, icons)
 - aws-ppt-skills → `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design`, `my-plugins:setup`
+- aws-reports → `my-plugins:aws-diagram` (architecture figures), `my-plugins:setup` (npm packages, fonts);
+  `../aws-blog-skills/scripts/lint_prose.py` (prose check)
 - setup → `../aws-diagram-design/assets/fonts/ttf` (Amazon Ember), `../aws-ppt-skills/scripts/install_fonts.sh`
 
 ## Rules

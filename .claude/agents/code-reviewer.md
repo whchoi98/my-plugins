@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Review changes to the my-plugins plugin (eight skills, three commands, bundled scripts, setup.sh, manifests, harness) for broken invariants, contradictions, and release-hygiene gaps with confidence-based filtering. Reports only high-confidence issues (75+). Use proactively after editing skills/ or commands/, or before committing.
+description: Review changes to the my-plugins plugin (nine skills, three commands, bundled scripts, setup.sh, manifests, harness) for broken invariants, contradictions, and release-hygiene gaps with confidence-based filtering. Reports only high-confidence issues (75+). Use proactively after editing skills/ or commands/, or before committing.
 tools: Read, Glob, Grep, Bash(git diff:*), Bash(git log:*)
 model: sonnet
 color: green

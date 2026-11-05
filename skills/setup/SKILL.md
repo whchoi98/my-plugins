@@ -1,6 +1,6 @@
 ---
 name: setup
-description: "my-plugins의 skill들이 쓰는 외부 프로그램과 폰트를 점검하고 설치한다. 대상은 다이어그램 PNG 렌더(uv, Playwright Chromium과 시스템 라이브러리, Amazon Ember, Noto Sans CJK KR)와 덱 생성·렌더 QA(pptxgenjs, python-pptx, lxml, Pillow, cairosvg, LibreOffice soffice, Poppler pdftoppm/pdftotext, rsvg-convert, NanumSquareOTF, D2Coding)다. \"my-plugins 설치 점검\", \"의존성 설치\", \"setup\", \"렌더링이 안 돼\", \"soffice 없음\", \"playwright 실행 안 됨\", \"폰트가 깨져\" 같은 요청이나, aws-blog-skills, aws-diagram-design, aws-ppt-skills, consulting-ppt-white-ppt, pptx-template-fill이 도구나 폰트가 없다고 할 때 사용한다."
+description: "my-plugins의 skill들이 쓰는 외부 프로그램과 폰트를 점검하고 설치한다. 대상은 다이어그램 PNG 렌더(uv, Playwright Chromium과 시스템 라이브러리, Amazon Ember, Noto Sans CJK KR)와 덱 생성·렌더 QA(pptxgenjs, python-pptx, lxml, Pillow, cairosvg, LibreOffice soffice, Poppler pdftoppm/pdftotext, rsvg-convert, NanumSquareOTF, D2Coding), 보고서 Word·HTML 빌드(docx, marked, docx-preview, jszip, NanumSquareOTF Regular)다. \"my-plugins 설치 점검\", \"의존성 설치\", \"setup\", \"렌더링이 안 돼\", \"soffice 없음\", \"playwright 실행 안 됨\", \"폰트가 깨져\" 같은 요청이나, aws-blog-skills, aws-diagram-design, aws-ppt-skills, consulting-ppt-white-ppt, pptx-template-fill, aws-reports가 도구나 폰트가 없다고 할 때 사용한다."
 ---
 
 # my-plugins setup
@@ -31,6 +31,8 @@ sudo 없이 되는 것만 설치한다. 사용자가 설치를 요청했으면 �
 | Noto Sans CJK KR | notofonts/noto-cjk의 OTF 3종을 `~/.local/share/fonts/noto-cjk`로 |
 | NanumSquareOTF, D2Coding | `aws-ppt-skills/scripts/install_fonts.sh`(fontconfig 별칭 포함) |
 | pptxgenjs | `npm install -g` |
+| docx, marked, docx-preview, jszip (aws-reports) | `npm install -g`, 버전 고정(docx 9.15.1, marked 18.1.1, docx-preview 0.4.1, jszip 3.10.1) |
+| NanumSquareOTF Regular·Bold (aws-reports 본문) | npm `@kfonts/nanum-square-otf` 0.2.0(OFL-1.1)을 `npm pack`으로 받아 `~/.local/share/fonts/nanumsquare-otf`로 |
 | python-pptx, lxml, Pillow, cairosvg | `pip install --user` |
 | LibreOffice | dnf 저장소에 없을 때(Amazon Linux 2023) 공식 RPM 묶음을 sha256 확인 후 `~/.local/opt/libreoffice`에 풀고 `~/.local/bin/soffice`로 연결 |
 
@@ -57,5 +59,5 @@ bash "${CLAUDE_SKILL_DIR}/scripts/setup.sh" install --sudo
 
 - Amazon Linux 2023처럼 Playwright가 공식 지원하지 않는 OS에서는 Ubuntu용 Chromium 빌드가 쓰이고, 렌더할 때마다 `BEWARE: your OS is not officially supported` 경고가 나온다. 결과에는 영향이 없다.
 - LibreOffice를 홈에 풀었을 때 KDE, Qt, GTK, GStreamer 라이브러리가 없다고 나오는 것은 GUI 플러그인용이다. skill이 쓰는 `soffice --headless` 변환에는 필요 없다.
-- 전역 npm 모듈은 `require()`가 기본으로 찾지 않는다. 덱을 만드는 node 명령 앞에는 `export NODE_PATH="$(npm root -g)"`를 둔다.
+- 전역 npm 모듈은 `require()`가 기본으로 찾지 않는다. 덱을 만드는 node 명령 앞에는 `export NODE_PATH="$(npm root -g)"`를 둔다. aws-reports의 `report.mjs`는 ESM이라 `NODE_PATH`를 읽지 않으므로 `npm root -g`를 직접 찾아본다.
 - `~/.local/bin`이 셸 설정의 PATH에 없으면 점검이 `[info]`로 알린다. 그때는 사용자에게 `~/.bashrc`에 `export PATH="$HOME/.local/bin:$PATH"`를 추가하라고 안내한다.

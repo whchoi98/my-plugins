@@ -6,7 +6,7 @@
 <a id="english"></a>
 ## English
 
-Layer-by-layer implementation guides for my-plugins, covering all eight skills and the three commands.
+Layer-by-layer implementation guides for my-plugins, covering all nine skills and the three commands.
 Each file follows the same 5-section structure (Overview / Components / Key Decisions / Code Pointers /
 Cross-references).
 
@@ -28,7 +28,7 @@ Last updated: 2026-11-03 (managed by /init-project, /add-reference-doc, /sync-do
 <a id="korean"></a>
 ## 한국어
 
-my-plugins의 skill 8개와 command 3개를 모두 다루는 레이어별 구현 가이드입니다. 각 파일은 같은 5개 섹션 구조(개요 / 구성요소 / 주요 결정 / 코드 포인터 / 상호 참조)를 따릅니다.
+my-plugins의 skill 9개와 command 3개를 모두 다루는 레이어별 구현 가이드입니다. 각 파일은 같은 5개 섹션 구조(개요 / 구성요소 / 주요 결정 / 코드 포인터 / 상호 참조)를 따릅니다.
 
 | 레이어 | 파일 | 상태 |
 |---|---|---|

@@ -15,6 +15,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `aws-reports` skill, merged from github.com/whchoi98/aws-reports 1.0.0 as one skill with two report types: benchmark reports (setup and method first, overall verdict and recommendations last) and PoC result reports (success criteria with the fixed verdict words 충족 / 부분 충족 / 미충족 / 측정하지 않음, an overall decision 진행 / 조건부 진행 / 보류, issues, cost and next steps). One Markdown draft builds an MS Word file and a standalone HTML file in the same style
+- `scripts/check_report.py --profile benchmark|poc`: page, font, caption, box, table-header and caption-note checks, wording terms from `style_terms.json`, and per-profile structure and verdict checks
+- `scripts/chart_style.py` `criteria()`: each success criterion against its target, colored by verdict, with a legend and the verdict word
+- `setup` checks and installs the aws-reports dependencies: docx 9.15.1, marked 18.1.1, docx-preview 0.4.1 and jszip 3.10.1 (`npm install -g`), and NanumSquareOTF Regular and Bold from npm `@kfonts/nanum-square-otf` 0.2.0 through `npm pack`
+- `tests/structure/test-aws-reports.sh`, and ADR-003 (one report skill, npm packages from the global folder)
+
+### Changed
+- `report.mjs` finds npm packages in a local `node_modules`, then `NODE_PATH`, then `npm root -g`, because ES module imports do not read `NODE_PATH`; `preview.py` finds the docx-preview and jszip bundles the same way. Nothing is written into the skill folder: chart scripts run with `python -B` and the examples' `make_charts.py` write to `./charts` or a given folder
+- Report layout rules from the user's 2026-11-04 Word edits: a table header that does not fit on one line puts its trailing unit on a second line and centers every header cell of that table; caption notes are centered on one line and left-aligned when they wrap; tables with 8-9 columns use 7.5/7 pt and 10+ columns 6.5 pt; the box title "고객 권고" is "권고"
+
 ## [1.1.0] - 2026-11-04
 
 ### Changed
@@ -68,6 +79,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+- `aws-reports` skill 추가. github.com/whchoi98/aws-reports 1.0.0을 보고서 유형 둘을 담은 skill 하나로 합침: 벤치마크 보고서(측정 환경과 방법이 먼저, 종합 평가와 권고가 마지막)와 PoC 결과 보고서(고정된 판정 단어 충족 / 부분 충족 / 미충족 / 측정하지 않음을 쓰는 성공 기준, 전체 판정 진행 / 조건부 진행 / 보류, 이슈, 비용, 다음 단계). Markdown 원고 하나로 MS Word 파일과 단일 HTML 파일을 같은 스타일로 생성
+- `scripts/check_report.py --profile benchmark|poc` 추가. 쪽, 글꼴, 캡션, 박스, 표 머리글, 캡션 주석 검사와 `style_terms.json` 표현 검사, 프로필별 구조와 판정 검사
+- `scripts/chart_style.py`의 `criteria()` 추가. 성공 기준별 목표 대비 결과를 판정 색과 범례, 판정 단어로 표시
+- `setup`이 aws-reports 의존 프로그램을 점검·설치: docx 9.15.1, marked 18.1.1, docx-preview 0.4.1, jszip 3.10.1(`npm install -g`), npm `@kfonts/nanum-square-otf` 0.2.0의 NanumSquareOTF Regular·Bold(`npm pack`)
+- `tests/structure/test-aws-reports.sh`와 ADR-003(보고서 skill 하나, 전역 폴더의 npm 패키지) 추가
+
+### Changed
+- `report.mjs`가 로컬 `node_modules`, `NODE_PATH`, `npm root -g` 순서로 npm 패키지를 찾도록 변경. ES 모듈 import는 `NODE_PATH`를 읽지 않기 때문. `preview.py`도 같은 순서로 docx-preview와 jszip 번들을 찾음. skill 폴더에는 쓰지 않음: 차트 스크립트는 `python -B`로 실행하고 예제의 `make_charts.py`는 `./charts`나 지정한 폴더에 씀
+- 2026-11-04 사용자가 Word에서 직접 고친 보고서 레이아웃 규칙 반영: 한 줄에 들어가지 않는 표 머리글은 끝의 단위를 둘째 줄로 내리고 그 표의 머리글을 모두 가운데 정렬, 캡션 주석은 한 줄이면 가운데·두 줄 이상이면 왼쪽 정렬, 8~9열 표는 7.5/7pt·10열 이상은 6.5pt, 박스 제목 "고객 권고"는 "권고"
 
 ## [1.1.0] - 2026-11-04
 

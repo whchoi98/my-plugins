@@ -1,7 +1,7 @@
 # Tests Module
 
 ## Role
-Harness tests for the dev hooks, for invariants of the shipped my-plugins plugin (eight skills, three
+Harness tests for the dev hooks, for invariants of the shipped my-plugins plugin (nine skills, three
 commands, manifests, licenses, docs), and for the behavior of the scripts it ships. Bash + `jq` + Python 3;
 no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL checker. Optional tools
 (`node`, `claude`) are skipped when absent. Run with `bash tests/run-all.sh [filter]`.
@@ -43,6 +43,13 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   unique IDs, A-17 reserved, category placement, cited IDs exist), one pattern count (A-J + K rows of
   `patterns.md`) in README (both languages), `skills/CLAUDE.md`, CLAUDE.md and SKILL.md, description
   triggers, sections, the change-rate snippet, and the humanize-korean notice.
+- `structure/test-aws-reports.sh` — aws-reports: description triggers for both report types, the source-material
+  guard, `style_terms.json` (valid patterns, known profiles, no stale `고객 권고` outside the rule rows), no
+  `node_modules` or `__pycache__` in the skill, examples' `make_charts.py` writing outside the skill folder; when
+  `node` and the npm packages are reachable (local, `NODE_PATH` or `npm root -g`), both examples built into
+  `$TEST_TMP` and checked clean with their profile, the table-header and caption-note layout rules on a fixture,
+  negative checks (uncentered two-line header, flipped note alignment, PoC wording and structure), and the
+  `npm root -g` lookup through a scratch npm prefix. Skipped parts say why.
 - `structure/test-integration.sh` — behavior of the merge fixes, each run with `HOME` on a scratch folder:
   `diagram_lib.py` asset lookup order (sibling skill, `AWS_DIAGRAM_ASSETS`, `.aws-diagram-assets`, plugin
   caches in numeric version order), `skills/setup/scripts/setup.sh` check mode and usage exit codes, sudo
@@ -56,7 +63,7 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   non-zero (`|| true`, or capture `$?`). Run `cd` only in a subshell.
 - Sourcing shares the runner's scope. Never assign `TOTAL`, `PASSED`, `FAILED`, `SKIPPED`, `FAILURES`,
   `FILTER`, `TEST_TMP`, `PROJECT_ROOT` or `SCRIPT_DIR`; a structure test rejects it. Prefix test-local
-  names per file (`PS_`, `AB_`, `SCR_`, `KD_`, `IT_`, `HK_`, `SP_`). Never export or assign `HOME`; pass it
+  names per file (`PS_`, `AB_`, `SCR_`, `KD_`, `IT_`, `HK_`, `SP_`, `AR_`). Never export or assign `HOME`; pass it
   per command (`env HOME="$TEST_TMP/..." ...`).
 - Never write a complete secret literal anywhere; split it into prefix and body.
 - Use `$TEST_TMP` for scratch files and repos; it is removed on exit. Never write into `skills/`

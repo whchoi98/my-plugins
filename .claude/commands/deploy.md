@@ -5,7 +5,7 @@ allowed-tools: Read, Glob, Bash(git status:*), Bash(git branch:*), Bash(git log:
 
 # Deploy (Release)
 
-For this repo, deploying means publishing a new version of `my-plugins` (all eight skills and three commands
+For this repo, deploying means publishing a new version of `my-plugins` (all nine skills and three commands
 share one version). The repo is installed from GitHub, so `git push` reaches every user. Commit, tag and push commands are intentionally NOT
 pre-allowed: each one is approved by the user when prompted.
 

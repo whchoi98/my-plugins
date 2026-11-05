@@ -16,7 +16,7 @@ Review the current changes using confidence-based scoring.
 ## Step 2: Review
 
 Apply the criteria in `.claude/skills/plugin-review/SKILL.md` to each changed file:
-- Shipped-content invariants for all eight skills and three commands: frontmatter and triggers, skill-dir
+- Shipped-content invariants for all nine skills and three commands: frontmatter and triggers, skill-dir
   script paths, `my-plugins:<skill>` calls and no old namespaces, sibling-relative paths, nothing written into
   a skill folder
 - Per-skill rules: aws-blog-skills (reference table, `lint_prose.py` in sync with `style.md`, author bio,

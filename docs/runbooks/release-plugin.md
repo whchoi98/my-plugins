@@ -11,7 +11,7 @@
 
 ## Overview
 Publish a new version of `my-plugins` to everyone who installed it from GitHub. Installed copies are keyed by
-`.claude-plugin/plugin.json` `version`; a push without a version change reaches nobody. All eight skills and
+`.claude-plugin/plugin.json` `version`; a push without a version change reaches nobody. All nine skills and
 three commands share that one version.
 
 ## When to Use
@@ -68,7 +68,7 @@ Then `/reload-plugins` or restart. The marketplace update alone does not move th
 ## Verification
 - `git ls-remote --tags origin vX.Y.Z` returns the tag
 - `claude plugin list` shows `my-plugins@my-plugins` at `X.Y.Z`
-- `claude plugin details my-plugins@my-plugins` lists 11 entries under Skills: the eight skills and the three commands
+- `claude plugin details my-plugins@my-plugins` lists 12 entries under Skills: the nine skills and the three commands
 - `diff -rq ~/.claude/plugins/cache/my-plugins/my-plugins/X.Y.Z/skills skills` prints nothing
 
 ## Rollback
@@ -89,7 +89,7 @@ Never reuse or delete a published version number.
 # 한국어
 
 ## 개요
-GitHub에서 `my-plugins`를 설치한 모든 사용자에게 새 버전을 배포합니다. 설치본은 `.claude-plugin/plugin.json`의 `version`을 기준으로 갱신되므로, 버전을 바꾸지 않은 push는 아무에게도 전달되지 않습니다. skill 8개와 command 3개가 이 버전 하나를 함께 씁니다.
+GitHub에서 `my-plugins`를 설치한 모든 사용자에게 새 버전을 배포합니다. 설치본은 `.claude-plugin/plugin.json`의 `version`을 기준으로 갱신되므로, 버전을 바꾸지 않은 push는 아무에게도 전달되지 않습니다. skill 9개와 command 3개가 이 버전 하나를 함께 씁니다.
 
 ## 사용 시점
 - `skills/` 아래의 모든 변경(어느 skill이든 SKILL.md, 참조 파일, 스크립트, 템플릿, assets)과 `commands/` 변경
@@ -140,7 +140,7 @@ claude plugin update my-plugins@my-plugins
 ## 검증
 - `git ls-remote --tags origin vX.Y.Z`가 태그를 돌려줍니다
 - `claude plugin list`에 `my-plugins@my-plugins`가 `X.Y.Z`로 보입니다
-- `claude plugin details my-plugins@my-plugins`의 Skills에 skill 8개와 command 3개, 모두 11개가 나옵니다
+- `claude plugin details my-plugins@my-plugins`의 Skills에 skill 9개와 command 3개, 모두 12개가 나옵니다
 - `diff -rq ~/.claude/plugins/cache/my-plugins/my-plugins/X.Y.Z/skills skills`가 아무것도 출력하지 않습니다
 
 ## 롤백

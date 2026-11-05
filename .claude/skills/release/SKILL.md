@@ -6,7 +6,7 @@ description: Cut a semver release of the my-plugins plugin - bump .claude-plugin
 # Release Skill
 
 Installed copies of this plugin update only when `plugin.json` `version` changes, so every change
-under `skills/` or `commands/` needs a release. All eight skills and three commands share one version.
+under `skills/` or `commands/` needs a release. All nine skills and three commands share one version.
 Full procedure: `docs/runbooks/release-plugin.md`.
 
 ## Procedure

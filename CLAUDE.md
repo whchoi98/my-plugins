@@ -1,9 +1,10 @@
 # Project Context
 
 ## Overview
-`my-plugins` 1.0.0 is one Claude Code plugin that bundles four earlier plugins by WooHyung Choi:
+`my-plugins` 1.2.0 is one Claude Code plugin that bundles five earlier plugins by WooHyung Choi:
 aws-blog-skills (AWS Korea Tech Blog drafts), aws-diagrams (AWS architecture and structure diagrams),
-kor-writing (Korean AI-tell removal) and aws-deck (AWS PowerPoint decks). It ships eight skills, three
+kor-writing (Korean AI-tell removal), aws-deck (AWS PowerPoint decks) and aws-reports (benchmark and PoC
+reports as MS Word + HTML). It ships nine skills, three
 slash commands, and Python, Bash and Node.js scripts that Claude runs on the user's machine. The `setup`
 skill checks and installs the external tools and fonts the other skills need.
 
@@ -15,7 +16,8 @@ Public repo `github.com/whchoi98/my-plugins`, MIT (bundled third-party files kee
 - **Content** — Markdown skills (`skills/<name>/SKILL.md`) with on-demand references, templates and assets
 - **Shipped scripts** — Python 3 (blog lint, structure, URL, diagram generation; icon lookup and embedding;
   diagram self-checks; python-pptx template tools), Playwright for Python (`uv run --no-project --with playwright`),
-  Node.js + pptxgenjs v4 (deck builds), Bash (`package_blog.sh`, `install_fonts.sh`, `setup.sh`)
+  Node.js + pptxgenjs v4 (deck builds), Node.js + docx 9 + marked 18 (report builds, `report.mjs`),
+  Bash (`package_blog.sh`, `install_fonts.sh`, `setup.sh`)
 - **Render QA tools** — LibreOffice `soffice`, Poppler `pdftoppm`/`pdftotext`, `rsvg-convert` or cairosvg
 - **Packaging** — Claude Code plugin manifests (`.claude-plugin/plugin.json`, `marketplace.json`), JSON
 - **Harness** — Bash 5 hooks and tests, `jq` 1.7, Python 3
@@ -26,7 +28,7 @@ Public repo `github.com/whchoi98/my-plugins`, MIT (bundled third-party files kee
 .claude-plugin/   - plugin.json (name, version) + marketplace.json (source ./)        [ships, loaded]
 skills/           - Shipped skills; module doc skills/CLAUDE.md                        [ships, loaded]
   aws-blog-skills/  aws-diagram/  aws-diagram-design/  kor-deslop/
-  aws-ppt-skills/  consulting-ppt-white-ppt/  pptx-template-fill/  setup/
+  aws-ppt-skills/  consulting-ppt-white-ppt/  pptx-template-fill/  aws-reports/  setup/
 commands/         - export-diagram, import-drawio, import-mermaid (aws-diagram-design)  [ships, loaded]
 third_party/      - upstream licenses and notices                                        [ships, inert]
 LICENSE, NOTICE.md, README.md, CHANGELOG.md                                              [ships, inert]
@@ -68,6 +70,10 @@ a plugin component there. Everything under `.claude/` is only active when this r
   - kor-deslop: the pattern count (79) comes from `references/patterns.md` and is the same in `skills/CLAUDE.md`, this file
     and the README in both languages.
   - aws-ppt-skills: slides keep the template's background, logo, footer and page numbers; no `·` or `—`.
+  - aws-reports: a wording correction goes into `references/style-rules.md` and `scripts/style_terms.json`
+    together (`"profiles": ["poc"]` for PoC-only terms); a layout rule goes into `report.mjs` `tableLayout()`
+    and `check_report.py` together; example numbers come from each example's `make_charts.py`. `report.mjs`
+    is ESM, so it finds the global npm packages itself (`NODE_PATH`, then `npm root -g`).
 - **Module docs**: never put `CLAUDE.md` inside `skills/<name>/`; that directory ships as the skill.
 - **Docs**: user-facing docs are bilingual (English first, `<a id="english">` / `<a id="korean">`),
   Korean sections in 합니다체, skill text in 한다체, no emojis, Mermaid for diagrams.

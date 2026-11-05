@@ -1,0 +1,16 @@
+{
+  "_comment": "Example data for the PoC report example (fictional PoC, made-up numbers). make_charts.py computes every ratio and verdict from these raw values.",
+  "criteria": [
+    {"id": "C1", "name": "요약 품질", "required": true, "target": 4.0, "result": 4.3, "unit": "점", "better": "higher", "method": "상담 200건, 상담사 3명 블라인드 평가(5점 척도)"},
+    {"id": "C2", "name": "응답 시간", "required": true, "target": 5.0, "result": 3.6, "unit": "초 (p95)", "better": "lower", "method": "통화 종료부터 요약 저장까지, 상담 1,000건"},
+    {"id": "C3", "name": "개인정보 마스킹", "required": true, "target": 0, "result": 0, "first_result": 2, "unit": "건 누락", "better": "lower", "method": "테스트 세트 300건(주민등록번호, 전화번호, 계좌번호, 카드번호)"},
+    {"id": "C4", "name": "건당 비용", "required": true, "target": 0.005, "result": 0.0038, "unit": "USD", "better": "lower", "method": "실측 입력·출력 토큰 × 서울 리전 On-Demand 가격"},
+    {"id": "C5", "name": "피크 처리량", "required": true, "target": 3000, "result": 2100, "unit": "건/시간", "better": "higher", "method": "상담 종료 이벤트 재생, 30분 유지"},
+    {"id": "C6", "name": "상담 시스템 연동", "required": false, "target": 3, "result": 2, "unit": "개 채널", "better": "higher", "method": "전화, 채팅, 이메일 채널에서 CRM API로 요약 저장"}
+  ],
+  "latency": [
+    {"bucket": "5분 미만", "p50": 1.9, "p95": 2.7},
+    {"bucket": "5~15분", "p50": 2.4, "p95": 3.4},
+    {"bucket": "15분 이상", "p50": 3.1, "p95": 4.6}
+  ]
+}

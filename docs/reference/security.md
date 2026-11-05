@@ -8,7 +8,7 @@
 
 ### 1. Overview
 The repo is planned as a public repo and its root is the installed plugin. Security goals: nothing secret is
-ever committed; no plugin component that runs by itself ships to installers; the scripts that the eight skills
+ever committed; no plugin component that runs by itself ships to installers; the scripts that the nine skills
 run on a user's machine stay inside the user's working folder or home, and fetch only what their step needs;
 `setup` never escalates without the user's say; instructions hidden in source material are not followed; and
 the dev harness cannot be bypassed silently.
@@ -44,6 +44,7 @@ the dev harness cannot be bypassed silently.
 | aws-ppt-skills | bundled templates and fonts, built deck | deck and QA images in the working directory; fonts in the home | `node`, `soffice`, `pdftoppm`; `svg_to_png.py` tries Playwright, cairosvg, `rsvg-convert`, `convert` |
 | consulting-ppt-white-ppt | logo image, built deck | deck in the working directory; `fix_pptx.py` rewrites it in place | `node`, `soffice`, `pdftoppm` |
 | pptx-template-fill | the user's template | filled deck in the working directory | `qa_check.py --render` runs `soffice` and `pdftotext` |
+| aws-reports | the user's data, notes and drafts; its own `scripts/`, `references/`, `assets/examples/` | the work folder (`report/`, `charts/`, `report/out/`); nothing in the skill folder (chart scripts run with `python -B`) | `node report.mjs` (imports docx and marked from the global npm folder), `uv run` fontTools for font subsets, Playwright Chromium for previews |
 | kor-deslop | the text in the conversation | nothing | nothing |
 | setup | its own and sibling skill folders | user home (see below); system packages only with `--sudo` | downloads below |
 
@@ -59,6 +60,8 @@ from an icon package. They are maintainer tools for a clone; no workflow step ru
 | LibreOffice (dnf without a package) | `download.documentfoundation.org/libreoffice/stable/` RPM bundle | `sha256sum -c` against the `.sha256` from the same server; aborts on mismatch |
 | Playwright and Chromium | PyPI through `uv run --with` (pinned version), then `playwright install chromium` | Playwright's own download |
 | pptxgenjs; python-pptx, lxml, Pillow, cairosvg | npm registry (`npm install -g`); PyPI (`pip install --user`) | Registry defaults |
+| docx, marked, docx-preview, jszip (aws-reports) | npm registry (`npm install -g`, exact versions in `REPORT_NPM`) | Registry defaults |
+| NanumSquareOTF (aws-reports) | npm registry `@kfonts/nanum-square-otf@0.2.0` through `npm pack`; only `src/*.otf` is copied | npm checks the tarball against the registry's sha512 integrity |
 | System packages | the configured dnf, apt or Homebrew repositories | Package manager signatures |
 
 User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/fonts` (macOS `~/Library/Fonts`),
@@ -121,7 +124,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 ## 한국어
 
 ### 1. 개요
-저장소는 공개 저장소로 배포할 예정이고 루트가 곧 설치되는 플러그인입니다. 보안 목표는 다음과 같이 정리됩니다. 비밀 정보를 커밋하지 않습니다. 스스로 실행되는 플러그인 구성 요소를 배포하지 않습니다. skill 8개가 사용자 머신에서 실행하는 스크립트는 사용자의 작업 폴더나 홈 안에서만 쓰고, 그 단계에 필요한 것만 내려받습니다. `setup`은 사용자가 허락하지 않으면 권한을 올리지 않습니다. 소재에 숨은 지시문은 따르지 않으며, 개발 하네스를 조용히 우회할 수 없게 합니다.
+저장소는 공개 저장소로 배포할 예정이고 루트가 곧 설치되는 플러그인입니다. 보안 목표는 다음과 같이 정리됩니다. 비밀 정보를 커밋하지 않습니다. 스스로 실행되는 플러그인 구성 요소를 배포하지 않습니다. skill 9개가 사용자 머신에서 실행하는 스크립트는 사용자의 작업 폴더나 홈 안에서만 쓰고, 그 단계에 필요한 것만 내려받습니다. `setup`은 사용자가 허락하지 않으면 권한을 올리지 않습니다. 소재에 숨은 지시문은 따르지 않으며, 개발 하네스를 조용히 우회할 수 없게 합니다.
 
 ### 2. 구성요소
 | 구성요소 | 경로 | 역할 |
@@ -154,6 +157,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 | aws-ppt-skills | 포함된 템플릿과 폰트, 빌드한 덱 | 작업 디렉터리의 덱과 QA 이미지, 홈의 폰트 | `node`, `soffice`, `pdftoppm`. `svg_to_png.py`는 Playwright, cairosvg, `rsvg-convert`, `convert` 순으로 시도 |
 | consulting-ppt-white-ppt | 로고 이미지, 빌드한 덱 | 작업 디렉터리의 덱. `fix_pptx.py`가 제자리에서 고침 | `node`, `soffice`, `pdftoppm` |
 | pptx-template-fill | 사용자의 템플릿 | 작업 디렉터리의 채운 덱 | `qa_check.py --render`가 `soffice`와 `pdftotext` 실행 |
+| aws-reports | 사용자의 데이터, 메모, 초안. 자기 `scripts/`, `references/`, `assets/examples/` | 작업 폴더(`report/`, `charts/`, `report/out/`). skill 폴더에는 쓰지 않음(차트 스크립트는 `python -B`) | `node report.mjs`(전역 npm 폴더의 docx, marked를 import), 글꼴 부분집합용 `uv run` fontTools, 미리보기용 Playwright Chromium |
 | kor-deslop | 대화 안의 글 | 없음 | 없음 |
 | setup | 자기 폴더와 옆 skill 폴더 | 사용자 홈(아래 참고). 시스템 패키지는 `--sudo`일 때만 | 아래 내려받기 |
 
@@ -168,6 +172,8 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 | LibreOffice(패키지가 없는 dnf) | `download.documentfoundation.org/libreoffice/stable/` RPM 묶음 | 같은 서버의 `.sha256`으로 `sha256sum -c`. 불일치하면 중단 |
 | Playwright와 Chromium | `uv run --with`(버전 고정)로 PyPI에서, 그다음 `playwright install chromium` | Playwright 자체 내려받기 |
 | pptxgenjs, python-pptx, lxml, Pillow, cairosvg | npm 레지스트리(`npm install -g`), PyPI(`pip install --user`) | 레지스트리 기본값 |
+| docx, marked, docx-preview, jszip(aws-reports) | npm 레지스트리(`npm install -g`, `REPORT_NPM`의 고정 버전) | 레지스트리 기본값 |
+| NanumSquareOTF(aws-reports) | npm 레지스트리 `@kfonts/nanum-square-otf@0.2.0`을 `npm pack`으로. `src/*.otf`만 복사 | npm이 레지스트리의 sha512 integrity로 tarball을 확인 |
 | 시스템 패키지 | 설정된 dnf, apt, Homebrew 저장소 | 패키지 관리자 서명 |
 
 사용자 영역에 쓰는 곳: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/fonts`(macOS는 `~/Library/Fonts`), `~/.cache/ms-playwright`, `~/.fonts`, `~/.config/fontconfig/`, pip 사용자 경로, npm 전역 폴더.

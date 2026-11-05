@@ -1,7 +1,7 @@
 {
   "name": "my-plugins",
   "version": "1.1.0",
-  "description": "WooHyung Choi의 Claude Code 작업 도구 묶음. AWS Korea Tech Blog 원고(aws-blog-skills), AWS 아키텍처와 구조 다이어그램(aws-diagram, aws-diagram-design), 한국어 AI 티 제거 윤문(kor-deslop), AWS PowerPoint 덱(aws-ppt-skills, consulting-ppt-white-ppt, pptx-template-fill), 의존 프로그램 점검과 설치(setup)",
+  "description": "WooHyung Choi의 Claude Code 작업 도구 묶음. AWS Korea Tech Blog 원고(aws-blog-skills), AWS 아키텍처와 구조 다이어그램(aws-diagram, aws-diagram-design), 한국어 AI 티 제거 윤문(kor-deslop), AWS PowerPoint 덱(aws-ppt-skills, consulting-ppt-white-ppt, pptx-template-fill), 벤치마크·PoC 결과 보고서 Word + HTML(aws-reports), 의존 프로그램 점검과 설치(setup)",
   "author": {
     "name": "WooHyung Choi"
   },
@@ -16,6 +16,9 @@
     "powerpoint",
     "pptx",
     "humanize",
-    "aws-korea-tech-blog"
+    "aws-korea-tech-blog",
+    "report",
+    "docx",
+    "poc"
   ]
 }
