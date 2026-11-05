@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Fixed
+- `setup.sh` check mode printed no version for docx and docx-preview: their `package.json` uses a 4-space indent and CRLF line endings. `pkg_version()` reads the version whatever the indent or line ending, with a test for both formats
+
 ## [1.2.0] - 2026-11-05
 
 ### Added
@@ -82,6 +85,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Fixed
+- `setup.sh` 점검 모드가 docx와 docx-preview의 버전을 표시하지 못하던 문제 수정. 두 패키지의 `package.json`은 4칸 들여쓰기와 CRLF 줄 끝을 씀. `pkg_version()`이 들여쓰기와 줄 끝에 관계없이 버전을 읽고, 두 형식을 확인하는 테스트 추가
 
 ## [1.2.0] - 2026-11-05
 

@@ -77,6 +77,13 @@ for ar_item in "NanumSquareOTF Regular" docx marked docx-preview jszip; do
     printf '%s\n' "$AR_SETUP" | grep -qE "^  \[(ok|miss)\] +${ar_item} " && pass "setup.sh check: reports '$ar_item'" \
         || fail "setup.sh check: reports '$ar_item'" "no [ok]/[miss] line for $ar_item"
 done
+# pkg_version reads the version whatever the indent or line ending (docx: 4 spaces, docx-preview: CRLF)
+AR_PV="$TEST_TMP/ar-pkgver"; mkdir -p "$AR_PV"
+printf '{\n    "name": "a",\n    "version": "9.15.1",\n' > "$AR_PV/four.json"
+printf '{\r\n  "name": "b",\r\n  "version": "0.4.1",\r\n' > "$AR_PV/crlf.json"
+printf '{\n  "name": "c",\n  "version": "18.1.1",\n  "x": {"version": "0.0.0"}\n' > "$AR_PV/two.json"
+AR_PV_OUT=$(bash -c "$(sed -n '/^pkg_version() /p' skills/setup/scripts/setup.sh); for f in four crlf two; do pkg_version \"$AR_PV/\$f.json\"; done" 2>&1 | tr '\n' ' ')
+assert_eq "setup.sh pkg_version: 4-space, CRLF and 2-space package.json" "9.15.1 0.4.1 18.1.1 " "$AR_PV_OUT"
 AR_PINS=$(sed -n 's/^REPORT_NPM=(\(.*\))$/\1/p' skills/setup/scripts/setup.sh)
 assert_eq "setup.sh REPORT_NPM pins the four report packages" "docx@9.15.1 marked@18.1.1 docx-preview@0.4.1 jszip@3.10.1" "$AR_PINS"
 for ar_pin in $AR_PINS; do

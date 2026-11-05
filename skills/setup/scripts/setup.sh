@@ -50,6 +50,8 @@ report_nanum_ok() { fc-list : file 2>/dev/null | grep -E "NanumSquare(OTF)?R\.ot
 REPORT_NPM=(docx@9.15.1 marked@18.1.1 docx-preview@0.4.1 jszip@3.10.1)
 REPORT_FONT_PKG="@kfonts/nanum-square-otf@0.2.0"
 npm_global_has() { local root; root=$(npm root -g 2>/dev/null) && [ -f "$root/$1/package.json" ]; }
+# package.json의 version 값. 들여쓰기 폭과 CRLF 줄 끝이 패키지마다 다르다(docx는 4칸, docx-preview는 CRLF)
+pkg_version() { tr -d '\r' < "$1" | sed -n 's/^[[:space:]]*"version":[[:space:]]*"\([^"]*\)".*/\1/p' | head -1; }
 
 # --------------------------------------------------------------------------- 점검 항목
 
@@ -113,7 +115,7 @@ check_reports() {
   for p in "${REPORT_NPM[@]}"; do
     name=${p%@*}
     if have npm && npm_global_has "$name"; then
-      ver=$(sed -n 's/^  "version": "\(.*\)",$/\1/p' "$root/$name/package.json" | head -1)
+      ver=$(pkg_version "$root/$name/package.json")
       ok "$name" "$ver"
     else miss "$name" "보고서 Word·HTML 빌드(npm -g)"; fi
   done
