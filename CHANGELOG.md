@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.2.1] - 2026-11-05
+
 ### Fixed
 - `setup.sh` check mode printed no version for docx and docx-preview: their `package.json` uses a 4-space indent and CRLF line endings. `pkg_version()` reads the version whatever the indent or line ending, with a test for both formats
 
@@ -69,7 +71,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/whchoi98/my-plugins/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/whchoi98/my-plugins/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/whchoi98/my-plugins/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/whchoi98/my-plugins/releases/tag/v1.0.0
@@ -85,6 +88,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.2.1] - 2026-11-05
 
 ### Fixed
 - `setup.sh` 점검 모드가 docx와 docx-preview의 버전을 표시하지 못하던 문제 수정. 두 패키지의 `package.json`은 4칸 들여쓰기와 CRLF 줄 끝을 씀. `pkg_version()`이 들여쓰기와 줄 끝에 관계없이 버전을 읽고, 두 형식을 확인하는 테스트 추가
@@ -140,7 +145,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.2.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.2.1...HEAD
+[1.2.1]: https://github.com/whchoi98/my-plugins/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/whchoi98/my-plugins/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/whchoi98/my-plugins/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/whchoi98/my-plugins/releases/tag/v1.0.0
