@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.3.0] - 2026-11-11
+
 ### Added
 - kor-deslop pattern D-8 (S1): the jargon-sounding nouns AI text favors, "실측" (실측 결과, 실측값), "축" (세 가지 축, 평가 축) and "레버" (비용 레버, 레버를 당기다), are replaced with 측정 / 측정값, 기준 / 관점 / 방향 / 측면, and 해법 / 수단 / 방법. Chart axes (x축, y축), physical axles and levers, and compounds such as 축소, 압축, 구축, 단축, 축적 are left alone. SKILL.md does not treat these words as content anchors. The pattern count is now 80
 - aws-blog-skills: "실측" is a banned word in `style.md` and a HARD finding in `lint_prose.py` (2026-11-11). `style.md` now lists the "축" rule that `lint_prose.py` already enforced, and 레버 may become 해법, 수단 or 방법
@@ -79,7 +81,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/whchoi98/my-plugins/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/whchoi98/my-plugins/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/whchoi98/my-plugins/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/whchoi98/my-plugins/compare/v1.0.0...v1.1.0
@@ -96,6 +99,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.3.0] - 2026-11-11
 
 ### Added
 - kor-deslop 패턴 D-8(S1) 추가. AI 글이 전문어처럼 들리게 즐겨 쓰는 "실측"(실측 결과, 실측값), "축"(세 가지 축, 평가 축), "레버"(비용 레버, 레버를 당기다)를 각각 "측정, 측정값", "기준, 관점, 방향, 측면", "해법, 수단, 방법"으로 바꿈. 그래프의 x축과 y축, 기계 부품인 축과 레버, 축소, 압축, 구축, 단축, 축적 같은 합성어는 대상에서 제외. SKILL.md는 이 어휘를 내용 앵커로 잡지 않음. 패턴 수는 80개
@@ -161,7 +166,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.2.1...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.3.0...HEAD
+[1.3.0]: https://github.com/whchoi98/my-plugins/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/whchoi98/my-plugins/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/whchoi98/my-plugins/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/whchoi98/my-plugins/compare/v1.0.0...v1.1.0
