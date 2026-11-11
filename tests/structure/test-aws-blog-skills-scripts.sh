@@ -64,6 +64,13 @@ sed 's/샘플 구성은 서브넷 두 개로 시작합니다./샘플 구성은 �
 SCR_OUT=$(python3 -I "$SCR/lint_prose.py" "$TEST_TMP/lint-bad.md" 2>&1); SCR_RC=$?
 assert_eq "lint_prose: banned word exits 1" "1" "$SCR_RC"
 assert_contains "lint_prose: names the banned word" "$SCR_OUT" "[HARD] '레버'"
+sed 's/샘플 구성은 서브넷 두 개로 시작합니다./실측 결과는 두 축으로 나눠 봅니다./' "$SCR_MD" > "$TEST_TMP/lint-axis.md"
+SCR_OUT=$(python3 -I "$SCR/lint_prose.py" "$TEST_TMP/lint-axis.md" 2>&1)
+assert_contains "lint_prose: flags 실측" "$SCR_OUT" "[HARD] '실측'"
+assert_contains "lint_prose: flags 축 used as axis metaphor" "$SCR_OUT" "기준, 방식, 관점, 측면"
+sed 's/샘플 구성은 서브넷 두 개로 시작합니다./그래프의 x축과 가로축은 시간이고, 로그를 압축해 구축한 축약본을 축소합니다./' "$SCR_MD" > "$TEST_TMP/lint-axis-ok.md"
+SCR_OUT=$(python3 -I "$SCR/lint_prose.py" "$TEST_TMP/lint-axis-ok.md" 2>&1)
+assert_contains "lint_prose: chart axes and compounds with 축 are not flagged" "$SCR_OUT" "hard_findings=0"
 SCR_LONG=$(printf '가%.0s' $(seq 1 150))
 sed "s/샘플 구성은 서브넷 두 개로 시작합니다./${SCR_LONG}입니다./" "$SCR_MD" > "$TEST_TMP/lint-long.md"
 SCR_OUT=$(python3 -I "$SCR/lint_prose.py" "$TEST_TMP/lint-long.md" 2>&1); SCR_RC=$?

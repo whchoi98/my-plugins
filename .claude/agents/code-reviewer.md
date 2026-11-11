@@ -30,7 +30,7 @@ as `my-plugins@my-plugins` and call `/my-plugins:<skill>`.
      `package_blog.sh` writes only under its out directory and no zip on failure; `check_urls.py` keeps the
      final-URL comparison; the step 0 source-material rule is intact; the `find_assets()` order and the
      `.aws-diagram-assets` pointer step in SKILL.md stay in step.
-   - kor-deslop: the pattern count (79) is the same in SKILL.md, its rulebook under `references/` and the README.
+   - kor-deslop: the pattern count (80) is the same in SKILL.md, its rulebook under `references/` and the README.
    - aws-ppt-skills and the deck skills: slides keep the template's background, logo, footer and page numbers;
      no `·` or `—` in slide copy; build steps set `NODE_PATH="$(npm root -g)"` before `node`.
    - aws-diagram-design and `commands/`: the commands follow `references/export.md`, `import-drawio.md`,

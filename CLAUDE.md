@@ -67,7 +67,7 @@ a plugin component there. Everything under `.claude/` is only active when this r
   - aws-blog-skills: confirmed rules are appended to references with `(YYYY-MM-DD 확정)`; a term added to
     `style.md` or `humanize-checklist.md` is mirrored in `scripts/lint_prose.py`; the author bio is verbatim in
     `references/structure.md` and `assets/templates/blog-template.md`; keep the description trigger phrases.
-  - kor-deslop: the pattern count (79) comes from `references/patterns.md` and is the same in `skills/CLAUDE.md`, this file
+  - kor-deslop: the pattern count (80) comes from `references/patterns.md` and is the same in `skills/CLAUDE.md`, this file
     and the README in both languages.
   - aws-ppt-skills: slides keep the template's background, logo, footer and page numbers; no `·` or `—`.
   - aws-reports: a wording correction goes into `references/style-rules.md` and `scripts/style_terms.json`

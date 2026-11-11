@@ -19,7 +19,7 @@ one fires, and reference files only when a step asks for them. Skills chain thro
 | aws-blog-skills | `skills/aws-blog-skills/SKILL.md` | Steps 0-7: scope, fact and URL check, skeleton and draft, style rules and 윤문, diagrams, structure check, packaging, rule registration | `references/` per step: structure, style, humanize-checklist, verification, diagrams, exemplars, collaboration |
 | aws-diagram | `skills/aws-diagram/SKILL.md` | Map the system to AWS services, look up exact icons with `find_icon.py`, compose SVG, inline icons with `embed.py` | `references/diagram_guide.md` (read in full) |
 | aws-diagram-design | `skills/aws-diagram-design/SKILL.md` | Pick a semantic pattern and one of 27 visual types, draw HTML/SVG on the 4px grid, pass the taste gate, export | `references/type-*.md` for the chosen type, `style-guide.md`, `semantic-patterns.md`, `animation.md`, export and import references |
-| kor-deslop | `skills/kor-deslop/SKILL.md` | One pass: rule priority, meaning preservation, severity-based fixes, six self-checks, three output modes | `references/patterns.md` (79 patterns and principles, read once per run) |
+| kor-deslop | `skills/kor-deslop/SKILL.md` | One pass: rule priority, meaning preservation, severity-based fixes, six self-checks, three output modes | `references/patterns.md` (80 patterns and principles, read once per run) |
 | aws-ppt-skills | `skills/aws-ppt-skills/SKILL.md` | Confirm theme, audience, presenter and content; paste the pptxgenjs helpers; build, apply template, lint, render, inspect | `references/diagrams.md` |
 | consulting-ppt-white-ppt | `skills/consulting-ppt-white-ppt/SKILL.md` | Confirm client, logo and chapters; derive the accent; compose with `consult_helpers.js`; fix and render | `examples/build_sample.js` |
 | pptx-template-fill | `skills/pptx-template-fill/SKILL.md` | Inventory shapes, write a mapping table, fill runs, cells and chart caches in place, unify fonts, QA | `references/recipes.md` |
@@ -120,7 +120,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 | aws-blog-skills | `skills/aws-blog-skills/SKILL.md` | 0~7단계: 범위, 사실과 URL 검증, 골격과 초안, 문장 규칙과 윤문, 다이어그램, 구조 검사, 패키징, 규칙 등록 | 단계별 `references/`: structure, style, humanize-checklist, verification, diagrams, exemplars, collaboration |
 | aws-diagram | `skills/aws-diagram/SKILL.md` | 시스템을 AWS 서비스로 대응시키고, `find_icon.py`로 정확한 아이콘을 찾아 SVG를 짜고, `embed.py`로 아이콘을 내장 | `references/diagram_guide.md`(전체를 읽음) |
 | aws-diagram-design | `skills/aws-diagram-design/SKILL.md` | 의미 패턴과 시각 유형 27가지 중 하나를 골라 4px 그리드로 HTML/SVG를 그리고, taste gate를 통과시킨 뒤 내보내기 | 고른 유형의 `references/type-*.md`, `style-guide.md`, `semantic-patterns.md`, `animation.md`, 내보내기와 가져오기 참조 |
-| kor-deslop | `skills/kor-deslop/SKILL.md` | 한 번에 처리: 규칙 우선순위, 의미 보존, 심각도별 수정, 자체 점검 6항목, 결과 전달 방식 3가지 | `references/patterns.md`(패턴과 원칙 79개, 실행마다 한 번) |
+| kor-deslop | `skills/kor-deslop/SKILL.md` | 한 번에 처리: 규칙 우선순위, 의미 보존, 심각도별 수정, 자체 점검 6항목, 결과 전달 방식 3가지 | `references/patterns.md`(패턴과 원칙 80개, 실행마다 한 번) |
 | aws-ppt-skills | `skills/aws-ppt-skills/SKILL.md` | 테마, 청중, 발표자, 내용을 확인하고 pptxgenjs 헬퍼를 붙여 빌드, 템플릿 적용, lint, 렌더, 눈으로 확인 | `references/diagrams.md` |
 | consulting-ppt-white-ppt | `skills/consulting-ppt-white-ppt/SKILL.md` | 고객 이름, 로고, 챕터를 확인하고 강조색을 뽑은 뒤 `consult_helpers.js`로 짜고, 고치고 렌더 | `examples/build_sample.js` |
 | pptx-template-fill | `skills/pptx-template-fill/SKILL.md` | 도형 인벤토리, 매핑 표 작성, run, 표 셀, 차트 캐시를 제자리에서 채우고 폰트 통일, QA | `references/recipes.md` |

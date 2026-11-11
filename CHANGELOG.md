@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- kor-deslop pattern D-8 (S1): the jargon-sounding nouns AI text favors, "실측" (실측 결과, 실측값), "축" (세 가지 축, 평가 축) and "레버" (비용 레버, 레버를 당기다), are replaced with 측정 / 측정값, 기준 / 관점 / 방향 / 측면, and 해법 / 수단 / 방법. Chart axes (x축, y축), physical axles and levers, and compounds such as 축소, 압축, 구축, 단축, 축적 are left alone. SKILL.md does not treat these words as content anchors. The pattern count is now 80
+- aws-blog-skills: "실측" is a banned word in `style.md` and a HARD finding in `lint_prose.py` (2026-11-11). `style.md` now lists the "축" rule that `lint_prose.py` already enforced, and 레버 may become 해법, 수단 or 방법
+- aws-reports: `style_terms.json` and `style-rules.md` flag "실측", "축" and "레버" in every report type. The PoC example says 측정한 입력·출력 토큰 instead of 실측 입력·출력 토큰
+
+### Fixed
+- The "축" check in aws-blog-skills `lint_prose.py` (a HARD finding) flagged chart axes and unrelated words: x축, y축, 가로축, 세로축, 건축, 저축, 축약, 축하. It now flags only 축 as a standalone word (두 축, 평가 축) and the joined forms 평가축, 핵심축, 중심축; aws-reports uses the same pattern. Tests cover both sides
+
 ## [1.2.1] - 2026-11-05
 
 ### Fixed
@@ -88,6 +96,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+- kor-deslop 패턴 D-8(S1) 추가. AI 글이 전문어처럼 들리게 즐겨 쓰는 "실측"(실측 결과, 실측값), "축"(세 가지 축, 평가 축), "레버"(비용 레버, 레버를 당기다)를 각각 "측정, 측정값", "기준, 관점, 방향, 측면", "해법, 수단, 방법"으로 바꿈. 그래프의 x축과 y축, 기계 부품인 축과 레버, 축소, 압축, 구축, 단축, 축적 같은 합성어는 대상에서 제외. SKILL.md는 이 어휘를 내용 앵커로 잡지 않음. 패턴 수는 80개
+- aws-blog-skills: "실측"을 `style.md` 금지어와 `lint_prose.py` HARD 항목에 추가(2026-11-11). `lint_prose.py`만 잡던 "축" 규칙을 `style.md` 표에도 적고, 레버의 대체어를 해법, 수단, 방법으로 넓힘
+- aws-reports: `style_terms.json`과 `style-rules.md`가 모든 보고서 유형에서 "실측", "축", "레버"를 경고함. PoC 예제의 "실측 입력·출력 토큰"을 "측정한 입력·출력 토큰"으로 바꿈
+
+### Fixed
+- aws-blog-skills `lint_prose.py`의 "축" HARD 검사가 그래프 축과 관계없는 낱말(x축, y축, 가로축, 세로축, 건축, 저축, 축약, 축하)까지 잡던 문제 수정. 독립된 낱말 "축"(두 축, 평가 축)과 붙여 쓴 평가축, 핵심축, 중심축만 잡음. aws-reports도 같은 패턴을 씀. 잡는 경우와 잡지 않는 경우를 모두 테스트로 확인
 
 ## [1.2.1] - 2026-11-05
 

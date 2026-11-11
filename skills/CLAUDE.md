@@ -8,7 +8,7 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 | `aws-blog-skills/` | aws-blog-skills 1.2.2 | SKILL.md, `references/` (rule files per step), `scripts/` (lint, structure, URL, diagram lib, render, package), `assets/templates/` |
 | `aws-diagram/` | aws-diagrams 1.0.0 | SKILL.md, `scripts/find_icon.py`, `embed.py`, `build_bundle.py`, `assets/` (icon bundle) |
 | `aws-diagram-design/` | aws-diagrams 1.0.0 | SKILL.md, `references/` (style guide, types, export, import), `scripts/` (self_check, verify-geometry, extractors), `assets/aws-icons/`, `assets/fonts/` |
-| `kor-deslop/` | kor-writing 1.0.0 | SKILL.md, `references/patterns.md` (A~K, 79 patterns) |
+| `kor-deslop/` | kor-writing 1.0.0 | SKILL.md, `references/patterns.md` (A~K, 80 patterns) |
 | `aws-ppt-skills/` | aws-deck 1.0.0 | SKILL.md, `scripts/` (apply_template, check_deck, svg_to_png, install_fonts.sh), `assets/templates/`, `assets/fonts/` |
 | `consulting-ppt-white-ppt/` | aws-deck 1.0.0 | SKILL.md, `lib/consult_helpers.js`, `tools/` (fix_pptx, fix_notes, extract_brand_color), `examples/` |
 | `pptx-template-fill/` | aws-deck 1.0.0 | SKILL.md, `scripts/` (tfill, inventory, qa_check, swap_font) |

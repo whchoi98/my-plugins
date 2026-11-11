@@ -1,6 +1,6 @@
 # AI 티 제거 점검표
 
-초안 완성 직후와 패키징 직전에 본문(표·코드·이미지 alt 제외)을 한 번씩 훑는다. 내용은 한 글자도 바꾸지 않고 문체만 고친다. humanize-korean 플러그인이 설치되어 있으면 그 플러그인의 `references/quick-rules.md`(10 카테고리 70 패턴)와 `metrics_v2.py`를 함께 쓴다(`find ~/.claude/plugins/cache -name quick-rules.md -path '*humanize*'`로 위치 확인). 이 점검표는 그중 격식체 AWS 테크 블로그에서 실제로 걸리는 항목만 모았다. 같은 플러그인의 `/my-plugins:kor-deslop` skill `references/patterns.md`(A~K 79개 패턴)를 같은 기준으로 쓸 수 있고, 이 점검표의 패턴 ID는 그 파일과 같다.
+초안 완성 직후와 패키징 직전에 본문(표·코드·이미지 alt 제외)을 한 번씩 훑는다. 내용은 한 글자도 바꾸지 않고 문체만 고친다. humanize-korean 플러그인이 설치되어 있으면 그 플러그인의 `references/quick-rules.md`(10 카테고리 70 패턴)와 `metrics_v2.py`를 함께 쓴다(`find ~/.claude/plugins/cache -name quick-rules.md -path '*humanize*'`로 위치 확인). 이 점검표는 그중 격식체 AWS 테크 블로그에서 실제로 걸리는 항목만 모았다. 같은 플러그인의 `/my-plugins:kor-deslop` skill `references/patterns.md`(A~K 80개 패턴)를 같은 기준으로 쓸 수 있고, 이 점검표의 패턴 ID는 그 파일과 같다.
 
 ## 번역투
 

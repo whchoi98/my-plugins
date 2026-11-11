@@ -98,7 +98,7 @@ assert_eq "structure.md skeleton has no banned middle dot" "" "$(printf '%s\n' "
 
 # --- lint_prose.py mirrors style.md ---
 AB_STYLE=$(cat "$SKILL_DIR/references/style.md")
-for ab_term in '레버' '낭비 절감' '암시적 캐싱' '미국 본토' '다음과 같습니다'; do
+for ab_term in '레버' '실측' '낭비 절감' '암시적 캐싱' '미국 본토' '다음과 같습니다'; do
     assert_contains "style.md bans '$ab_term'" "$AB_STYLE" "$ab_term"
     grep -qF -- "(\"$ab_term\"" "$SKILL_DIR/scripts/lint_prose.py" && pass "lint_prose.py HARD has '$ab_term'" \
         || fail "lint_prose.py HARD has '$ab_term'" "style.md bans it but lint_prose.py does not"

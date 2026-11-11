@@ -8,13 +8,13 @@
 
 https://aws.amazon.com/ko/blogs/tech/evaluate-ai-agent-search-quality-with-amazon-opensearch-service-1/
 
-- **참고할 것**: 실무 질문("검색 품질을 어떻게 측정하고 계신가요?")으로 열고 마치며가 그 질문에 답하는 수미상관. 실측 밀도 — 검증 수치(Spearman 0.94), 함정(형태소 분석기 누락 시 NDCG 급락), 실패 사례(Cohen's Kappa=0.0)까지 공개하는 정직한 서술. 표 도입 문장이 실험 맥락만 설명하고 표 내용을 중복하지 않음
+- **참고할 것**: 실무 질문("검색 품질을 어떻게 측정하고 계신가요?")으로 열고 마치며가 그 질문에 답하는 수미상관. 측정값 밀도 — 검증 수치(Spearman 0.94), 함정(형태소 분석기 누락 시 NDCG 급락), 실패 사례(Cohen's Kappa=0.0)까지 공개하는 정직한 서술. 표 도입 문장이 실험 맥락만 설명하고 표 내용을 중복하지 않음
 
 ## 2. AWS Graviton으로 EKS 비용 최적화 하기
 
 https://aws.amazon.com/ko/blogs/tech/aws-graviton-eks-optimization/
 
-- **참고할 것**: 전 항목 균형의 표본. 헤딩 없는 리드 문단, 고객 실측 사례(P90 레이턴시 48.2% 개선)와 실제 명령어(docker buildx)의 공존, "프로젝트의 언어·CI/CD·안정성 요구에 따라 적합한 방식이 달라진다"처럼 표의 존재 이유를 설명하는 도입 문장
+- **참고할 것**: 전 항목 균형의 표본. 헤딩 없는 리드 문단, 고객 측정 사례(P90 레이턴시 48.2% 개선)와 실제 명령어(docker buildx)의 공존, "프로젝트의 언어·CI/CD·안정성 요구에 따라 적합한 방식이 달라진다"처럼 표의 존재 이유를 설명하는 도입 문장
 
 ## 3. 엔터프라이즈 보안 요구사항을 충족하는 프라이빗 Amazon Bedrock AgentCore 구축하기
 

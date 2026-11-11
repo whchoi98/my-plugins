@@ -29,7 +29,7 @@ need, including the cases that broke on Amazon Linux 2023.
 | `/my-plugins:aws-diagram` | aws-diagrams 1.0.0 | AWS architecture diagrams with the official AWS and Bedrock AgentCore icon sets |
 | `/my-plugins:aws-diagram-design` | aws-diagrams 1.0.0 | AWS-branded structure diagrams: flowchart, sequence, timeline, ER, charts and more |
 | `/my-plugins:export-diagram`, `/my-plugins:import-drawio`, `/my-plugins:import-mermaid` | aws-diagrams 1.0.0 | Export an aws-diagram-design HTML file to SVG/PNG; redraw draw.io or Mermaid sources |
-| `/my-plugins:kor-deslop` | kor-writing 1.0.0 | Removes AI tells from Korean text in one pass (79 patterns), content unchanged |
+| `/my-plugins:kor-deslop` | kor-writing 1.0.0 | Removes AI tells from Korean text in one pass (80 patterns), content unchanged |
 | `/my-plugins:aws-ppt-skills` | aws-deck 1.0.0 | AWS Korea 2026 black or white template decks with pptxgenjs and Korean speaker notes |
 | `/my-plugins:consulting-ppt-white-ppt` | aws-deck 1.0.0 | Dense consulting-report decks with a customer brand accent |
 | `/my-plugins:pptx-template-fill` | aws-deck 1.0.0 | Fills an existing .pptx template in place, keeping its layout |
@@ -202,7 +202,7 @@ HTML)를 한 번에 설치합니다. skill끼리 같은
 | `/my-plugins:aws-diagram` | aws-diagrams 1.0.0 | 공식 AWS 아이콘과 Bedrock AgentCore 아이콘으로 그리는 AWS 아키텍처 구성도 |
 | `/my-plugins:aws-diagram-design` | aws-diagrams 1.0.0 | 흐름도, 시퀀스, 타임라인, ER, 차트 등 AWS 브랜드 스킨의 구조 다이어그램 |
 | `/my-plugins:export-diagram`, `/my-plugins:import-drawio`, `/my-plugins:import-mermaid` | aws-diagrams 1.0.0 | aws-diagram-design HTML을 SVG/PNG로 내보내기, draw.io와 Mermaid 다시 그리기 |
-| `/my-plugins:kor-deslop` | kor-writing 1.0.0 | 한국어 글의 AI 티를 한 번에 제거(패턴 79개). 내용은 그대로 둡니다 |
+| `/my-plugins:kor-deslop` | kor-writing 1.0.0 | 한국어 글의 AI 티를 한 번에 제거(패턴 80개). 내용은 그대로 둡니다 |
 | `/my-plugins:aws-ppt-skills` | aws-deck 1.0.0 | 2026 AWS Korea 블랙·화이트 템플릿 덱(pptxgenjs, 한국어 발표 대본) |
 | `/my-plugins:consulting-ppt-white-ppt` | aws-deck 1.0.0 | 고객 브랜드 색을 쓰는 고밀도 컨설팅 리포트 덱 |
 | `/my-plugins:pptx-template-fill` | aws-deck 1.0.0 | 기존 .pptx 템플릿의 레이아웃을 유지하며 내용 채우기 |

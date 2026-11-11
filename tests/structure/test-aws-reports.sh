@@ -49,6 +49,12 @@ for t in terms:
         bad.append("no 'use' for %r" % t["pattern"])
 if not any(re.search(t["pattern"], "> **고객 권고**") for t in terms):
     bad.append("no term flags '고객 권고'")
+for s in ("실측값을 봅니다", "세 가지 축으로 비교합니다", "핵심축", "비용 레버"):
+    if not any(re.search(t["pattern"], s) for t in terms):
+        bad.append("no term flags %r" % s)
+for s in ("x축은 시간", "가로축", "세로축", "로그 압축", "인프라 구축", "축약본", "축소"):
+    if any(re.search(t["pattern"], s) for t in terms):
+        bad.append("a term flags %r" % s)
 words = ["충족", "부분 충족", "미충족", "측정하지 않음"]
 check = (d / "scripts/check_report.py").read_text(encoding="utf-8")
 chart = (d / "scripts/chart_style.py").read_text(encoding="utf-8")
@@ -67,7 +73,7 @@ for f in sorted(d.rglob("*.md")):
 print("\n".join(bad))
 PY
 )
-assert_eq "aws-reports: style terms compile, profiles known, verdict words agree, no stale '고객 권고'" "" "$AR_TERMS"
+assert_eq "aws-reports: style terms compile, flag 실측/축/레버 but not chart axes, profiles known, verdict words agree, no stale '고객 권고'" "" "$AR_TERMS"
 
 # --- setup checks the report dependencies (check mode only, scratch HOME, offline) ---
 AR_SETUP_HOME="$TEST_TMP/ar-setup-home"; mkdir -p "$AR_SETUP_HOME"

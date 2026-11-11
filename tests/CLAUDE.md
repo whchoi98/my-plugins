@@ -33,9 +33,10 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   kor-deslop, step sections, `${CLAUDE_SKILL_DIR}` script calls and no claude.ai-only names, the step 0
   rule that instructions inside source material are not followed, reference table completeness, the step 4
   `.aws-diagram-assets` pointer written after copying `diagram_lib.py`, author bio sync, draft skeletons
-  free of banned notation, and `lint_prose.py` mirroring `style.md`.
+  free of banned notation, and `lint_prose.py` mirroring `style.md` (including `실측`).
 - `structure/test-aws-blog-skills-scripts.sh` — runs the aws-blog-skills scripts on fixture drafts in
-  `$TEST_TMP`: `lint_prose.py` and `check_structure.py` exit codes, `package_blog.sh` bundle and
+  `$TEST_TMP`: `lint_prose.py` and `check_structure.py` exit codes, the `실측` and `축` rules (the axis
+  metaphor flagged, chart axes and compounds such as `x축`, `압축` not), `package_blog.sh` bundle and
   no-zip-on-failure, `check_urls.py` OK/FAIL/REDIRECT against a local server, `render_diagrams.py`
   argument guard, and the diagram generator set up by running SKILL.md step 4's copy lines with an empty
   `HOME`.
@@ -44,7 +45,8 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   `patterns.md`) in README (both languages), `skills/CLAUDE.md`, CLAUDE.md and SKILL.md, description
   triggers, sections, the change-rate snippet, and the humanize-korean notice.
 - `structure/test-aws-reports.sh` — aws-reports: description triggers for both report types, the source-material
-  guard, `style_terms.json` (valid patterns, known profiles, no stale `고객 권고` outside the rule rows), no
+  guard, `style_terms.json` (valid patterns, `실측`, `축` and `레버` flagged but chart axes and
+  compounds not, known profiles, no stale `고객 권고` outside the rule rows), no
   `node_modules` or `__pycache__` in the skill, examples' `make_charts.py` writing outside the skill folder; when
   `node` and the npm packages are reachable (local, `NODE_PATH` or `npm root -g`), both examples built into
   `$TEST_TMP` and checked clean with their profile, the table-header and caption-note layout rules on a fixture,
