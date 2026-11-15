@@ -108,6 +108,7 @@ $W/
 
 - AWS 서비스 구성도는 `my-plugins:aws-diagram`, 흐름도와 시퀀스, 차트는 `my-plugins:aws-diagram-design`으로 만든다. 그림은 흰 바탕으로 그린다.
 - 파일은 `$W/images/`에 `fig01-<이름>.png`처럼 둔다. `img`의 `width`와 `height`에는 화면에 보일 크기(CSS px)를 쓰고, 구성도처럼 넓은 그림은 `div.canvas`에 `wide`를 붙인다(design-spec.md의 그림 항목).
+- 글자가 들어간 그림은 영어판도 만든다. 같은 배치에 문구만 영어로 바꿔 `fig01-<이름>-en.png`로 두고 `en.body.html`의 `img`가 가리키게 한다. 독자가 영어로 전환하면 그림도 영어로 바뀐다. 화면 캡처는 예외로 같은 파일을 쓴다(design-spec.md의 그림 항목).
 - 옮겨 싣는 글의 그림은 `import_aws_post.py`가 내려받는다. 받지 못한 그림은 `WARN`으로 알려 주므로 직접 받거나 사용자에게 알린다.
 - 만든 그림은 Read 도구로 열어 직접 본다.
 
@@ -153,6 +154,6 @@ python3 "${CLAUDE_SKILL_DIR}/../aws-blog-skills/scripts/check_urls.py" "$W/out/u
 ## 후속 요청 처리
 
 - **문장 교정**: `$W`의 조각을 고치고 같은 표현을 전수 확인한 뒤 5단계부터 다시 한다. 배치는 `--replace`로 한다.
-- **그림 교체**: `images/`의 파일을 바꾸고 `width`, `height`, `alt`, 캡션을 두 언어에서 맞춘다.
+- **그림 교체**: `images/`의 파일을 바꾸고 `width`, `height`, `alt`, 캡션을 두 언어에서 맞춘다. 영어판 그림(`-en`)이 있으면 함께 다시 만든다.
 - **분류나 태그 변경**: `meta.json`을 고치고 다시 빌드한다. 분류가 바뀌면 블로그 저장소의 이전 폴더에 남은 파일을 지워야 하므로 사용자에게 알린다.
 - **디자인 변경**("제목을 더 크게", "표 글자를 키워"): 템플릿을 고쳐야 하므로 7단계의 절차로 진행한다.

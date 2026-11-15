@@ -293,6 +293,12 @@ if [ "$TB_RC" -eq 0 ] && [ -f "$TB_OUT/$TB_SLUG-report.html" ]; then
         && tb_check "English table removed (component counts differ)" '절 1의 표 수가 다릅니다: ko 1, en 0' 1
     tb_case ensec && tb_resub "$TB_R" '<section class="sec" id="en-s2">.*?</section>\n' '' \
         && tb_check "English section removed" '절 수가 다릅니다: ko 2, en 1' 1
+    tb_case enfig && cp "$TB_C/$TB_SLUG-assets/fig01-flow.png" "$TB_C/$TB_SLUG-assets/fig01-flow-en.png" \
+        && tb_resub "$TB_R" '(id="en-s1".*?)fig01-flow\.png' '\1fig01-flow-en.png' \
+        && tb_check "the English side may show the English version of a figure (<name>-en.<ext>)" '결과: ERROR 0 / WARN 0' 0
+    tb_case figorder && cp "$TB_C/$TB_SLUG-assets/fig01-flow.png" "$TB_C/$TB_SLUG-assets/fig09-other.png" \
+        && tb_resub "$TB_R" '(id="en-s1".*?)fig01-flow\.png' '\1fig09-other.png' \
+        && tb_check "the English side shows a different figure" '두 언어의 그림 파일 순서가 다릅니다' 1
     tb_case figcap && tb_edit "$TB_R" '<b>그림 1.</b>' '<b>그림 2.</b>' \
         && tb_check "figure caption number skipped" 'ko 그림 캡션 번호가 순서대로가 아닙니다' 1
     tb_case tblcap && tb_edit "$TB_R" '<b>Table 1.</b>' '<b>Table 3.</b>' \

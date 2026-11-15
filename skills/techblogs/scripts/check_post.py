@@ -241,8 +241,10 @@ def main():
                 if x != y:
                     E("절 %d의 %s 수가 다릅니다: ko %d, en %d" % (n, name, x, y))
     imgs = {lang: [i.attrs.get("src", "") for i in col.find("img")] for lang, col in cols.items()}
-    if imgs["ko"] != imgs["en"]:
-        E("두 언어의 그림 파일 순서가 다릅니다.")
+    # The English side shows the same file or its English version: <name>-en.<ext> for <name>.<ext>.
+    if len(imgs["ko"]) != len(imgs["en"]) or any(e not in (k, "%s-en%s" % os.path.splitext(k))
+                                                 for k, e in zip(imgs["ko"], imgs["en"])):
+        E("두 언어의 그림 파일 순서가 다릅니다. 영어 쪽은 같은 파일이거나 그 영어판(<이름>-en.<확장자>)이어야 합니다.")
 
     # 4. 그림, 표, 코드 상자
     base = os.path.dirname(os.path.abspath(path))

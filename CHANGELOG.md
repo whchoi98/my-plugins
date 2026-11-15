@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- `techblogs`: a figure with text in it gets an English version, `<name>-en.<ext>`, that the English body points to, so the figure changes with the language switch. `check_post.py` accepts the same file or its English version on the English side (it used to require the same file); SKILL.md and design-spec.md describe the rule, and two tests cover it
+
 ## [1.4.0] - 2026-11-15
 
 ### Added
@@ -119,6 +122,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Changed
+- `techblogs`: 글자가 들어간 그림은 영어판 `<이름>-en.<확장자>`를 만들어 영어 본문에서 가리키도록 변경. 언어를 전환하면 그림도 함께 바뀜. `check_post.py`는 영어 쪽 그림이 같은 파일이거나 그 영어판이면 통과시킴(이전에는 같은 파일만 허용). SKILL.md와 design-spec.md에 규칙을 적고 테스트 2개 추가
 
 ## [1.4.0] - 2026-11-15
 
