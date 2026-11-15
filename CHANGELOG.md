@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `techblogs`: a newly written post explains its core concept with an analogy to a familiar situation (SKILL.md step 2, with a worked example). The analogy covers every item being compared, maps their differences onto roles in the situation, never replaces the facts, and is carried into the English body; decorative figures of speech stay banned, republished posts get none, and polishing keeps the analogy. Three tests cover the rule
+
 ## [1.4.1] - 2026-11-15
 
 ### Changed
@@ -125,6 +128,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+- `techblogs`: 새로 쓰는 글에 핵심 개념을 익숙한 상황에 빗댄 비유를 넣는 규칙 추가 (SKILL.md 2단계, 예시 포함). 비교하는 대상 전부를 한 상황 안에서 설명하고 차이를 역할의 차이로 드러내며, 사실을 대신하지 않고 영어 본문에도 옮김. 꾸미는 수사 금지는 그대로이고 옮겨 싣는 글에는 넣지 않으며 윤문할 때 지우지 않음. 테스트 3개 추가
 
 ## [1.4.1] - 2026-11-15
 

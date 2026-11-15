@@ -120,6 +120,11 @@ for tb_n in 0 1 2 3 4 5 6 7; do
 done
 assert_contains "techblogs SKILL.md: commit and push only when the user says so" "$TB_SKILL" \
     "커밋과 push는 사용자가 하라고 한 때에만 한다"
+assert_contains "techblogs SKILL.md: a new post explains its core concept with an analogy" "$TB_SKILL" \
+    "새로 쓰는 글에는 핵심 개념을 익숙한 상황에 빗댄 비유를 넣는다"
+assert_contains "techblogs SKILL.md: an analogy does not replace the facts" "$TB_SKILL" "비유는 사실을 대신하지 않는다"
+assert_contains "techblogs SKILL.md: polishing keeps the explanatory analogy" "$TB_SKILL" \
+    "2단계에서 넣은 설명용 비유는 윤문하면서 지우지 않는다"
 for tb_s in build_post check_post import_aws_post place_post preview; do
     assert_contains "techblogs SKILL.md: calls scripts/$tb_s.py through the skill dir" "$TB_SKILL" \
         "\"\${CLAUDE_SKILL_DIR}/scripts/$tb_s.py\""
