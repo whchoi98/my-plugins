@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.0] - 2026-11-15
+
 ### Added
 - `html-report` skill: one shareable HTML page in a common report design. Korean and English sit in one file behind a language switch; light and dark themes start from the system setting; one column up to 1440px; NanumSquareOTF_ac and D2Coding; white boxes for tables and figures with "그림 N." captions; superscript citations; rounded status pills; and a fixed page order (top bar, head, sections, source table, method, sharing line). `data-report="research"` makes the source parts required, `general` keeps them optional
 - `scripts/check_html.py`: a `<style>` or `<script>` that differs from the template, inline `style`, tokens, page order, language pairs, Korean outside its pair, banned symbols (·, —, –, →) in text and in the tab title, `alt` and `aria-label`, caption numbers, citations against the source table, source-mix counts, relative images, and template sample sentences (read from the template itself) are ERRORs; 한다체 or 해요체 sentences, "~하세요" and an uncited source are WARNs; `--dump-ko` hands the Korean text to aws-blog-skills `lint_prose.py`
@@ -98,7 +100,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/whchoi98/my-plugins/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/whchoi98/my-plugins/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/whchoi98/my-plugins/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/whchoi98/my-plugins/compare/v1.1.0...v1.2.0
@@ -116,6 +119,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.4.0] - 2026-11-15
 
 ### Added
 - `html-report` skill 추가. 공통 디자인의 공유용 단일 HTML 보고서를 만듦. 한국어와 영어를 한 파일에 넣고 버튼으로 바꾸며, 라이트와 다크 테마(처음에는 시스템 설정), 최대 1440px 한 컬럼, NanumSquareOTF_ac와 D2Coding, "그림 N." 캡션이 붙는 흰 상자의 표와 그림, 위 첨자 인용 번호, 둥근 상태 알약, 고정된 페이지 순서(상단 막대, 머리, 절, 출처 표, 조사 방법, 공유 범위)를 갖춤. `data-report="research"`이면 출처 관련 요소가 필수, `general`이면 선택
@@ -200,7 +205,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.4.0...HEAD
+[1.4.0]: https://github.com/whchoi98/my-plugins/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/whchoi98/my-plugins/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/whchoi98/my-plugins/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/whchoi98/my-plugins/compare/v1.1.0...v1.2.0
