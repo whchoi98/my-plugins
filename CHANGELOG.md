@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.2] - 2026-11-15
+
 ### Added
 - `techblogs`: a newly written post explains its core concept with an analogy to a familiar situation (SKILL.md step 2, with a worked example). The analogy covers every item being compared, maps their differences onto roles in the situation, never replaces the facts, and is carried into the English body; decorative figures of speech stay banned, republished posts get none, and polishing keeps the analogy. Three tests cover the rule
 
@@ -108,7 +110,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.4.2...HEAD
+[1.4.2]: https://github.com/whchoi98/my-plugins/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/whchoi98/my-plugins/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/whchoi98/my-plugins/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/whchoi98/my-plugins/compare/v1.2.1...v1.3.0
@@ -128,6 +131,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.4.2] - 2026-11-15
 
 ### Added
 - `techblogs`: 새로 쓰는 글에 핵심 개념을 익숙한 상황에 빗댄 비유를 넣는 규칙 추가 (SKILL.md 2단계, 예시 포함). 비교하는 대상 전부를 한 상황 안에서 설명하고 차이를 역할의 차이로 드러내며, 사실을 대신하지 않고 영어 본문에도 옮김. 꾸미는 수사 금지는 그대로이고 옮겨 싣는 글에는 넣지 않으며 윤문할 때 지우지 않음. 테스트 3개 추가
@@ -222,7 +227,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.4.1...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.4.2...HEAD
+[1.4.2]: https://github.com/whchoi98/my-plugins/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/whchoi98/my-plugins/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/whchoi98/my-plugins/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/whchoi98/my-plugins/compare/v1.2.1...v1.3.0
