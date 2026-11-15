@@ -1,7 +1,7 @@
 # Tests Module
 
 ## Role
-Harness tests for the dev hooks, for invariants of the shipped my-plugins plugin (nine skills, three
+Harness tests for the dev hooks, for invariants of the shipped my-plugins plugin (eleven skills, three
 commands, manifests, licenses, docs), and for the behavior of the scripts it ships. Bash + `jq` + Python 3;
 no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL checker. Optional tools
 (`node`, `claude`) are skipped when absent. Run with `bash tests/run-all.sh [filter]`.
@@ -52,6 +52,26 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   `$TEST_TMP` and checked clean with their profile, the table-header and caption-note layout rules on a fixture,
   negative checks (uncentered two-line header, flipped note alignment, PoC wording and structure), and the
   `npm root -g` lookup through a scratch npm prefix. Skipped parts say why.
+- `structure/test-html-report.sh` — html-report: description triggers, sections, the sharing scope asked for,
+  design-spec.md token colors present in the template, the raw template failing only on its placeholders, a
+  filled copy passing `check_html.py` and its `--dump-ko` text passing `lint_prose.py`, one mutation per rule
+  (missing pair, `·`, `→`, a dash in the tab title, a template sample sentence left in the summary and in a
+  method item, `border-left`, appended CSS, inline `style`, removed toggle script, changed token, caption number,
+  citation, source-mix count, Korean outside a pair, page order, 한다체, 해요체 and a 한다체 list item, general
+  mode), and `embed_images.py` embedding an image and refusing a path outside the page folder. The filled copy
+  breaks every remaining sample sentence through `check_html.template_samples()` (bytecode to `$TEST_TMP`).
+- `structure/test-techblogs.sh` — techblogs: skill files, description routing, sections and the commit and push rule,
+  every path, script and skill named in SKILL.md and references, the template names the blog layout and `preview.py`
+  depend on, template `[[tokens]]` equal to the keys `build_post.py` fills, and the meta.json example in design-spec.md.
+  The fixture `fixtures/techblogs/work/` is built in `$TEST_TMP` and passes `check_post.py` (ERROR 0, WARN 0) and
+  `lint_prose.py`; then one edit of the built copy per `check_post.py` rule (`<style>`, `<script>`, leftover token, TODO,
+  inline `style`, layout hooks, section ids, menu links, component and section counts, caption numbers, image file,
+  alt, remote image, canvas, table scroll box, code box, `·`, `—`, inline code exempt, the WARN rules, front matter,
+  `--blog`). `build_post.py` stops on unfinished input and on an `--out` inside the skill folder (tried on a copy of
+  the skill); `import_aws_post.py` reads the saved page `fixtures/techblogs/aws-post.html` (sections, table, code box,
+  references; an image on another host is warned about, not fetched); `place_post.py` runs on a fake blog repository
+  with `git` and `bundle` stubbed (existing slug, `--replace`, category and icon checks). `preview.py` and `--build`
+  are not run.
 - `structure/test-integration.sh` — behavior of the merge fixes, each run with `HOME` on a scratch folder:
   `diagram_lib.py` asset lookup order (sibling skill, `AWS_DIAGRAM_ASSETS`, `.aws-diagram-assets`, plugin
   caches in numeric version order), `skills/setup/scripts/setup.sh` check mode and usage exit codes, sudo
@@ -59,13 +79,16 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   skills, and the skill inventory (skills/CLAUDE.md table, README tables, `my-plugins:<name>` references).
 - `fixtures/secret-samples.txt` — TAB-separated `name / prefix / body`; joined at runtime so no full
   token is stored. `fixtures/false-positives.txt` — one non-secret per line.
+- `fixtures/techblogs/` — `work/` (a made-up two-section post: `meta.json`, `ko.body.html`, `en.body.html`, one 8x8 PNG)
+  and `aws-post.html` (a made-up saved AWS blog page without images). Invented text only: no real customer, account
+  or internal data.
 
 ## Rules
 - Test files are sourced, not executed: do not `exit`, do not `set -e`, guard commands that may return
   non-zero (`|| true`, or capture `$?`). Run `cd` only in a subshell.
 - Sourcing shares the runner's scope. Never assign `TOTAL`, `PASSED`, `FAILED`, `SKIPPED`, `FAILURES`,
   `FILTER`, `TEST_TMP`, `PROJECT_ROOT` or `SCRIPT_DIR`; a structure test rejects it. Prefix test-local
-  names per file (`PS_`, `AB_`, `SCR_`, `KD_`, `IT_`, `HK_`, `SP_`, `AR_`). Never export or assign `HOME`; pass it
+  names per file (`PS_`, `AB_`, `SCR_`, `KD_`, `IT_`, `HK_`, `SP_`, `AR_`, `HR_`, `TB_`). Never export or assign `HOME`; pass it
   per command (`env HOME="$TEST_TMP/..." ...`).
 - Never write a complete secret literal anywhere; split it into prefix and body.
 - Use `$TEST_TMP` for scratch files and repos; it is removed on exit. Never write into `skills/`

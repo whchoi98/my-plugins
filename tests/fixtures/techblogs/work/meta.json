@@ -1,0 +1,16 @@
+{
+  "slug": "sample-batch-window",
+  "category": "Sample",
+  "category_dir": "sample",
+  "icon": "sample",
+  "date": "2026-01-15",
+  "minutes": 0,
+  "tags": ["Example", "Batch"],
+  "title": {"ko": "예시 배치 작업의 실행 시간 줄이기", "en": "Shortening an example batch job"},
+  "excerpt": {"ko": "가상의 집계 배치를 단계별로 재고 읽기 단계를 나누어 실행 시간을 줄인 예시입니다.", "en": "A made-up example that times a batch job stage by stage and splits the read stage."},
+  "thesis": {"ko": "가상의 집계 배치는 읽기 단계가 전체 시간의 절반을 차지합니다. 읽기 단계를 네 개로 나누면 전체 시간이 40분에서 26분으로 줄어듭니다.", "en": "The read stage takes half of the run time of a made-up aggregation batch. Splitting it into four workers cuts the run from 40 minutes to 26."},
+  "facts": [{"ko": "<b>결과</b> 전체 실행 시간 40분에서 26분", "en": "<b>Result</b> total run time from 40 minutes to 26"}],
+  "author": {"ko": "예시 글쓴이", "en": "Example Author"},
+  "note": {"ko": "이 글의 수치는 검사용으로 지어낸 값입니다.", "en": "Every number in this post is made up for testing."},
+  "sources": [{"title": "Example batch guide", "url": "https://example.com/docs/batch", "kind": {"ko": "웹 문서", "en": "Web"}, "accessed": "2026-01-15"}]
+}

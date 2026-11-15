@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ko" data-lang="ko" data-report="research">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title data-ko="보고서 제목" data-en="Report title">보고서 제목</title>
+<script>
+(function(){var r=document.documentElement;try{var t=localStorage.getItem('html-report:theme');if(t==='light'||t==='dark')r.dataset.theme=t;var l=localStorage.getItem('html-report:lang');if(l==='ko'||l==='en'){r.dataset.lang=l;r.lang=l}}catch(e){}})();
+</script>
+<style>
+/* html-report design tokens. Do not edit per report; references/design-spec.md and scripts/check_html.py hold the same values. */
+:root{--bg:#f3f5f8;--ink:#15202b;--muted:#5a6774;--accent:#1d5bb8;--surface:#ffffff;--fig:#ffffff;--line:#d9dfe6;--rule:#c9d1db;--callout:#e8f0fc;--code:#f6f8fa;--ok-bg:#e2f3e8;--ok:#17703c;--warn-bg:#fdf1d2;--warn:#8a5a00;--bad-bg:#fbe4e2;--bad:#b42318;--info-bg:#e8f0fc;--info:#1d5bb8;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0e1319;--ink:#e4e9ef;--muted:#9ba7b4;--accent:#86abff;--surface:#151c25;--fig:#ffffff;--line:#2a3441;--rule:#3a4655;--callout:#17243a;--code:#121922;--ok-bg:#11301e;--ok:#7fd6a1;--warn-bg:#382d0e;--warn:#f0c860;--bad-bg:#3c1a1a;--bad:#ff9d94;--info-bg:#17243a;--info:#86abff;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#0e1319;--ink:#e4e9ef;--muted:#9ba7b4;--accent:#86abff;--surface:#151c25;--fig:#ffffff;--line:#2a3441;--rule:#3a4655;--callout:#17243a;--code:#121922;--ok-bg:#11301e;--ok:#7fd6a1;--warn-bg:#382d0e;--warn:#f0c860;--bad-bg:#3c1a1a;--bad:#ff9d94;--info-bg:#17243a;--info:#86abff;color-scheme:dark}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'NanumSquareOTF_ac','NanumSquareOTF','NanumSquare_ac','NanumSquare','Apple SD Gothic Neo','Malgun Gothic','맑은 고딕',sans-serif;font-size:15px;line-height:1.75;word-break:keep-all;overflow-wrap:break-word}
+:root[data-lang="ko"] body [lang="en"],:root[data-lang="en"] body [lang="ko"]{display:none!important}
+.wrap{max-width:1440px;margin:0 auto;padding-inline:40px}
+a{color:var(--accent)}
+.topbar{position:sticky;top:0;z-index:10;background:var(--bg);border-bottom:1px solid var(--line);padding-top:env(safe-area-inset-top,0px)}
+.topbar-in{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;min-height:52px;flex-wrap:wrap}
+.list-link{font-weight:700;text-decoration:none}
+.switches{display:flex;gap:8px;flex-wrap:wrap}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:999px;overflow:hidden;background:var(--surface)}
+.seg button{font:inherit;font-size:13px;line-height:1.6;border:0;background:transparent;color:var(--muted);padding:3px 12px;cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--accent);color:var(--bg);font-weight:700}
+.doc-head{padding-block:48px 8px}
+.meta{display:flex;flex-wrap:wrap;gap:4px 24px;margin:0 0 12px;color:var(--muted);font-size:13px}
+.meta b{color:var(--ink);margin-right:6px}
+h1{font-size:clamp(30px,3.2vw,44px);line-height:1.3;margin:0 0 16px;letter-spacing:-.01em}
+.lead{font-size:17px;line-height:1.8;margin:0 0 20px}
+.tags{list-style:none;display:flex;flex-wrap:wrap;gap:6px;margin:0 0 20px;padding:0}
+.tags li{font-size:12.5px;border:1px solid var(--line);background:var(--surface);border-radius:6px;padding:1px 10px;color:var(--muted)}
+.source-mix{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 16px;margin:0 0 8px;font-size:13px;color:var(--muted)}
+.source-mix .label{margin:0;font-weight:700;color:var(--ink)}
+.source-mix ul{list-style:none;display:flex;flex-wrap:wrap;gap:4px 16px;margin:0;padding:0}
+.sec,.sources,.method{border-top:2px solid var(--rule);padding-top:28px;margin-top:48px}
+.src-kind{margin:0 0 6px;font-size:12.5px;font-weight:700;color:var(--accent);letter-spacing:.02em}
+h2{font-size:26px;line-height:1.4;margin:0 0 16px}
+h3{font-size:17px;line-height:1.5;margin:28px 0 8px}
+p,ul,ol{margin:0 0 14px}
+ul,ol{padding-left:1.4em}
+.box{background:var(--surface);border:1px solid var(--line);border-radius:10px;overflow-x:auto}
+.fig,.tbl{margin:24px 0}
+.fig .box{background:var(--fig);padding:16px}
+.fig img,.fig svg{display:block;max-width:100%;height:auto;margin:0 auto}
+figcaption{font-size:13px;color:var(--muted);margin-top:8px;text-align:center}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{padding:10px 14px;text-align:left;vertical-align:top;border-bottom:1px solid var(--line)}
+th{font-size:13px;font-weight:700;color:var(--muted)}
+tbody tr:last-child td{border-bottom:0}
+.callout{background:var(--callout);border:0;border-radius:10px;padding:16px 20px;margin:20px 0;display:flex;flex-direction:column;gap:10px}
+.callout>*{margin:0}
+pre.box{background:var(--code);padding:14px 18px;margin:20px 0;overflow-x:auto;font-size:13.5px;line-height:1.6}
+code{font-family:'D2Coding',ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.92em}
+pre code{font-size:inherit}
+sup.cite{font-size:.72em;line-height:0;margin-left:1px}
+sup.cite a{text-decoration:none}
+.pill{display:inline-block;font-size:12.5px;font-weight:700;line-height:1.6;padding:1px 10px;border-radius:999px;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.warn{background:var(--warn-bg);color:var(--warn)}
+.pill.bad{background:var(--bad-bg);color:var(--bad)}
+.pill.info{background:var(--info-bg);color:var(--info)}
+.sources td:first-child{width:3.5em;color:var(--muted)}
+.sources td:last-child{white-space:nowrap}
+.share{border-top:1px solid var(--line);margin:48px 0 0;padding-block:16px 48px;color:var(--muted);font-size:13px}
+@media (max-width:640px){
+.wrap{padding-inline:16px}
+.doc-head{padding-block:28px 4px}
+.sec,.sources,.method{margin-top:36px;padding-top:20px}
+.fig .box{padding:12px}
+.fig:not(.fit) .box img,.fig:not(.fit) .box svg{max-width:none;width:max(100%,720px)}
+table{font-size:13px}
+.sources table{min-width:600px}
+th,td{padding:8px 10px}
+.share{margin-top:36px;padding-bottom:32px}
+}
+@media print{.topbar{display:none}.fig,.tbl,.callout,pre.box{break-inside:avoid}h2,h3{break-after:avoid}}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="wrap topbar-in">
+    <a class="list-link" href="./"><span lang="ko">목록</span><span lang="en">All reports</span></a>
+    <div class="switches">
+      <div class="seg" role="group" aria-label="Language">
+        <button type="button" data-set-lang="ko" aria-pressed="true" translate="no">한국어</button>
+        <button type="button" data-set-lang="en" aria-pressed="false" translate="no">English</button>
+      </div>
+      <div class="seg" role="group" aria-label="Theme">
+        <button type="button" data-set-theme="light" aria-pressed="false"><span lang="ko">라이트</span><span lang="en">Light</span></button>
+        <button type="button" data-set-theme="dark" aria-pressed="false"><span lang="ko">다크</span><span lang="en">Dark</span></button>
+      </div>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <header class="doc-head">
+    <p class="meta">
+      <span><b><span lang="ko">기준일</span><span lang="en">As of</span></b><time datetime="2026-11-11">2026-11-11</time></span>
+      <span data-meta="searched"><b><span lang="ko">검색한 곳</span><span lang="en">Searched</span></b><span lang="ko">AWS 공식 문서, AWS 블로그</span><span lang="en">AWS documentation, AWS blogs</span></span>
+    </p>
+    <h1><span lang="ko">보고서 제목을 한 줄로 작성합니다</span><span lang="en">Write the report title on one line</span></h1>
+    <p class="lead" lang="ko">요약 문단입니다. 이 보고서가 답하는 질문과 결론을 두세 문장으로 적습니다. 결론을 받치는 숫자가 있으면 결론 문장에 함께 적습니다.</p>
+    <p class="lead" lang="en">This is the summary paragraph. State the question the report answers and its conclusion in two or three sentences. Put the number behind the conclusion in the same sentence.</p>
+    <ul class="tags">
+      <li translate="no">Amazon S3</li>
+      <li><span lang="ko">비용</span><span lang="en">Cost</span></li>
+    </ul>
+    <div class="source-mix">
+      <p class="label"><span lang="ko">출처 구성</span><span lang="en">Sources</span></p>
+      <ul>
+        <li data-kind="docs" data-count="2"><span lang="ko">공식 문서 2건</span><span lang="en">Official docs: 2</span></li>
+        <li data-kind="blog" data-count="1"><span lang="ko">블로그 1건</span><span lang="en">Blog posts: 1</span></li>
+      </ul>
+    </div>
+  </header>
+
+  <section class="sec" id="s1">
+    <p class="src-kind"><span lang="ko">공식 문서</span><span lang="en">Official docs</span></p>
+    <h2><span lang="ko">1. 첫 번째 절 제목</span><span lang="en">1. First section title</span></h2>
+    <p lang="ko">절의 첫 문단은 이 절의 결론을 먼저 적습니다. 문서에서 확인한 사실에는 출처 번호를 붙입니다.<sup class="cite"><a href="#src-1">1</a></sup> 같은 사실을 두 문서가 함께 말하면 번호를 나란히 붙입니다.<sup class="cite"><a href="#src-1">1</a>,<a href="#src-2">2</a></sup></p>
+    <p lang="en">The first paragraph of a section states its conclusion first. Attach a source number to every fact taken from a document.<sup class="cite"><a href="#src-1">1</a></sup> When two documents state the same fact, attach both numbers.<sup class="cite"><a href="#src-1">1</a>,<a href="#src-2">2</a></sup></p>
+    <h3><span lang="ko">소제목</span><span lang="en">Subheading</span></h3>
+    <p lang="ko">상태는 둥근 알약으로 표시합니다. <span class="pill ok">확인됨</span> <span class="pill warn">조건부</span> <span class="pill bad">지원 안 됨</span></p>
+    <p lang="en">Show a status as a rounded pill. <span class="pill ok">Confirmed</span> <span class="pill warn">Conditional</span> <span class="pill bad">Not supported</span></p>
+    <div class="callout">
+      <p lang="ko">강조 문단입니다. 독자가 꼭 가져가야 할 판단 하나만 적습니다. 운영 환경에 적용하기 전에 같은 조건으로 한 번 더 확인하는 것을 권고합니다.</p>
+      <p lang="en">This is a highlighted paragraph. Keep it to the one judgment the reader must take away. We recommend checking once more under the same conditions before applying it in production.</p>
+    </div>
+    <figure class="fig">
+      <div class="box">
+        <svg viewBox="0 0 960 220" width="960" height="220" role="img" aria-label="Placeholder figure" xmlns="http://www.w3.org/2000/svg">
+          <rect x="40" y="60" width="220" height="100" rx="10" fill="#e8f0fc" stroke="#1d5bb8"/>
+          <rect x="370" y="60" width="220" height="100" rx="10" fill="#e8f0fc" stroke="#1d5bb8"/>
+          <rect x="700" y="60" width="220" height="100" rx="10" fill="#e8f0fc" stroke="#1d5bb8"/>
+          <path d="M260 110 H362 M590 110 H692" stroke="#5a6774" stroke-width="2"/>
+          <path d="M354 104 L362 110 L354 116 M684 104 L692 110 L684 116" fill="none" stroke="#5a6774" stroke-width="2"/>
+        </svg>
+      </div>
+      <figcaption><span lang="ko">그림 1. 그림이 보여 주는 것을 한 문장으로 적습니다</span><span lang="en">Figure 1. One sentence on what the figure shows</span></figcaption>
+    </figure>
+  </section>
+
+  <section class="sec" id="s2">
+    <p class="src-kind"><span lang="ko">블로그</span><span lang="en">Blog posts</span></p>
+    <h2><span lang="ko">2. 두 번째 절 제목</span><span lang="en">2. Second section title</span></h2>
+    <p lang="ko">표는 숫자를, 본문은 숫자의 뜻을 맡습니다. 표 바로 앞 문장은 표를 읽는 기준만 알려 줍니다.<sup class="cite"><a href="#src-3">3</a></sup></p>
+    <p lang="en">The table carries the numbers and the text carries what they mean. The sentence before a table only says how to read it.<sup class="cite"><a href="#src-3">3</a></sup></p>
+    <figure class="tbl">
+      <div class="box">
+        <table>
+          <thead><tr><th><span lang="ko">항목</span><span lang="en">Item</span></th><th><span lang="ko">값</span><span lang="en">Value</span></th><th><span lang="ko">상태</span><span lang="en">Status</span></th></tr></thead>
+          <tbody>
+            <tr><td><span lang="ko">첫 번째 항목</span><span lang="en">First item</span></td><td>128</td><td><span class="pill ok"><span lang="ko">확인됨</span><span lang="en">Confirmed</span></span></td></tr>
+            <tr><td><span lang="ko">두 번째 항목</span><span lang="en">Second item</span></td><td>64</td><td><span class="pill warn"><span lang="ko">조건부</span><span lang="en">Conditional</span></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <figcaption><span lang="ko">표 1. 표가 담은 것을 한 문장으로 적습니다</span><span lang="en">Table 1. One sentence on what the table holds</span></figcaption>
+    </figure>
+    <pre class="box"><code>aws s3api list-buckets --query "Buckets[].Name"</code></pre>
+  </section>
+
+  <section class="sources" id="sources">
+    <h2><span lang="ko">참조 원문 데이터 출처</span><span lang="en">Source data</span></h2>
+    <div class="box">
+      <table>
+        <thead><tr><th><span lang="ko">번호</span><span lang="en">No.</span></th><th><span lang="ko">종류</span><span lang="en">Type</span></th><th><span lang="ko">제목</span><span lang="en">Title</span></th><th><span lang="ko">게시한 곳</span><span lang="en">Publisher</span></th><th><span lang="ko">확인한 날</span><span lang="en">Checked</span></th></tr></thead>
+        <tbody>
+          <tr id="src-1" data-kind="docs"><td>1</td><td><span lang="ko">공식 문서</span><span lang="en">Official docs</span></td><td><a href="https://example.com/source-1" translate="no">Source title as published</a></td><td translate="no">AWS</td><td>2026-11-11</td></tr>
+          <tr id="src-2" data-kind="docs"><td>2</td><td><span lang="ko">공식 문서</span><span lang="en">Official docs</span></td><td><a href="https://example.com/source-2" translate="no">Source title as published</a></td><td translate="no">AWS</td><td>2026-11-11</td></tr>
+          <tr id="src-3" data-kind="blog"><td>3</td><td><span lang="ko">블로그</span><span lang="en">Blog post</span></td><td><a href="https://example.com/source-3" translate="no">Source title as published</a></td><td translate="no">AWS Blog</td><td>2026-11-11</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="method" id="method">
+    <h2><span lang="ko">조사 방법</span><span lang="en">Method</span></h2>
+    <ul lang="ko">
+      <li>검색한 기간과 검색어를 적습니다.</li>
+      <li>포함한 출처와 제외한 출처의 기준을 적습니다.</li>
+      <li>사실을 어떻게 확인했는지 적습니다. 두 출처가 다르면 어느 쪽을 따랐는지 밝힙니다.</li>
+    </ul>
+    <ul lang="en">
+      <li>State the search period and the search terms.</li>
+      <li>State what made a source in scope or out of scope.</li>
+      <li>State how each fact was checked. When two sources disagree, say which one the report follows.</li>
+    </ul>
+  </section>
+
+  <p class="share"><span lang="ko">공유 범위: 사내 공유용입니다. 고객에게 보내기 전에 담당자 검토가 필요합니다.</span><span lang="en">Sharing: internal only. Review it with the owner before it goes to a customer.</span></p>
+</main>
+
+<script>
+(function(){
+  var r=document.documentElement,mq=window.matchMedia?matchMedia('(prefers-color-scheme: dark)'):null;
+  function save(k,v){try{localStorage.setItem('html-report:'+k,v)}catch(e){}}
+  function theme(){return r.dataset.theme||(mq&&mq.matches?'dark':'light')}
+  function sync(){
+    var l=r.dataset.lang==='en'?'en':'ko',t=theme(),title=document.querySelector('title');
+    if(title&&title.dataset[l])document.title=title.dataset[l];
+    document.querySelectorAll('img[data-alt-en]').forEach(function(i){if(i.dataset.altKo===undefined)i.dataset.altKo=i.alt;i.alt=l==='en'?i.dataset.altEn:i.dataset.altKo});
+    document.querySelectorAll('[data-set-lang]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.setLang===l))});
+    document.querySelectorAll('[data-set-theme]').forEach(function(b){b.setAttribute('aria-pressed',String(b.dataset.setTheme===t))});
+  }
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('[data-set-lang],[data-set-theme]');if(!b)return;
+    if(b.dataset.setLang){r.dataset.lang=b.dataset.setLang;r.lang=b.dataset.setLang;save('lang',b.dataset.setLang)}
+    else{r.dataset.theme=b.dataset.setTheme;save('theme',b.dataset.setTheme)}
+    sync();
+  });
+  if(mq&&mq.addEventListener)mq.addEventListener('change',sync);
+  sync();
+})();
+</script>
+</body>
+</html>

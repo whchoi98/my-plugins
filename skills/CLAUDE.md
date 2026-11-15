@@ -13,6 +13,8 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 | `consulting-ppt-white-ppt/` | aws-deck 1.0.0 | SKILL.md, `lib/consult_helpers.js`, `tools/` (fix_pptx, fix_notes, extract_brand_color), `examples/` |
 | `pptx-template-fill/` | aws-deck 1.0.0 | SKILL.md, `scripts/` (tfill, inventory, qa_check, swap_font) |
 | `aws-reports/` | aws-reports 1.0.0 | SKILL.md (report type, then one procedure), `references/` (markdown-spec, style-rules, benchmark-structure, poc-structure, poc-verdict-rules), `scripts/` (report.mjs, check_report.py, chart_style.py, fonts.py, preview.py, svg2png.py, style_terms.json), `assets/examples/` (benchmark, poc) |
+| `html-report/` | new | SKILL.md, `references/design-spec.md` (tokens, page order, language pairs, components), `assets/template.html`, `scripts/` (check_html, embed_images, preview) |
+| `techblogs/` | new (replaces the user-level techblogs skill) | SKILL.md, `references/design-spec.md` (meta.json keys, fragment markup, text rules), `references/publish.md` (placing, build, viewing, git rules), `assets/template.html`, `scripts/` (import_aws_post, build_post, check_post, place_post, preview) |
 | `setup/` | new | SKILL.md, `scripts/setup.sh` (check, install, install --sudo) |
 
 ## Cross-skill links
@@ -21,6 +23,12 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 - aws-ppt-skills → `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design`, `my-plugins:setup`
 - aws-reports → `my-plugins:aws-diagram` (architecture figures), `my-plugins:setup` (npm packages, fonts);
   `../aws-blog-skills/scripts/lint_prose.py` (prose check)
+- html-report → `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design` (figures), `my-plugins:kor-deslop`
+  (check-only), `my-plugins:setup` (Playwright); `../aws-blog-skills/scripts/lint_prose.py` and
+  `../aws-blog-skills/references/style.md` (Korean text)
+- techblogs → `my-plugins:kor-deslop` (check-only), `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design`
+  (figures), `my-plugins:setup` (Playwright); `../aws-blog-skills/scripts/lint_prose.py` and `check_urls.py`,
+  `../aws-blog-skills/references/style.md`, `humanize-checklist.md` and `verification.md`
 - setup → `../aws-diagram-design/assets/fonts/ttf` (Amazon Ember), `../aws-ppt-skills/scripts/install_fonts.sh`
 
 ## Rules

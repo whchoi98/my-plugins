@@ -52,6 +52,18 @@ Everything in the repo root ships to users (`marketplace.json` has `"source": ".
 - One pattern count (80) in SKILL.md, `references/patterns.md`, the README (both languages), `skills/CLAUDE.md`
   and CLAUDE.md; existing pattern IDs are never renumbered
 
+**html-report**
+- A design value (color, size, width, page order, component) changes in `references/design-spec.md`,
+  `assets/template.html` and `scripts/check_html.py` together; the raw template fails only on its placeholders
+- `embed_images.py` reads only image files inside the page's folder
+
+**techblogs**
+- A design value changes in `references/design-spec.md`, `assets/template.html` and `scripts/check_post.py` together;
+  the template keeps the names the blog's report layout depends on (`div.wrap.page`, `nav.top.theme-bar`, the
+  `techblogs-lang` and `techblogs-theme` storage keys) and its `[[tokens]]` are the keys `build_post.py` fills
+- `build_post.py` writes nothing into the skill folder; `import_aws_post.py` fetches only from the AWS blog hosts;
+  `place_post.py` never runs git
+
 **Deck skills (aws-ppt-skills, consulting-ppt-white-ppt, pptx-template-fill)**
 - Slides keep the template's background, logo, footer and page numbers; no `·` or `—` in slide copy
 - `node` build steps set `NODE_PATH="$(npm root -g)"` first; templates in `assets/templates/` are never edited

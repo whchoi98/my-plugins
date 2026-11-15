@@ -1,0 +1,23 @@
+<section class="sec" id="ko-s1"><header class="sec-head"><p class="eyebrow">01</p><h2>문제와 측정</h2></header><div class="prose">
+<p>이 글은 검사용으로 지어낸 예시입니다. 가상의 집계 배치가 매일 밤 40분 동안 실행된다고 가정합니다.</p>
+<h3>단계별 시간</h3>
+<p>단계별로 시간을 재면 읽기 단계가 전체의 절반을 차지합니다.</p>
+<div class="scroll"><table>
+<thead>
+<tr><th>단계</th><th>시간(분)</th><th>상태</th></tr>
+</thead>
+<tbody>
+<tr><td>읽기</td><td class="num">20</td><td><span class="pill warn">느림</span></td></tr>
+<tr><td>집계</td><td class="num">12</td><td><span class="pill good">정상</span></td></tr>
+<tr><td>쓰기</td><td class="num">8</td><td><span class="pill good">정상</span></td></tr>
+</tbody>
+</table></div>
+<p class="cap"><b>표 1.</b> 단계별 실행 시간. 지어낸 예시 값</p>
+<figure class="fig"><div class="canvas"><img src="images/fig01-flow.png" alt="읽기, 집계, 쓰기 세 단계가 차례로 이어지는 흐름" width="8" height="8" loading="lazy"></div><figcaption><b>그림 1.</b> 배치의 세 단계</figcaption></figure>
+</div></section>
+<section class="sec" id="ko-s2"><header class="sec-head"><p class="eyebrow">02</p><h2>읽기 단계 나누기</h2></header><div class="prose">
+<p>읽기 단계를 네 개로 나누어 동시에 실행하면 20분이 6분으로 줄어듭니다. 설정은 <a href="https://example.com/guide" target="_blank" rel="noopener">예시 안내서</a>를 따릅니다.</p>
+<div class="snippet"><div class="snippet-bar"><span class="lang">bash</span><button type="button" class="copy"><span class="i">복사</span><span class="ok">복사됨</span></button></div><pre><code># 읽기 작업을 네 개로 나눈다
+run-batch --stage read --workers 4</code></pre></div>
+<blockquote><p>전체 실행 시간은 40분에서 26분으로 줄어듭니다.</p></blockquote>
+</div></section>

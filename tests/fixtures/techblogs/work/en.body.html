@@ -1,0 +1,23 @@
+<section class="sec" id="en-s1"><header class="sec-head"><p class="eyebrow">01</p><h2>The problem and the numbers</h2></header><div class="prose">
+<p>This post is a made-up example for testing. Assume an aggregation batch that runs for 40 minutes every night.</p>
+<h3>Time per stage</h3>
+<p>Timing each stage shows that the read stage takes half of the run.</p>
+<div class="scroll"><table>
+<thead>
+<tr><th>Stage</th><th>Time (min)</th><th>Status</th></tr>
+</thead>
+<tbody>
+<tr><td>Read</td><td class="num">20</td><td><span class="pill warn">Slow</span></td></tr>
+<tr><td>Aggregate</td><td class="num">12</td><td><span class="pill good">OK</span></td></tr>
+<tr><td>Write</td><td class="num">8</td><td><span class="pill good">OK</span></td></tr>
+</tbody>
+</table></div>
+<p class="cap"><b>Table 1.</b> Run time per stage. Made-up example values</p>
+<figure class="fig"><div class="canvas"><img src="images/fig01-flow.png" alt="Three stages in a row: read, aggregate, write" width="8" height="8" loading="lazy"></div><figcaption><b>Figure 1.</b> The three stages of the batch</figcaption></figure>
+</div></section>
+<section class="sec" id="en-s2"><header class="sec-head"><p class="eyebrow">02</p><h2>Splitting the read stage</h2></header><div class="prose">
+<p>Running the read stage as four workers at once cuts 20 minutes to 6. The settings follow the <a href="https://example.com/guide" target="_blank" rel="noopener">example guide</a>.</p>
+<div class="snippet"><div class="snippet-bar"><span class="lang">bash</span><button type="button" class="copy"><span class="i">Copy</span><span class="ok">Copied</span></button></div><pre><code># split the read job into four
+run-batch --stage read --workers 4</code></pre></div>
+<blockquote><p>The total run time drops from 40 minutes to 26.</p></blockquote>
+</div></section>

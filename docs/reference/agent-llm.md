@@ -7,7 +7,7 @@
 ## English
 
 ### 1. Overview
-The plugin's "model logic" is nine skills and three command prompts: Markdown instructions Claude follows
+The plugin's "model logic" is eleven skills and three command prompts: Markdown instructions Claude follows
 inside the user's Claude Code session. There is no SDK call, prompt template file, subagent or model
 configuration. Claude Code loads every skill and command `description` in every session, the SKILL.md body when
 one fires, and reference files only when a step asks for them. Skills chain through the Skill tool as
@@ -24,6 +24,8 @@ one fires, and reference files only when a step asks for them. Skills chain thro
 | consulting-ppt-white-ppt | `skills/consulting-ppt-white-ppt/SKILL.md` | Confirm client, logo and chapters; derive the accent; compose with `consult_helpers.js`; fix and render | `examples/build_sample.js` |
 | pptx-template-fill | `skills/pptx-template-fill/SKILL.md` | Inventory shapes, write a mapping table, fill runs, cells and chart caches in place, unify fonts, QA | `references/recipes.md` |
 | aws-reports | `skills/aws-reports/SKILL.md` | Pick the report type (benchmark or PoC), gather data and the PoC success criteria, compute numbers and verdicts in Python, write one Markdown draft, build Word + HTML with `report.mjs`, run `check_report.py --profile`, look at the previews | `references/` per type: `benchmark-structure.md`, or `poc-structure.md` + `poc-verdict-rules.md`; always `markdown-spec.md`, `style-rules.md`; `assets/examples/<type>/` |
+| html-report | `skills/html-report/SKILL.md` | Pick research or general, gather content, sources and the sharing scope, copy the template, fill Korean and English pairs, embed images, run `check_html.py` and `lint_prose.py` on the Korean text, look at the four previews | `references/design-spec.md` (read once), `assets/template.html` |
+| techblogs | `skills/techblogs/SKILL.md` | Fix the material and scope (a new post, or a published AWS blog post brought in with `import_aws_post.py`), verify facts and links, write the Korean fragment, remove AI tells, write the English fragment, build with `build_post.py`, run `check_post.py`, `lint_prose.py` and `check_urls.py`, place into the blog repository with `place_post.py --build`, look at the previews | `references/design-spec.md` (before writing), `references/publish.md` (when placing); aws-blog-skills `references/style.md`, `humanize-checklist.md`, `verification.md` |
 | setup | `skills/setup/SKILL.md` | Check, install user-level items, ask before the sudo step, re-check and report `missing:` | none |
 | commands | `commands/*.md` | `export-diagram`, `import-drawio`, `import-mermaid` follow the aws-diagram-design references instead of restating them | `skills/aws-diagram-design/references/export.md`, `import-*.md`, `output-spec.md` |
 
@@ -36,26 +38,30 @@ one fires, and reference files only when a step asks for them. Skills chain thro
 | aws-blog-skills | `my-plugins:kor-deslop` (check-only) | Self-check for remaining AI tells after the draft and before packaging (step 3, `references/humanize-checklist.md`) |
 | aws-ppt-skills | `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design` | Architecture and structure diagrams; graphs stay native pptxgenjs charts |
 | aws-reports | `my-plugins:aws-diagram` | Architecture figure in the method section, converted with `svg2png.py` |
-| aws-blog-skills, aws-ppt-skills, consulting-ppt-white-ppt, aws-reports | `my-plugins:setup` | A tool or font is missing |
+| html-report | `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design`, `my-plugins:kor-deslop` (check-only) | Figures; an optional AI-tell check on the Korean text |
+| techblogs | `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design`, `my-plugins:kor-deslop` (check-only) | Figures (step 4); the AI-tell check after the Korean draft (step 3) |
+| aws-blog-skills, aws-ppt-skills, consulting-ppt-white-ppt, aws-reports, html-report, techblogs | `my-plugins:setup` | A tool or font is missing |
 
 Charts and comparison figures specific to the blog are drawn by aws-blog-skills itself with `diagram_lib.py`,
 which reads icons and fonts from `../aws-diagram-design/assets` (see [architecture.md](../architecture.md)).
 
-**Token cost** (`claude --plugin-dir . plugin details my-plugins`, 2026-11-05; estimates):
+**Token cost** (`claude --plugin-dir . plugin details my-plugins`, 2026-11-15; estimates):
 
 | Component | Always-on | On invoke |
 |---|---|---|
-| aws-blog-skills | ~410 | ~4.8k |
-| aws-diagram | ~580 | ~3.6k |
-| aws-diagram-design | ~540 | ~21.1k |
-| kor-deslop | ~140 | ~1.4k |
-| aws-ppt-skills | ~250 | ~30.7k |
-| consulting-ppt-white-ppt | ~500 | ~7.4k |
-| pptx-template-fill | ~490 | ~3.7k |
-| aws-reports | ~430 | ~3.8k |
-| setup | ~340 | ~1.4k |
-| export-diagram, import-drawio, import-mermaid | ~60, ~60, ~60 | ~760, ~1.5k, ~1.4k |
-| **Total always-on** | **~3.9k** | |
+| aws-blog-skills | ~490 | ~5k |
+| aws-diagram | ~630 | ~3.8k |
+| aws-diagram-design | ~590 | ~22.1k |
+| kor-deslop | ~160 | ~1.4k |
+| aws-ppt-skills | ~280 | ~32.2k |
+| consulting-ppt-white-ppt | ~540 | ~7.7k |
+| pptx-template-fill | ~530 | ~3.9k |
+| aws-reports | ~500 | ~4k |
+| html-report | ~340 | ~2.9k |
+| techblogs | ~440 | ~4.1k |
+| setup | ~370 | ~1.5k |
+| export-diagram, import-drawio, import-mermaid | ~70, ~70, ~70 | ~800, ~1.6k, ~1.5k |
+| **Total always-on** | **~5.1k** | |
 
 References come on top of the on-invoke figure. A chained run pays for each skill that fires: a blog post with
 a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bodies in the same session.
@@ -68,6 +74,11 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
   ([ADR-003](../decisions/ADR-003-one-report-skill-global-npm.md)).
 - Delegate, don't copy: aws-blog-skills and aws-ppt-skills call the diagram skills and kor-deslop through the
   Skill tool instead of copying their rules ([ADR-002](../decisions/ADR-002-merge-four-plugins-into-one.md)).
+- html-report fills a fixed template instead of rendering a draft: the model edits content only, and
+  `check_html.py` verifies pairs, order, numbering and tokens ([ADR-004](../decisions/ADR-004-html-report-template-fill.md)).
+- techblogs builds the page from fragments: the model writes `meta.json` and one body fragment per language,
+  `build_post.py` copies the template's `<style>` and `<script>` unchanged, and `check_post.py` compares the two
+  languages ([ADR-005](../decisions/ADR-005-techblogs-personal-blog-workflow.md)).
 - Descriptions route between neighbours: aws-diagram and aws-diagram-design each name the other "in this
   plugin" for the other kind of figure; consulting-ppt-white-ppt names aws-ppt-skills for seminar decks;
   aws-blog-skills states that it takes precedence over kor-deslop for blog drafts.
@@ -96,6 +107,10 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 - `skills/pptx-template-fill/SKILL.md`
 - `skills/aws-reports/SKILL.md`
 - `skills/aws-reports/references/poc-verdict-rules.md`
+- `skills/html-report/SKILL.md`
+- `skills/html-report/references/design-spec.md`
+- `skills/techblogs/SKILL.md`
+- `skills/techblogs/references/design-spec.md`
 - `skills/setup/SKILL.md`
 - `commands/export-diagram.md`
 - `skills/CLAUDE.md`
@@ -104,7 +119,9 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 - Related modules: `skills/` (`skills/CLAUDE.md`)
 - Related ADRs: [ADR-001](../decisions/ADR-001-claude-code-skill-conventions.md),
   [ADR-002](../decisions/ADR-002-merge-four-plugins-into-one.md),
-  [ADR-003](../decisions/ADR-003-one-report-skill-global-npm.md)
+  [ADR-003](../decisions/ADR-003-one-report-skill-global-npm.md),
+  [ADR-004](../decisions/ADR-004-html-report-template-fill.md),
+  [ADR-005](../decisions/ADR-005-techblogs-personal-blog-workflow.md)
 - Related runbooks: [release-plugin.md](../runbooks/release-plugin.md),
   [setup-dependencies.md](../runbooks/setup-dependencies.md)
 
@@ -112,7 +129,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 ## 한국어
 
 ### 1. 개요
-이 플러그인의 "모델 로직"은 skill 9개와 command 프롬프트 3개입니다. 사용자의 Claude Code 세션 안에서 Claude가 따르는 Markdown 지침이며, SDK 호출, 프롬프트 템플릿 파일, 하위 에이전트, 모델 설정은 없습니다. Claude Code는 모든 skill과 command의 `description`을 매 세션 로드하고, skill이 실행될 때 SKILL.md 본문을, 단계가 요구할 때만 참조 파일을 읽습니다. skill끼리는 Skill 도구로 `my-plugins:<skill>`을 불러 이어지며, 결정적 검사는 모델이 눈으로 판단하는 대신 실행해야 하는 함께 배포되는 스크립트입니다.
+이 플러그인의 "모델 로직"은 skill 11개와 command 프롬프트 3개입니다. 사용자의 Claude Code 세션 안에서 Claude가 따르는 Markdown 지침이며, SDK 호출, 프롬프트 템플릿 파일, 하위 에이전트, 모델 설정은 없습니다. Claude Code는 모든 skill과 command의 `description`을 매 세션 로드하고, skill이 실행될 때 SKILL.md 본문을, 단계가 요구할 때만 참조 파일을 읽습니다. skill끼리는 Skill 도구로 `my-plugins:<skill>`을 불러 이어지며, 결정적 검사는 모델이 눈으로 판단하는 대신 실행해야 하는 함께 배포되는 스크립트입니다.
 
 ### 2. 구성요소
 | skill | 진입점 | 모델이 하는 일 | 필요할 때 읽는 것 |
@@ -125,6 +142,8 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 | consulting-ppt-white-ppt | `skills/consulting-ppt-white-ppt/SKILL.md` | 고객 이름, 로고, 챕터를 확인하고 강조색을 뽑은 뒤 `consult_helpers.js`로 짜고, 고치고 렌더 | `examples/build_sample.js` |
 | pptx-template-fill | `skills/pptx-template-fill/SKILL.md` | 도형 인벤토리, 매핑 표 작성, run, 표 셀, 차트 캐시를 제자리에서 채우고 폰트 통일, QA | `references/recipes.md` |
 | aws-reports | `skills/aws-reports/SKILL.md` | 보고서 유형(벤치마크, PoC)을 고르고 데이터와 PoC 성공 기준을 모아 숫자와 판정을 Python으로 계산한 뒤, Markdown 원고 하나를 써서 `report.mjs`로 Word + HTML을 빌드하고 `check_report.py --profile`로 검사하고 미리보기를 확인 | 유형별 `references/`: `benchmark-structure.md` 또는 `poc-structure.md` + `poc-verdict-rules.md`, 항상 `markdown-spec.md`, `style-rules.md`, `assets/examples/<유형>/` |
+| html-report | `skills/html-report/SKILL.md` | 조사 보고서인지 일반 보고서인지 정하고, 내용과 출처와 공유 범위를 모은 뒤, 템플릿을 복사해 한국어와 영어 짝을 채우고, 그림을 넣고, `check_html.py`와 한국어 글의 `lint_prose.py`를 실행하고, 미리보기 네 가지 화면을 확인 | `references/design-spec.md`(한 번), `assets/template.html` |
+| techblogs | `skills/techblogs/SKILL.md` | 소재와 범위를 정하고(새 글, 또는 `import_aws_post.py`로 가져온 게시된 AWS 블로그 글) 사실과 링크를 검증한 뒤 한국어 조각을 쓰고 AI 티를 없앤 다음 영어 조각을 쓰고 `build_post.py`로 빌드해 `check_post.py`, `lint_prose.py`, `check_urls.py`를 실행하고 `place_post.py --build`로 블로그 저장소에 배치한 뒤 미리보기 화면을 확인 | `references/design-spec.md`(본문을 쓰기 전), `references/publish.md`(배치할 때), aws-blog-skills의 `references/style.md`, `humanize-checklist.md`, `verification.md` |
 | setup | `skills/setup/SKILL.md` | 점검, 사용자 영역 설치, sudo 단계 전에 허락받기, 재점검과 `missing:` 보고 | 없음 |
 | command | `commands/*.md` | `export-diagram`, `import-drawio`, `import-mermaid`는 aws-diagram-design 참조를 다시 적지 않고 따름 | `skills/aws-diagram-design/references/export.md`, `import-*.md`, `output-spec.md` |
 
@@ -137,25 +156,29 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 | aws-blog-skills | `my-plugins:kor-deslop`(점검만) | 초안 완성 직후와 패키징 직전의 자가 점검에서 남은 AI 티 확인(3단계, `references/humanize-checklist.md`) |
 | aws-ppt-skills | `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design` | 아키텍처와 구조 다이어그램. 그래프는 pptxgenjs 기본 차트로 유지 |
 | aws-reports | `my-plugins:aws-diagram` | 측정 환경 섹션의 구성도. `svg2png.py`로 PNG 변환 |
-| aws-blog-skills, aws-ppt-skills, consulting-ppt-white-ppt, aws-reports | `my-plugins:setup` | 도구나 폰트가 없을 때 |
+| html-report | `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design`, `my-plugins:kor-deslop`(점검만) | 그림, 한국어 글의 AI 티 점검(선택) |
+| techblogs | `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design`, `my-plugins:kor-deslop`(점검만) | 그림(4단계), 한국어 초안을 쓴 뒤의 AI 티 점검(3단계) |
+| aws-blog-skills, aws-ppt-skills, consulting-ppt-white-ppt, aws-reports, html-report, techblogs | `my-plugins:setup` | 도구나 폰트가 없을 때 |
 
 블로그 고유의 차트와 비교 그림은 aws-blog-skills가 `diagram_lib.py`로 직접 그리며, 아이콘과 폰트는 `../aws-diagram-design/assets`에서 읽습니다([architecture.md](../architecture.md) 참고).
 
-**토큰 비용**(`claude --plugin-dir . plugin details my-plugins`, 2026-11-05, 추정치):
+**토큰 비용**(`claude --plugin-dir . plugin details my-plugins`, 2026-11-15, 추정치):
 
 | 구성 요소 | 항상 로드 | 호출할 때 |
 |---|---|---|
-| aws-blog-skills | ~410 | ~4.8k |
-| aws-diagram | ~580 | ~3.6k |
-| aws-diagram-design | ~540 | ~21.1k |
-| kor-deslop | ~140 | ~1.4k |
-| aws-ppt-skills | ~250 | ~30.7k |
-| consulting-ppt-white-ppt | ~500 | ~7.4k |
-| pptx-template-fill | ~490 | ~3.7k |
-| aws-reports | ~430 | ~3.8k |
-| setup | ~340 | ~1.4k |
-| export-diagram, import-drawio, import-mermaid | ~60, ~60, ~60 | ~760, ~1.5k, ~1.4k |
-| **항상 로드 합계** | **~3.9k** | |
+| aws-blog-skills | ~490 | ~5k |
+| aws-diagram | ~630 | ~3.8k |
+| aws-diagram-design | ~590 | ~22.1k |
+| kor-deslop | ~160 | ~1.4k |
+| aws-ppt-skills | ~280 | ~32.2k |
+| consulting-ppt-white-ppt | ~540 | ~7.7k |
+| pptx-template-fill | ~530 | ~3.9k |
+| aws-reports | ~500 | ~4k |
+| html-report | ~340 | ~2.9k |
+| techblogs | ~440 | ~4.1k |
+| setup | ~370 | ~1.5k |
+| export-diagram, import-drawio, import-mermaid | ~70, ~70, ~70 | ~800, ~1.6k, ~1.5k |
+| **항상 로드 합계** | **~5.1k** | |
 
 참조 파일은 호출 비용에 더해집니다. 이어서 실행하면 실행된 skill마다 비용이 붙습니다. 구조 다이어그램이 있는 블로그 원고는 한 세션에서 aws-blog-skills, aws-diagram-design, kor-deslop 본문을 모두 로드합니다.
 
@@ -163,6 +186,8 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 - 점진적 공개: description만 항상 로드하고 본문과 참조 파일은 호출할 때 로드합니다. 참조 파일은 단계마다 읽으므로 문장 교정 때 다이어그램 프로필까지 불러오지 않습니다.
 - aws-reports는 보고서 유형 둘을 담은 skill 하나입니다. description이 하나라 항상 로드 비용이 ~430토큰이고(skill 두 개면 ~980), SKILL.md가 유형을 고른 뒤 벤치마크나 PoC 참조 파일로 보냅니다([ADR-003](../decisions/ADR-003-one-report-skill-global-npm.md)).
 - 복사하지 않고 위임: aws-blog-skills와 aws-ppt-skills는 다이어그램 skill과 kor-deslop의 규칙을 복사하지 않고 Skill 도구로 부릅니다([ADR-002](../decisions/ADR-002-merge-four-plugins-into-one.md)).
+- html-report는 원고를 변환하지 않고 고정 템플릿을 채웁니다. 모델은 내용만 고치고, `check_html.py`가 짝, 순서, 번호, 토큰을 확인합니다([ADR-004](../decisions/ADR-004-html-report-template-fill.md)).
+- techblogs는 조각 파일로 페이지를 빌드합니다. 모델은 `meta.json`과 언어별 본문 조각을 쓰고 `build_post.py`가 템플릿의 `<style>`과 `<script>`를 그대로 옮기며 `check_post.py`가 두 언어를 비교합니다([ADR-005](../decisions/ADR-005-techblogs-personal-blog-workflow.md)).
 - description이 이웃 skill로 안내: aws-diagram과 aws-diagram-design은 다른 종류의 그림에는 "이 플러그인의" 상대 skill을 쓰라고 적고, consulting-ppt-white-ppt는 세미나 덱에 aws-ppt-skills를 안내하며, aws-blog-skills는 블로그 원고에서 kor-deslop보다 자신이 우선한다고 적습니다.
 - 기계적 규칙은 종료 코드가 있는 스크립트로 둡니다(`lint_prose.py`, `check_structure.py`, `check_urls.py`, `diagram_lib.py`의 기하 assert, `self_check.py`, `check_deck.py`, `qa_check.py`). SKILL.md에는 판단과 작업 순서만 남깁니다.
 - 경로: `${CLAUDE_SKILL_DIR}`는 SKILL.md에서만 치환됩니다(aws-blog-skills, setup). 다이어그램과 덱 skill은 "Base directory for this skill"에서 `SKILL_DIR`을 정합니다. Bash 호출 사이에 셸 상태가 남지 않으므로 모델은 절대 경로를 씁니다([ADR-001](../decisions/ADR-001-claude-code-skill-conventions.md)).
@@ -184,11 +209,15 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 - `skills/pptx-template-fill/SKILL.md`
 - `skills/aws-reports/SKILL.md`
 - `skills/aws-reports/references/poc-verdict-rules.md`
+- `skills/html-report/SKILL.md`
+- `skills/html-report/references/design-spec.md`
+- `skills/techblogs/SKILL.md`
+- `skills/techblogs/references/design-spec.md`
 - `skills/setup/SKILL.md`
 - `commands/export-diagram.md`
 - `skills/CLAUDE.md`
 
 ### 5. 상호 참조
 - 관련 모듈: `skills/`(`skills/CLAUDE.md`)
-- 관련 ADR: [ADR-001](../decisions/ADR-001-claude-code-skill-conventions.md), [ADR-002](../decisions/ADR-002-merge-four-plugins-into-one.md), [ADR-003](../decisions/ADR-003-one-report-skill-global-npm.md)
+- 관련 ADR: [ADR-001](../decisions/ADR-001-claude-code-skill-conventions.md), [ADR-002](../decisions/ADR-002-merge-four-plugins-into-one.md), [ADR-003](../decisions/ADR-003-one-report-skill-global-npm.md), [ADR-004](../decisions/ADR-004-html-report-template-fill.md), [ADR-005](../decisions/ADR-005-techblogs-personal-blog-workflow.md)
 - 관련 런북: [release-plugin.md](../runbooks/release-plugin.md), [setup-dependencies.md](../runbooks/setup-dependencies.md)

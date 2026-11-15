@@ -15,6 +15,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `html-report` skill: one shareable HTML page in a common report design. Korean and English sit in one file behind a language switch; light and dark themes start from the system setting; one column up to 1440px; NanumSquareOTF_ac and D2Coding; white boxes for tables and figures with "그림 N." captions; superscript citations; rounded status pills; and a fixed page order (top bar, head, sections, source table, method, sharing line). `data-report="research"` makes the source parts required, `general` keeps them optional
+- `scripts/check_html.py`: a `<style>` or `<script>` that differs from the template, inline `style`, tokens, page order, language pairs, Korean outside its pair, banned symbols (·, —, –, →) in text and in the tab title, `alt` and `aria-label`, caption numbers, citations against the source table, source-mix counts, relative images, and template sample sentences (read from the template itself) are ERRORs; 한다체 or 해요체 sentences, "~하세요" and an uncited source are WARNs; `--dump-ko` hands the Korean text to aws-blog-skills `lint_prose.py`
+- `scripts/embed_images.py` (images as data URIs, only files inside the page folder) and `scripts/preview.py` (four views: 1440 and 390 px, light Korean and dark English; warns when the buttons do not switch the page; retries with the system `node` when Playwright's bundled Node.js does not start, as on hosts without `libatomic.so.1`)
+- `tests/structure/test-html-report.sh` and ADR-004
+- `techblogs` skill: the workflow for a post on the author's personal tech blog (whchoi98.github.io, Jekyll), from source material to a placed and built post. It has the same steps as aws-blog-skills (fact check with every URL verified, Korean text, AI-tell removal, figures, rule registration) and another destination: a bilingual report page (`<slug>-report.html`), a front matter file (`<slug>.md`) and an image folder (`<slug>-assets/`). The page design is fixed: one column up to 1440px, NanumSquareOTF_ac and D2Coding, light and dark themes, a language switch, a sideways section menu and code boxes with a copy button. It replaces the user-level techblogs skill
+- `scripts/build_post.py` fills `assets/template.html` from the work folder (`meta.json`, `ko.body.html`, `en.body.html`, `images/`) and stops on a `"TODO"`, a missing English fragment, a missing image or an `--out` inside the skill folder; `scripts/check_post.py` reports a `<style>` or `<script>` that differs from the template, different component counts in the two languages, caption numbers, missing image files, banned symbols (·, —, –), inline `style` and front matter errors as ERRORs, and writes the Korean text (`--dump-ko`) and the links (`--urls`) for aws-blog-skills `lint_prose.py` and `check_urls.py`
+- `scripts/import_aws_post.py` (a published AWS blog post, from its address or a saved page, into a work folder; fetches only from the AWS blog hosts), `scripts/place_post.py` (copies a built post into the blog repository, checks it there, builds the site with `--build`, never runs git) and `scripts/preview.py` (Playwright screenshots of the report page and of the post page that embeds it)
+- `import_aws_post.py` takes pictures wherever they sit (alone in a paragraph, at the end of a text paragraph, inline as base64), drops editor placeholder images, keeps the note after a reference link, writes root-relative links with the locale of the page, drops links that are not http(s), keeps a figure in the body when its file could not be fetched, and ends with the share of the article text it carried over (`coverage`) and every block it left out
+- `check_post.py` also flags banned symbols in image `alt` text and in the excerpt and a Korean copy button on the English side; `--dump-ko` also writes the excerpt, the masthead facts and the closing note, so they pass through `lint_prose.py`; `build_post.py` empties the assets folder before it copies the images
+- `tests/structure/test-techblogs.sh`, `tests/fixtures/techblogs/` and ADR-005
+
+### Changed
+- The aws-reports description sends HTML-only reports to `my-plugins:html-report`
+- The aws-blog-skills description sends posts for the author's personal blog to `my-plugins:techblogs`
+- Token cost table in `docs/reference/agent-llm.md` measured again (2026-11-15)
+
 ## [1.3.0] - 2026-11-11
 
 ### Added
@@ -99,6 +116,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+- `html-report` skill 추가. 공통 디자인의 공유용 단일 HTML 보고서를 만듦. 한국어와 영어를 한 파일에 넣고 버튼으로 바꾸며, 라이트와 다크 테마(처음에는 시스템 설정), 최대 1440px 한 컬럼, NanumSquareOTF_ac와 D2Coding, "그림 N." 캡션이 붙는 흰 상자의 표와 그림, 위 첨자 인용 번호, 둥근 상태 알약, 고정된 페이지 순서(상단 막대, 머리, 절, 출처 표, 조사 방법, 공유 범위)를 갖춤. `data-report="research"`이면 출처 관련 요소가 필수, `general`이면 선택
+- `scripts/check_html.py`: 템플릿과 다른 `<style>`이나 `<script>`, 인라인 `style`, 토큰, 페이지 순서, 두 언어 짝, 짝 밖의 한국어, 본문과 탭 제목, `alt`, `aria-label`의 금지 기호(·, —, –, →), 캡션 번호, 출처 표와 인용 번호, 출처 구성 건수, 상대 경로 그림, 템플릿에서 직접 읽은 예시 문장을 ERROR로, 한다체나 해요체 문장과 "~하세요"와 인용하지 않은 출처를 WARN으로 알림. `--dump-ko`로 한국어 글을 aws-blog-skills `lint_prose.py`에 넘김
+- `scripts/embed_images.py`(그림을 data URI로, 페이지 폴더 안의 파일만)와 `scripts/preview.py`(1440px와 390px, 라이트 한국어와 다크 영어의 화면 네 가지. 버튼을 눌러도 화면이 바뀌지 않으면 경고. `libatomic.so.1`이 없는 호스트처럼 Playwright에 포함된 Node.js가 시작되지 않으면 시스템 `node`로 다시 시도)
+- `tests/structure/test-html-report.sh`와 ADR-004
+- `techblogs` skill 추가. 글쓴이 개인 기술 블로그(whchoi98.github.io, Jekyll)에 올릴 글을 소재부터 배치와 빌드까지 만듦. aws-blog-skills와 절차(URL 전수 확인을 포함한 사실 검증, 한국어 본문, AI 티 제거 윤문, 그림, 규칙 등록)가 같고 올리는 곳이 다름. 결과물은 한영 리포트 페이지(`<slug>-report.html`), front matter 파일(`<slug>.md`), 그림 폴더(`<slug>-assets/`). 디자인은 최대 1440px 한 컬럼, NanumSquareOTF_ac와 D2Coding, 라이트와 다크 테마, 언어 전환, 가로 이동 메뉴, 복사 버튼이 있는 코드 상자로 고정. 사용자 개인 skill로 쓰던 techblogs를 대체
+- `scripts/build_post.py`: 작업 폴더(`meta.json`, `ko.body.html`, `en.body.html`, `images/`)를 `assets/template.html`에 채움. `"TODO"`가 남았거나 영어 조각이나 그림 파일이 없거나 `--out`이 skill 폴더 안이면 멈춤. `scripts/check_post.py`: 템플릿과 다른 `<style>`이나 `<script>`, 두 언어의 구성 요소 수 차이, 캡션 번호, 없는 그림 파일, 금지 기호(·, —, –), 인라인 `style`, front matter 오류를 ERROR로 알리고 한국어 글(`--dump-ko`)과 링크 목록(`--urls`)을 aws-blog-skills `lint_prose.py`와 `check_urls.py`에 넘김
+- `scripts/import_aws_post.py`(게시된 AWS 블로그 글을 주소나 저장한 페이지에서 작업 폴더로 옮김. AWS 블로그 호스트에서만 내려받음), `scripts/place_post.py`(빌드한 글을 블로그 저장소에 배치하고 그 자리에서 검사, `--build`로 사이트 빌드. git은 실행하지 않음), `scripts/preview.py`(리포트 페이지와 그 페이지를 넣은 글 페이지의 Playwright 화면 캡처)
+- `import_aws_post.py`가 그림을 놓인 자리와 관계없이 옮김(문단에 혼자 있는 그림, 글 문단 끝의 그림, base64로 든 그림). 편집용 자리 표시 그림은 버리고, 참고 자료 링크 뒤의 설명을 유지하며, 루트 상대 링크를 페이지의 언어 경로로 쓰고, http(s)가 아닌 링크는 글자만 남김. 받지 못한 그림도 본문에 자리를 남기고, 원문 글자 가운데 옮긴 비율(`coverage`)과 옮기지 않은 블록을 마지막에 출력
+- `check_post.py`가 그림 `alt`와 요약의 금지 기호, 영어 쪽 복사 버튼의 한글도 검사. `--dump-ko`가 요약, 머리의 요점, 끝의 고지문도 뽑아 `lint_prose.py` 검사를 받게 함. `build_post.py`가 그림을 복사하기 전에 assets 폴더를 비움
+- `tests/structure/test-techblogs.sh`, `tests/fixtures/techblogs/`, ADR-005
+
+### Changed
+- aws-reports description이 HTML만 필요한 보고서를 `my-plugins:html-report`로 안내
+- aws-blog-skills description이 글쓴이 개인 블로그에 올릴 글을 `my-plugins:techblogs`로 안내
+- `docs/reference/agent-llm.md`의 토큰 비용 표를 다시 측정(2026-11-15)
 
 ## [1.3.0] - 2026-11-11
 

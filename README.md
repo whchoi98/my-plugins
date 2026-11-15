@@ -16,7 +16,8 @@ One Claude Code plugin that bundles aws-blog-skills, aws-diagrams, kor-writing, 
 
 `my-plugins` merges five plugins into one install: the AWS Korea Tech Blog drafting workflow, AWS architecture
 and structure diagrams, Korean AI-tell removal, AWS PowerPoint decks, and customer reports as MS Word + HTML
-(benchmarks and PoC results). The skills call each other inside
+(benchmarks and PoC results), and adds a common design for single-file bilingual HTML reports and a workflow for posts
+on the author's personal tech blog. The skills call each other inside
 the same plugin, so a blog post can draw its diagrams and run the 윤문 check without a second plugin, and a
 deck can embed the same diagrams. A `setup` skill checks and installs every external tool and font the skills
 need, including the cases that broke on Amazon Linux 2023.
@@ -34,6 +35,8 @@ need, including the cases that broke on Amazon Linux 2023.
 | `/my-plugins:consulting-ppt-white-ppt` | aws-deck 1.0.0 | Dense consulting-report decks with a customer brand accent |
 | `/my-plugins:pptx-template-fill` | aws-deck 1.0.0 | Fills an existing .pptx template in place, keeping its layout |
 | `/my-plugins:aws-reports` | aws-reports 1.0.0 | Customer reports as MS Word + standalone HTML from one Markdown draft: benchmarks, and PoC results with success criteria, verdicts and next steps |
+| `/my-plugins:html-report` | new | One shareable HTML page in a common report design: Korean and English in one file, light and dark, a 1440px column, and a source table and method for research reports |
+| `/my-plugins:techblogs` | new | Posts for the author's personal tech blog (whchoi98.github.io, Jekyll): fact check, Korean and English text, a bilingual report page built from a fixed template, checks, placing into the blog repository and the Jekyll build |
 | `/my-plugins:setup` | new | Checks and installs the external tools and fonts above |
 
 ## What Changed from the Four Plugins
@@ -119,6 +122,9 @@ sudo needs a password. Claude asks before running the sudo step.
 aws-reports builds its Word and HTML files with the npm packages docx, marked, docx-preview and jszip and the
 NanumSquareOTF font; `setup` installs them (`npm install -g` at fixed versions, the font from npm `@kfonts`).
 
+techblogs places its result into a local clone of the blog repository and builds the site there with that
+repository's own Bundler and Jekyll (`bundle exec jekyll build`). `setup` does not install Ruby, Bundler or Jekyll.
+
 Then ask in plain Korean, or call a skill directly:
 
 ```text
@@ -128,6 +134,8 @@ Then ask in plain Korean, or call a skill directly:
 화이트 테마로 50명 미만 기술 세미나 덱 만들어줘
 이 CSV로 Graviton vs Intel 벤치마크 보고서 Word랑 HTML로 만들어줘
 PoC 결과를 성공 기준별 판정으로 정리해서 보고서로 만들어줘
+이 조사 내용을 한영 전환되는 HTML 보고서로 만들어줘
+이 측정 결과를 내 블로그에 올릴 글로 정리해줘
 /my-plugins:pptx-template-fill
 ```
 
@@ -153,6 +161,8 @@ skills/
 ├── consulting-ppt-white-ppt/  # consulting-report decks
 ├── pptx-template-fill/  # fill an existing template
 ├── aws-reports/         # benchmark and PoC reports: Word + HTML engine, references, examples
+├── html-report/         # common-design HTML reports: template, design spec, checker
+├── techblogs/           # personal tech blog posts: template, design spec, import, build, check, place
 └── setup/               # dependency check and install (scripts/setup.sh)
 commands/                # export-diagram, import-drawio, import-mermaid
 third_party/             # upstream licenses and notices
@@ -189,7 +199,8 @@ WooHyung Choi, [github.com/whchoi98](https://github.com/whchoi98)
 
 `my-plugins`는 플러그인 다섯 개를 하나로 합친 Claude Code 플러그인입니다. AWS Korea Tech Blog 원고 작성, AWS
 아키텍처와 구조 다이어그램, 한국어 AI 티 제거 윤문, AWS PowerPoint 덱 제작, 벤치마크·PoC 결과 보고서(MS Word +
-HTML)를 한 번에 설치합니다. skill끼리 같은
+HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고서 skill과 개인 기술 블로그 글을 만드는 skill을
+더했습니다. skill끼리 같은
 플러그인 안에서 서로를 부르므로 블로그 원고가 다른 플러그인 없이 다이어그램을 그리고 윤문 점검을 하며, 덱도 같은
 다이어그램을 넣습니다. `setup` skill은 skill들이 쓰는 외부 프로그램과 폰트를 점검하고 설치하며, Amazon Linux
 2023에서 막혔던 경우도 처리합니다.
@@ -207,6 +218,8 @@ HTML)를 한 번에 설치합니다. skill끼리 같은
 | `/my-plugins:consulting-ppt-white-ppt` | aws-deck 1.0.0 | 고객 브랜드 색을 쓰는 고밀도 컨설팅 리포트 덱 |
 | `/my-plugins:pptx-template-fill` | aws-deck 1.0.0 | 기존 .pptx 템플릿의 레이아웃을 유지하며 내용 채우기 |
 | `/my-plugins:aws-reports` | aws-reports 1.0.0 | Markdown 원고 하나로 만드는 고객 공유용 Word + 단일 HTML 보고서: 벤치마크, 성공 기준별 판정과 다음 단계를 담은 PoC 결과 |
+| `/my-plugins:html-report` | 신규 | 공통 디자인의 공유용 단일 HTML 보고서: 한국어와 영어를 한 파일에, 라이트와 다크, 1440px 한 컬럼, 조사 보고서의 출처 표와 조사 방법 |
+| `/my-plugins:techblogs` | 신규 | 글쓴이 개인 기술 블로그(whchoi98.github.io, Jekyll)에 올릴 글: 사실 검증, 한국어와 영어 본문, 고정 템플릿으로 빌드하는 한영 리포트 페이지, 규격 검사, 블로그 저장소 배치와 Jekyll 빌드 |
 | `/my-plugins:setup` | 신규 | 위 skill들의 외부 프로그램과 폰트 점검·설치 |
 
 ## 네 플러그인에서 달라진 점
@@ -291,6 +304,9 @@ claude plugin update my-plugins@my-plugins
 aws-reports는 npm 패키지 docx, marked, docx-preview, jszip과 NanumSquareOTF 폰트로 Word와 HTML을 만듭니다.
 `setup`이 이들을 설치합니다(`npm install -g` 고정 버전, 폰트는 npm `@kfonts`).
 
+techblogs는 결과물을 블로그 저장소의 로컬 클론에 배치하고 그 저장소의 Bundler와 Jekyll로 사이트를
+빌드합니다(`bundle exec jekyll build`). Ruby, Bundler, Jekyll은 `setup`이 설치하지 않습니다.
+
 그다음 한국어로 요청하거나 skill을 직접 부릅니다.
 
 ```text
@@ -300,6 +316,8 @@ aws-reports는 npm 패키지 docx, marked, docx-preview, jszip과 NanumSquareOTF
 화이트 테마로 50명 미만 기술 세미나 덱 만들어줘
 이 CSV로 Graviton vs Intel 벤치마크 보고서 Word랑 HTML로 만들어줘
 PoC 결과를 성공 기준별 판정으로 정리해서 보고서로 만들어줘
+이 조사 내용을 한영 전환되는 HTML 보고서로 만들어줘
+이 측정 결과를 내 블로그에 올릴 글로 정리해줘
 /my-plugins:pptx-template-fill
 ```
 
@@ -325,6 +343,8 @@ skills/
 ├── consulting-ppt-white-ppt/  # 컨설팅 리포트 덱
 ├── pptx-template-fill/  # 기존 템플릿 채우기
 ├── aws-reports/         # 벤치마크·PoC 보고서: Word + HTML 변환기, references, 예제
+├── html-report/         # 공통 디자인 HTML 보고서: 템플릿, 디자인 규격, 검사기
+├── techblogs/           # 개인 기술 블로그 글: 템플릿, 디자인 규격, 가져오기, 빌드, 검사, 배치
 └── setup/               # 의존 프로그램 점검과 설치(scripts/setup.sh)
 commands/                # export-diagram, import-drawio, import-mermaid
 third_party/             # 원 저작물의 라이선스와 고지

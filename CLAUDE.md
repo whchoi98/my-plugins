@@ -1,11 +1,12 @@
 # Project Context
 
 ## Overview
-`my-plugins` 1.2.0 is one Claude Code plugin that bundles five earlier plugins by WooHyung Choi:
+`my-plugins` 1.3.0 is one Claude Code plugin that bundles five earlier plugins by WooHyung Choi:
 aws-blog-skills (AWS Korea Tech Blog drafts), aws-diagrams (AWS architecture and structure diagrams),
 kor-writing (Korean AI-tell removal), aws-deck (AWS PowerPoint decks) and aws-reports (benchmark and PoC
-reports as MS Word + HTML). It ships nine skills, three
-slash commands, and Python, Bash and Node.js scripts that Claude runs on the user's machine. The `setup`
+reports as MS Word + HTML), plus the new html-report skill (common-design bilingual HTML reports) and the new
+techblogs skill (posts for the author's personal tech blog). It ships eleven
+skills, three slash commands, and Python, Bash and Node.js scripts that Claude runs on the user's machine. The `setup`
 skill checks and installs the external tools and fonts the other skills need.
 
 The repo root **is** the shipped plugin and its marketplace (`.claude-plugin/marketplace.json`,
@@ -15,7 +16,8 @@ Public repo `github.com/whchoi98/my-plugins`, MIT (bundled third-party files kee
 ## Tech Stack
 - **Content** — Markdown skills (`skills/<name>/SKILL.md`) with on-demand references, templates and assets
 - **Shipped scripts** — Python 3 (blog lint, structure, URL, diagram generation; icon lookup and embedding;
-  diagram self-checks; python-pptx template tools), Playwright for Python (`uv run --no-project --with playwright`),
+  diagram self-checks; python-pptx template tools; HTML report checks and image embedding; personal blog post import,
+  build, check and placement), Playwright for Python (`uv run --no-project --with playwright`),
   Node.js + pptxgenjs v4 (deck builds), Node.js + docx 9 + marked 18 (report builds, `report.mjs`),
   Bash (`package_blog.sh`, `install_fonts.sh`, `setup.sh`)
 - **Render QA tools** — LibreOffice `soffice`, Poppler `pdftoppm`/`pdftotext`, `rsvg-convert` or cairosvg
@@ -28,7 +30,7 @@ Public repo `github.com/whchoi98/my-plugins`, MIT (bundled third-party files kee
 .claude-plugin/   - plugin.json (name, version) + marketplace.json (source ./)        [ships, loaded]
 skills/           - Shipped skills; module doc skills/CLAUDE.md                        [ships, loaded]
   aws-blog-skills/  aws-diagram/  aws-diagram-design/  kor-deslop/
-  aws-ppt-skills/  consulting-ppt-white-ppt/  pptx-template-fill/  aws-reports/  setup/
+  aws-ppt-skills/  consulting-ppt-white-ppt/  pptx-template-fill/  aws-reports/  html-report/  techblogs/  setup/
 commands/         - export-diagram, import-drawio, import-mermaid (aws-diagram-design)  [ships, loaded]
 third_party/      - upstream licenses and notices                                        [ships, inert]
 LICENSE, NOTICE.md, README.md, CHANGELOG.md                                              [ships, inert]
@@ -74,6 +76,12 @@ a plugin component there. Everything under `.claude/` is only active when this r
     together (`"profiles": ["poc"]` for PoC-only terms); a layout rule goes into `report.mjs` `tableLayout()`
     and `check_report.py` together; example numbers come from each example's `make_charts.py`. `report.mjs`
     is ESM, so it finds the global npm packages itself (`NODE_PATH`, then `npm root -g`).
+  - html-report: a design rule goes into `references/design-spec.md`, `assets/template.html` and
+    `scripts/check_html.py` together; a report keeps the template's `<style>` and `<script>`; Korean and English
+    are element pairs (`lang="ko"`, then the same tag with `lang="en"`).
+  - techblogs: a design rule goes into `references/design-spec.md`, `assets/template.html` and
+    `scripts/check_post.py` together; a report keeps the template's `<style>` and `<script>`; the page body is
+    built from the fragment files in the work folder (`meta.json`, `ko.body.html`, `en.body.html`).
 - **Module docs**: never put `CLAUDE.md` inside `skills/<name>/`; that directory ships as the skill.
 - **Docs**: user-facing docs are bilingual (English first, `<a id="english">` / `<a id="korean">`),
   Korean sections in 합니다체, skill text in 한다체, no emojis, Mermaid for diagrams.

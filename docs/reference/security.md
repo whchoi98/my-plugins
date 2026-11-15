@@ -8,7 +8,7 @@
 
 ### 1. Overview
 The repo is planned as a public repo and its root is the installed plugin. Security goals: nothing secret is
-ever committed; no plugin component that runs by itself ships to installers; the scripts that the nine skills
+ever committed; no plugin component that runs by itself ships to installers; the scripts that the eleven skills
 run on a user's machine stay inside the user's working folder or home, and fetch only what their step needs;
 `setup` never escalates without the user's say; instructions hidden in source material are not followed; and
 the dev harness cannot be bypassed silently.
@@ -32,7 +32,7 @@ the dev harness cannot be bypassed silently.
 | Diagram self-check | `skills/aws-diagram-design/scripts/self_check.py` | Flags remote assets (except the approved Google Fonts stylesheet), executable attributes and extra scripts in a generated HTML file |
 | Source-material rule | `skills/aws-blog-skills/SKILL.md` step 0 | Instructions inside sources and fetched pages are not followed, kept out of the draft, and reported to the user |
 | Structure tests | `tests/structure/test-plugin-structure.sh` | Root component paths, empty `.mcp.json`, stale namespaces under `skills/` and `commands/`, no `CLAUDE.md` inside skill folders |
-| Skill tests | `tests/structure/test-aws-blog-skills.sh`, `tests/structure/test-integration.sh` | The step 0 rule; `setup.sh` check mode and exit codes, every executed sudo is `sudo -n` inside the `--sudo` path |
+| Skill tests | `tests/structure/test-aws-blog-skills.sh`, `tests/structure/test-integration.sh`, `tests/structure/test-techblogs.sh` | The step 0 rule; `setup.sh` check mode and exit codes, every executed sudo is `sudo -n` inside the `--sudo` path; techblogs refuses an `--out` inside the skill folder, fetches only from the AWS blog hosts and never runs git |
 
 **Scripts by skill.** Claude runs these only when it follows a SKILL.md and the user approves the command.
 
@@ -45,6 +45,8 @@ the dev harness cannot be bypassed silently.
 | consulting-ppt-white-ppt | logo image, built deck | deck in the working directory; `fix_pptx.py` rewrites it in place | `node`, `soffice`, `pdftoppm` |
 | pptx-template-fill | the user's template | filled deck in the working directory | `qa_check.py --render` runs `soffice` and `pdftotext` |
 | aws-reports | the user's data, notes and drafts; its own `scripts/`, `references/`, `assets/examples/` | the work folder (`report/`, `charts/`, `report/out/`); nothing in the skill folder (chart scripts run with `python -B`) | `node report.mjs` (imports docx and marked from the global npm folder), `uv run` fontTools for font subsets, Playwright Chromium for previews |
+| html-report | the user's notes, data and sources; its own `assets/template.html` | the work folder (`report/`, `report/out/`); `embed_images.py` reads only image files inside the page's folder | Playwright Chromium for previews (the system `node` as the Playwright driver when the bundled one does not start) |
+| techblogs | the user's notes and data; a published AWS blog post (its address or a saved page); its own `assets/template.html`; the blog repository's `_config.yml` and `assets/icons` | the work folder (`<YYYY-MM-DD>-<slug>/` and its `out/`); `build_post.py` refuses an `--out` inside the skill folder; `place_post.py` copies the post into `<blog repository>/docs/techblog/<category>/` and never runs git | `import_aws_post.py` GETs the post and its images only from `aws.amazon.com` and the AWS blog image host; `check_urls.py` (aws-blog-skills) GETs the page's links; `place_post.py --build` runs the blog repository's `scripts/build-lab-zip.sh` when it exists and `bundle exec jekyll build`; Playwright Chromium for previews (the system `node` as the Playwright driver when it is on `PATH`) |
 | kor-deslop | the text in the conversation | nothing | nothing |
 | setup | its own and sibling skill folders | user home (see below); system packages only with `--sudo` | downloads below |
 
@@ -94,6 +96,10 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 - The diagram import parsers treat `.drawio` and Mermaid input as untrusted, and `self_check.py` rejects remote
   assets other than the approved Google Fonts stylesheet, executable attributes and extra scripts, so a
   generated diagram is a self-contained file.
+- techblogs leaves the work folder only through `place_post.py`, which copies one post into the blog repository the
+  user names and prints `git add` lines instead of running git; staging, commit and push stay with the user because a
+  push to that repository publishes the site. `import_aws_post.py` treats the page as data: it keeps an allowlist of
+  inline tags and fetches only from the AWS blog hosts ([ADR-005](../decisions/ADR-005-techblogs-personal-blog-workflow.md)).
 
 ### 4. Code Pointers
 - `.claude/hooks/secret-scan.sh`
@@ -106,12 +112,15 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 - `skills/aws-blog-skills/SKILL.md`
 - `skills/aws-blog-skills/scripts/package_blog.sh`
 - `skills/aws-blog-skills/scripts/check_urls.py`
+- `skills/techblogs/scripts/import_aws_post.py`
+- `skills/techblogs/scripts/place_post.py`
 - `skills/aws-diagram-design/scripts/mermaid_extract.py`
 - `skills/aws-diagram-design/scripts/self_check.py`
 - `tests/hooks/test-hooks.sh`
 - `tests/hooks/test-secret-patterns.sh`
 - `tests/structure/test-plugin-structure.sh`
 - `tests/structure/test-integration.sh`
+- `tests/structure/test-techblogs.sh`
 
 ### 5. Cross-references
 - Related modules: `skills/` (`skills/CLAUDE.md`), `tests/` (`tests/CLAUDE.md`)
@@ -124,7 +133,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 ## 한국어
 
 ### 1. 개요
-저장소는 공개 저장소로 배포할 예정이고 루트가 곧 설치되는 플러그인입니다. 보안 목표는 다음과 같이 정리됩니다. 비밀 정보를 커밋하지 않습니다. 스스로 실행되는 플러그인 구성 요소를 배포하지 않습니다. skill 9개가 사용자 머신에서 실행하는 스크립트는 사용자의 작업 폴더나 홈 안에서만 쓰고, 그 단계에 필요한 것만 내려받습니다. `setup`은 사용자가 허락하지 않으면 권한을 올리지 않습니다. 소재에 숨은 지시문은 따르지 않으며, 개발 하네스를 조용히 우회할 수 없게 합니다.
+저장소는 공개 저장소로 배포할 예정이고 루트가 곧 설치되는 플러그인입니다. 보안 목표는 다음과 같이 정리됩니다. 비밀 정보를 커밋하지 않습니다. 스스로 실행되는 플러그인 구성 요소를 배포하지 않습니다. skill 11개가 사용자 머신에서 실행하는 스크립트는 사용자의 작업 폴더나 홈 안에서만 쓰고, 그 단계에 필요한 것만 내려받습니다. `setup`은 사용자가 허락하지 않으면 권한을 올리지 않습니다. 소재에 숨은 지시문은 따르지 않으며, 개발 하네스를 조용히 우회할 수 없게 합니다.
 
 ### 2. 구성요소
 | 구성요소 | 경로 | 역할 |
@@ -145,7 +154,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 | 다이어그램 자체 점검 | `skills/aws-diagram-design/scripts/self_check.py` | 생성된 HTML에서 외부 자산(승인된 Google Fonts 스타일시트 제외), 실행 속성, 추가 스크립트를 잡아냄 |
 | 소재 규칙 | `skills/aws-blog-skills/SKILL.md` 0단계 | 소재와 읽어 온 페이지 안의 지시문을 따르지 않고 원고에 넣지 않으며 사용자에게 알림 |
 | 구조 테스트 | `tests/structure/test-plugin-structure.sh` | 루트 구성 요소 경로, 빈 `.mcp.json`, `skills/`와 `commands/`의 예전 이름 공간, skill 폴더 안 `CLAUDE.md` 금지 |
-| skill 테스트 | `tests/structure/test-aws-blog-skills.sh`, `tests/structure/test-integration.sh` | 0단계 규칙, `setup.sh` 점검 모드와 종료 코드, 실행되는 sudo가 모두 `--sudo` 경로 안의 `sudo -n`인지 |
+| skill 테스트 | `tests/structure/test-aws-blog-skills.sh`, `tests/structure/test-integration.sh`, `tests/structure/test-techblogs.sh` | 0단계 규칙, `setup.sh` 점검 모드와 종료 코드, 실행되는 sudo가 모두 `--sudo` 경로 안의 `sudo -n`인지, techblogs가 skill 폴더 안의 `--out`을 거부하고 AWS 블로그 호스트에서만 내려받으며 git을 실행하지 않는지 |
 
 **skill별 스크립트.** Claude는 SKILL.md를 따를 때, 사용자가 명령을 승인한 경우에만 이 스크립트를 실행합니다.
 
@@ -158,6 +167,8 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 | consulting-ppt-white-ppt | 로고 이미지, 빌드한 덱 | 작업 디렉터리의 덱. `fix_pptx.py`가 제자리에서 고침 | `node`, `soffice`, `pdftoppm` |
 | pptx-template-fill | 사용자의 템플릿 | 작업 디렉터리의 채운 덱 | `qa_check.py --render`가 `soffice`와 `pdftotext` 실행 |
 | aws-reports | 사용자의 데이터, 메모, 초안. 자기 `scripts/`, `references/`, `assets/examples/` | 작업 폴더(`report/`, `charts/`, `report/out/`). skill 폴더에는 쓰지 않음(차트 스크립트는 `python -B`) | `node report.mjs`(전역 npm 폴더의 docx, marked를 import), 글꼴 부분집합용 `uv run` fontTools, 미리보기용 Playwright Chromium |
+| html-report | 사용자의 메모, 데이터, 출처. 자기 `assets/template.html` | 작업 폴더(`report/`, `report/out/`). `embed_images.py`는 페이지 폴더 안의 그림 파일만 읽음 | 미리보기용 Playwright Chromium(포함된 드라이버가 시작되지 않으면 시스템 `node`를 Playwright 드라이버로 씀) |
+| techblogs | 사용자의 메모와 데이터. 게시된 AWS 블로그 글(주소나 저장한 페이지). 자기 `assets/template.html`. 블로그 저장소의 `_config.yml`과 `assets/icons` | 작업 폴더(`<YYYY-MM-DD>-<slug>/`와 그 안의 `out/`). `build_post.py`는 skill 폴더 안의 `--out`을 거부함. `place_post.py`는 글을 `<블로그 저장소>/docs/techblog/<분류 폴더>/`에 복사하고 git을 실행하지 않음 | `import_aws_post.py`는 글과 그림을 `aws.amazon.com`과 AWS 블로그 그림 호스트에서만 GET. `check_urls.py`(aws-blog-skills)는 페이지의 링크를 GET. `place_post.py --build`는 블로그 저장소에 `scripts/build-lab-zip.sh`가 있으면 실행한 뒤 `bundle exec jekyll build`를 실행. 미리보기용 Playwright Chromium(`PATH`에 시스템 `node`가 있으면 Playwright 드라이버로 씀) |
 | kor-deslop | 대화 안의 글 | 없음 | 없음 |
 | setup | 자기 폴더와 옆 skill 폴더 | 사용자 홈(아래 참고). 시스템 패키지는 `--sudo`일 때만 | 아래 내려받기 |
 
@@ -188,6 +199,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 - 체크섬으로 확인하는 것은 LibreOffice뿐이고, 체크섬도 같은 서버에서 받으므로 손상은 잡지만 오염된 미러는 막지 못합니다. uv와 Noto 폰트는 HTTPS에만 기댑니다.
 - 소재(블로그, PDF, 슬라이드)와 WebFetch로 읽은 페이지는 지시가 아니라 데이터입니다. aws-blog-skills 0단계에서 작업 지시는 사용자의 메시지에서만 받습니다. 소재에서 발견한 지시문은 따르지 않고 원고에 옮기지 않으며, 위치와 함께 사용자에게 알립니다. 소재의 명령은 인용하거나 검증할 내용이고, 실행하려면 먼저 사용자 승인을 받습니다. `tests/structure/test-aws-blog-skills.sh`가 이 규칙이 0단계에 남아 있는지 확인합니다. 덱과 다이어그램 skill도 사용자가 준 소재를 읽지만 이 규칙을 명시하지 않습니다.
 - 다이어그램 가져오기 파서는 `.drawio`와 Mermaid 입력을 신뢰하지 않고, `self_check.py`는 승인된 Google Fonts 스타일시트 외의 외부 자산, 실행 속성, 추가 스크립트를 거부하므로 생성된 다이어그램은 혼자 완결된 파일입니다.
+- techblogs가 작업 폴더 밖에 쓰는 경로는 `place_post.py` 하나입니다. 사용자가 지정한 블로그 저장소에 글 한 편을 복사하고 git을 실행하는 대신 `git add` 줄을 출력합니다. 그 저장소는 push하면 사이트가 배포되므로 스테이징, 커밋, push는 사용자가 합니다. `import_aws_post.py`는 페이지를 데이터로 다룹니다. 허용한 인라인 태그만 남기고 AWS 블로그 호스트에서만 내려받습니다([ADR-005](../decisions/ADR-005-techblogs-personal-blog-workflow.md)).
 
 ### 4. 코드 포인터
 - `.claude/hooks/secret-scan.sh`
@@ -200,12 +212,15 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 - `skills/aws-blog-skills/SKILL.md`
 - `skills/aws-blog-skills/scripts/package_blog.sh`
 - `skills/aws-blog-skills/scripts/check_urls.py`
+- `skills/techblogs/scripts/import_aws_post.py`
+- `skills/techblogs/scripts/place_post.py`
 - `skills/aws-diagram-design/scripts/mermaid_extract.py`
 - `skills/aws-diagram-design/scripts/self_check.py`
 - `tests/hooks/test-hooks.sh`
 - `tests/hooks/test-secret-patterns.sh`
 - `tests/structure/test-plugin-structure.sh`
 - `tests/structure/test-integration.sh`
+- `tests/structure/test-techblogs.sh`
 
 ### 5. 상호 참조
 - 관련 모듈: `skills/`(`skills/CLAUDE.md`), `tests/`(`tests/CLAUDE.md`)

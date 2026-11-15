@@ -11,7 +11,7 @@
 
 ## System Overview
 `my-plugins` is one Claude Code plugin that bundles five earlier plugins by WooHyung Choi: aws-blog-skills
-1.2.2, aws-diagrams 1.0.0, kor-writing 1.0.0, aws-deck 1.0.0 and aws-reports 1.0.0. It ships nine skills and three slash
+1.2.2, aws-diagrams 1.0.0, kor-writing 1.0.0, aws-deck 1.0.0 and aws-reports 1.0.0. It ships eleven skills and three slash
 commands. Each skill is Markdown instructions plus bundled Python, Bash or Node.js scripts that Claude runs on
 the user's machine when the workflow calls for them. Skills call each other inside the plugin with the Skill
 tool as `my-plugins:<skill>`, and reach each other's files only by paths relative to their own folder.
@@ -37,6 +37,8 @@ Output goes to the user's current directory, never into the plugin cache.
 | `consulting-ppt-white-ppt` | aws-deck 1.0.0 | Dense, light consulting-report decks with a customer brand accent |
 | `pptx-template-fill` | aws-deck 1.0.0 | Fills a user-supplied .pptx in place with python-pptx |
 | `aws-reports` | aws-reports 1.0.0 | Benchmark and PoC result reports as MS Word + standalone HTML from one Markdown draft |
+| `html-report` | new | One shareable HTML page in the common report design (bilingual, light and dark), filled from a fixed template and checked |
+| `techblogs` | new | Posts for the author's personal tech blog: a bilingual report page and a front matter file built from work-folder fragments and a fixed template, checked, then placed into the blog repository |
 | `setup` | new | Checks and installs the external tools and fonts the other skills need |
 | `commands/export-diagram.md`, `import-drawio.md`, `import-mermaid.md` | aws-diagrams 1.0.0 | Thin prompts that follow `skills/aws-diagram-design/references/` |
 
@@ -51,6 +53,11 @@ Output goes to the user's current directory, never into the plugin cache.
 - pptx-template-fill — `tfill.py`, `inventory.py`, `swap_font.py`, `qa_check.py`, `example_fill.py`
 - aws-reports — `report.mjs` (Markdown to docx + HTML, Node.js), `check_report.py` (style contract, `--profile benchmark|poc`),
   `chart_style.py`, `fonts.py` (font subsets), `preview.py` (Playwright), `svg2png.py`
+- html-report — `check_html.py` (design contract, `--dump-ko`), `embed_images.py` (images as data URIs, page folder
+  only), `preview.py` (Playwright, four views)
+- techblogs — `import_aws_post.py` (a published AWS blog post into a work folder), `build_post.py` (fragments into the
+  template), `check_post.py` (design contract, `--dump-ko`, `--urls`), `place_post.py` (copy into the blog repository,
+  `--build` for Jekyll, no git), `preview.py` (Playwright, the report page and the post page that embeds it)
 - setup — `scripts/setup.sh` (check, `install`, `install --sudo`)
 
 ### Dependency Layer
@@ -82,6 +89,8 @@ flowchart LR
     DESLOP["kor-deslop"]
     SETUP["setup"]
     REPORTS["aws-reports"]
+    HTML["html-report"]
+    TB["techblogs"]
     CMDS["commands: export-diagram, import-drawio, import-mermaid"]
     LIB["aws-blog-skills/scripts/diagram_lib.py"]
     ASSETS[("aws-diagram-design/assets: aws-icons, fonts/ttf")]
@@ -99,6 +108,16 @@ flowchart LR
     REPORTS -->|Skill tool| DIAG
     REPORTS -->|Skill tool| SETUP
     REPORTS -->|"../aws-blog-skills/scripts/lint_prose.py"| BLOG
+    HTML -->|Skill tool| DIAG
+    HTML -->|Skill tool| DD
+    HTML -->|Skill tool| DESLOP
+    HTML -->|Skill tool| SETUP
+    HTML -->|"../aws-blog-skills/scripts/lint_prose.py"| BLOG
+    TB -->|Skill tool| DIAG
+    TB -->|Skill tool| DD
+    TB -->|Skill tool| DESLOP
+    TB -->|Skill tool| SETUP
+    TB -->|"../aws-blog-skills/scripts/lint_prose.py, check_urls.py"| BLOG
     CMDS -->|follow references/| DD
     BLOG --- LIB
     LIB -->|"../aws-diagram-design/assets"| ASSETS
@@ -146,7 +165,7 @@ flowchart LR
 | Path | Ships to installers | Loaded as plugin component | Notes |
 |---|---|---|---|
 | `.claude-plugin/` | yes | yes | Manifests |
-| `skills/<name>/` (9 skills) | yes | yes | Description always, body and references on invoke |
+| `skills/<name>/` (11 skills) | yes | yes | Description always, body and references on invoke |
 | `commands/` | yes | yes | Three Markdown prompts; the only root component directory |
 | `.mcp.json` | yes | yes | Must stay `{"mcpServers": {}}` |
 | `skills/CLAUDE.md` | yes | no | Module doc, outside any skill folder |
@@ -167,6 +186,12 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 - **One report skill, two report types** — benchmark and PoC reports share one engine, one description and one
   checker profile switch; npm packages are global and `report.mjs` finds them itself
   ([ADR-003](decisions/ADR-003-one-report-skill-global-npm.md)).
+- **HTML reports from a fixed template** — html-report copies `assets/template.html` and fills content only; the
+  design spec, template and checker hold the same values, and Korean and English are element pairs in one file
+  ([ADR-004](decisions/ADR-004-html-report-template-fill.md)).
+- **Blog posts built from fragments** — techblogs writes `meta.json` and one body fragment per language, and
+  `build_post.py` fills the skill's own template. That template keeps the names the blog's report layout depends on,
+  so it is not shared with html-report ([ADR-005](decisions/ADR-005-techblogs-personal-blog-workflow.md)).
 - **aws-blog-skills targets Claude Code** — `${CLAUDE_SKILL_DIR}` paths, a work folder, checks on the assembled
   bundle ([ADR-001](decisions/ADR-001-claude-code-skill-conventions.md)).
 - **Scripts for mechanical rules** — banned words, structure, URLs, diagram geometry and deck lint are scripts
@@ -184,7 +209,7 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 # 한국어
 
 ## 시스템 개요
-`my-plugins`는 WooHyung Choi의 플러그인 다섯 개(aws-blog-skills 1.2.2, aws-diagrams 1.0.0, kor-writing 1.0.0, aws-deck 1.0.0, aws-reports 1.0.0)를 묶은 Claude Code 플러그인 하나입니다. skill 9개와 슬래시 command 3개를 배포합니다. 각 skill은 Markdown 지침과 함께 배포되는 Python, Bash, Node.js 스크립트로 이루어지며, 워크플로가 필요로 할 때 Claude가 사용자 머신에서 스크립트를 실행합니다. skill끼리는 플러그인 안에서 Skill 도구로 `my-plugins:<skill>`을 부르고, 다른 skill의 파일은 자기 폴더 기준 상대 경로로만 찾습니다. 결과물은 사용자의 현재 디렉터리에 만들며 플러그인 캐시에는 쓰지 않습니다.
+`my-plugins`는 WooHyung Choi의 플러그인 다섯 개(aws-blog-skills 1.2.2, aws-diagrams 1.0.0, kor-writing 1.0.0, aws-deck 1.0.0, aws-reports 1.0.0)를 묶은 Claude Code 플러그인 하나입니다. skill 11개와 슬래시 command 3개를 배포합니다. 각 skill은 Markdown 지침과 함께 배포되는 Python, Bash, Node.js 스크립트로 이루어지며, 워크플로가 필요로 할 때 Claude가 사용자 머신에서 스크립트를 실행합니다. skill끼리는 플러그인 안에서 Skill 도구로 `my-plugins:<skill>`을 부르고, 다른 skill의 파일은 자기 폴더 기준 상대 경로로만 찾습니다. 결과물은 사용자의 현재 디렉터리에 만들며 플러그인 캐시에는 쓰지 않습니다.
 
 ## 구성 요소
 
@@ -204,6 +229,8 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 | `consulting-ppt-white-ppt` | aws-deck 1.0.0 | 고객 브랜드 색을 쓰는 밝은 고밀도 컨설팅 리포트 덱 |
 | `pptx-template-fill` | aws-deck 1.0.0 | 사용자가 준 .pptx를 python-pptx로 제자리에서 채우기 |
 | `aws-reports` | aws-reports 1.0.0 | Markdown 원고 하나로 만드는 벤치마크·PoC 결과 보고서(MS Word + 단일 HTML) |
+| `html-report` | 신규 | 고정 템플릿을 채우고 검사하는 공통 디자인의 공유용 단일 HTML 보고서(한영 전환, 라이트와 다크) |
+| `techblogs` | 신규 | 글쓴이 개인 기술 블로그에 올릴 글. 작업 폴더의 조각 파일과 고정 템플릿으로 한영 리포트 페이지와 front matter 파일을 빌드하고 검사한 뒤 블로그 저장소에 배치 |
 | `setup` | 신규 | 다른 skill이 쓰는 외부 프로그램과 폰트 점검·설치 |
 | `commands/export-diagram.md`, `import-drawio.md`, `import-mermaid.md` | aws-diagrams 1.0.0 | `skills/aws-diagram-design/references/`를 따르는 짧은 프롬프트 |
 
@@ -215,6 +242,8 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 - consulting-ppt-white-ppt — `lib/consult_helpers.js`, `tools/extract_brand_color.py`, `fix_pptx.py`, `fix_notes.py`
 - pptx-template-fill — `tfill.py`, `inventory.py`, `swap_font.py`, `qa_check.py`, `example_fill.py`
 - aws-reports — `report.mjs`(Markdown을 docx + HTML로, Node.js), `check_report.py`(스타일 계약, `--profile benchmark|poc`), `chart_style.py`, `fonts.py`(글꼴 부분집합), `preview.py`(Playwright), `svg2png.py`
+- html-report — `check_html.py`(디자인 계약, `--dump-ko`), `embed_images.py`(그림을 data URI로, 페이지 폴더 안만), `preview.py`(Playwright, 화면 네 가지)
+- techblogs — `import_aws_post.py`(게시된 AWS 블로그 글을 작업 폴더로), `build_post.py`(조각 파일을 템플릿에 채움), `check_post.py`(디자인 계약, `--dump-ko`, `--urls`), `place_post.py`(블로그 저장소에 복사, `--build`로 Jekyll 빌드, git 실행 없음), `preview.py`(Playwright, 리포트 페이지와 그 페이지를 넣은 글 페이지)
 - setup — `scripts/setup.sh`(점검, `install`, `install --sudo`)
 
 ### Dependency Layer
@@ -243,6 +272,8 @@ flowchart LR
     DESLOP["kor-deslop"]
     SETUP["setup"]
     REPORTS["aws-reports"]
+    HTML["html-report"]
+    TB["techblogs"]
     CMDS["commands: export-diagram, import-drawio, import-mermaid"]
     LIB["aws-blog-skills/scripts/diagram_lib.py"]
     ASSETS[("aws-diagram-design/assets: aws-icons, fonts/ttf")]
@@ -260,6 +291,16 @@ flowchart LR
     REPORTS -->|Skill tool| DIAG
     REPORTS -->|Skill tool| SETUP
     REPORTS -->|"../aws-blog-skills/scripts/lint_prose.py"| BLOG
+    HTML -->|Skill tool| DIAG
+    HTML -->|Skill tool| DD
+    HTML -->|Skill tool| DESLOP
+    HTML -->|Skill tool| SETUP
+    HTML -->|"../aws-blog-skills/scripts/lint_prose.py"| BLOG
+    TB -->|Skill tool| DIAG
+    TB -->|Skill tool| DD
+    TB -->|Skill tool| DESLOP
+    TB -->|Skill tool| SETUP
+    TB -->|"../aws-blog-skills/scripts/lint_prose.py, check_urls.py"| BLOG
     CMDS -->|follow references/| DD
     BLOG --- LIB
     LIB -->|"../aws-diagram-design/assets"| ASSETS
@@ -299,7 +340,7 @@ flowchart LR
 | 경로 | 설치자에게 배포 | 플러그인 구성 요소로 로드 | 비고 |
 |---|---|---|---|
 | `.claude-plugin/` | 예 | 예 | 매니페스트 |
-| `skills/<name>/`(skill 9개) | 예 | 예 | description은 항상, 본문과 참조 파일은 호출할 때 |
+| `skills/<name>/`(skill 11개) | 예 | 예 | description은 항상, 본문과 참조 파일은 호출할 때 |
 | `commands/` | 예 | 예 | Markdown 프롬프트 3개. 루트의 유일한 구성 요소 폴더 |
 | `.mcp.json` | 예 | 예 | `{"mcpServers": {}}` 유지 |
 | `skills/CLAUDE.md` | 예 | 아니요 | 모듈 문서, skill 폴더 밖 |
@@ -312,6 +353,8 @@ flowchart LR
 ## 주요 설계 결정
 - **플러그인 하나, 이름 공간 하나** — 네 플러그인을 합쳐 skill 사이의 호출이 설치본 하나 안에서 풀리게 했습니다([ADR-002](decisions/ADR-002-merge-four-plugins-into-one.md)).
 - **보고서 skill 하나, 보고서 유형 둘** — 벤치마크와 PoC 보고서가 변환기, description, 검사 프로필 전환을 함께 씁니다. npm 패키지는 전역에 두고 `report.mjs`가 직접 찾습니다([ADR-003](decisions/ADR-003-one-report-skill-global-npm.md)).
+- **고정 템플릿으로 만드는 HTML 보고서** — html-report는 `assets/template.html`을 복사해 내용만 채웁니다. 디자인 규격, 템플릿, 검사기가 같은 값을 갖고, 한국어와 영어는 한 파일 안의 요소 짝입니다([ADR-004](decisions/ADR-004-html-report-template-fill.md)).
+- **조각 파일로 빌드하는 블로그 글** — techblogs는 `meta.json`과 언어별 본문 조각을 쓰고 `build_post.py`가 skill의 템플릿에 채웁니다. 이 템플릿은 블로그의 report 레이아웃이 의존하는 이름을 유지해야 하므로 html-report와 공유하지 않습니다([ADR-005](decisions/ADR-005-techblogs-personal-blog-workflow.md)).
 - **옆 skill 기준 상대 경로** — 다른 skill의 파일은 `../<skill>/...`로 찾고, 플러그인 캐시 glob은 대비책으로만 씁니다([ADR-002](decisions/ADR-002-merge-four-plugins-into-one.md)).
 - **의존 프로그램은 `setup`으로** — 스크립트 하나가 모든 외부 프로그램과 폰트를 점검하고 설치하며, sudo는 요청할 때만 씁니다([런북](runbooks/setup-dependencies.md)).
 - **aws-blog-skills는 Claude Code 대상** — `${CLAUDE_SKILL_DIR}` 경로, 작업 폴더, 조립한 번들 검사([ADR-001](decisions/ADR-001-claude-code-skill-conventions.md)).

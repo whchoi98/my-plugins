@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="ko-KR">
+<head>
+<meta charset="utf-8">
+<title>가상의 대기열 작업자 수 정하기 | AWS 기술 블로그</title>
+<link rel="canonical" href="https://aws.amazon.com/ko/blogs/tech/sample-import-post/">
+<meta property="og:title" content="가상의 대기열 작업자 수 정하기 | Amazon Web Services">
+<meta property="article:published_time" content="2026-01-10T09:00:00+09:00">
+</head>
+<body>
+<main>
+<article>
+<footer><span property="articleSection">Sample Category</span></footer>
+<section class="blog-post-content lb-rtxt" property="articleBody">
+<p>이 글은 가져오기 검사용으로 지어낸 예시입니다. 가상의 대기열을 처리하는 작업자 수를 정합니다.</p>
+<h2>1. 측정</h2>
+<p>작업자 수를 바꿔 가며 처리 시간을 쟀습니다. 기준은 <a href="/ko/sample-page/">예시 페이지</a>의 <span style="color:red">권장값</span>입니다.</p>
+<table>
+<tr><th>작업자 수</th><th>처리 시간(초)</th></tr>
+<tr><td>2</td><td>90</td></tr>
+<tr><td>4</td><td>50</td></tr>
+</table>
+<p>표 1. 작업자 수별 처리 시간</p>
+<h3>고른 값</h3>
+<ul>
+<li>작업자 <strong>4개</strong>를 씁니다.</li>
+<li>대기 시간은 <code>30</code>초로 둡니다.</li>
+</ul>
+<h2>2. 설정</h2>
+<p>다음 명령으로 작업자 수를 바꿉니다.</p>
+<pre><code class="lang-bash">queue-tool set --workers 4 &amp;&amp; queue-tool show</code></pre>
+<blockquote><p>값을 바꾼 뒤에는 처리 시간을 다시 잽니다.</p></blockquote>
+<h2>참고 자료</h2>
+<ul>
+<li><a href="https://docs.aws.amazon.com/example/latest/guide.html">예시 사용 설명서</a></li>
+<li><a href="https://example.com/notes">예시 노트</a></li>
+</ul>
+<p>이 글의 수치는 지어낸 값입니다.</p>
+</section>
+</article>
+</main>
+</body>
+</html>
