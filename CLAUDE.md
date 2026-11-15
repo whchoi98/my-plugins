@@ -1,7 +1,7 @@
 # Project Context
 
 ## Overview
-`my-plugins` 1.4.0 is one Claude Code plugin that bundles five earlier plugins by WooHyung Choi:
+`my-plugins` 1.4.1 is one Claude Code plugin that bundles five earlier plugins by WooHyung Choi:
 aws-blog-skills (AWS Korea Tech Blog drafts), aws-diagrams (AWS architecture and structure diagrams),
 kor-writing (Korean AI-tell removal), aws-deck (AWS PowerPoint decks) and aws-reports (benchmark and PoC
 reports as MS Word + HTML), plus the new html-report skill (common-design bilingual HTML reports) and the new

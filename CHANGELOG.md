@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.4.1] - 2026-11-15
+
 ### Changed
 - `techblogs`: a figure with text in it gets an English version, `<name>-en.<ext>`, that the English body points to, so the figure changes with the language switch. `check_post.py` accepts the same file or its English version on the English side (it used to require the same file); SKILL.md and design-spec.md describe the rule, and two tests cover it
 
@@ -103,7 +105,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/whchoi98/my-plugins/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/whchoi98/my-plugins/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/whchoi98/my-plugins/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/whchoi98/my-plugins/compare/v1.2.0...v1.2.1
@@ -122,6 +125,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.4.1] - 2026-11-15
 
 ### Changed
 - `techblogs`: 글자가 들어간 그림은 영어판 `<이름>-en.<확장자>`를 만들어 영어 본문에서 가리키도록 변경. 언어를 전환하면 그림도 함께 바뀜. `check_post.py`는 영어 쪽 그림이 같은 파일이거나 그 영어판이면 통과시킴(이전에는 같은 파일만 허용). SKILL.md와 design-spec.md에 규칙을 적고 테스트 2개 추가
@@ -211,7 +216,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.4.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.4.1...HEAD
+[1.4.1]: https://github.com/whchoi98/my-plugins/compare/v1.4.0...v1.4.1
 [1.4.0]: https://github.com/whchoi98/my-plugins/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/whchoi98/my-plugins/compare/v1.2.1...v1.3.0
 [1.2.1]: https://github.com/whchoi98/my-plugins/compare/v1.2.0...v1.2.1
