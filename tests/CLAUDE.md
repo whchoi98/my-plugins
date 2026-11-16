@@ -62,7 +62,8 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   breaks every remaining sample sentence through `check_html.template_samples()` (bytecode to `$TEST_TMP`).
 - `structure/test-techblogs.sh` — techblogs: skill files, description routing, sections and the commit and push rule,
   every path, script and skill named in SKILL.md and references, the template names the blog layout and `preview.py`
-  depend on, template `[[tokens]]` equal to the keys `build_post.py` fills, and the meta.json example in design-spec.md.
+  depend on, the title fit (`fitTitle`, `h1.one`) named in both the template and design-spec.md, template `[[tokens]]`
+  equal to the keys `build_post.py` fills, and the meta.json example in design-spec.md.
   The fixture `fixtures/techblogs/work/` is built in `$TEST_TMP` and passes `check_post.py` (ERROR 0, WARN 0) and
   `lint_prose.py`; then one edit of the built copy per `check_post.py` rule (`<style>`, `<script>`, leftover token, TODO,
   inline `style`, layout hooks, section ids, menu links, component and section counts, caption numbers, image file,

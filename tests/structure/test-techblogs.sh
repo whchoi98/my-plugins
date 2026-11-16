@@ -198,6 +198,10 @@ for tb_t in '<div class="wrap page">' '<nav class="top theme-bar">' \
             'id="langSeg"' 'id="themeSeg"' 'data-v="ko"' 'data-v="en"' 'data-v="light"' 'data-v="dark"'; do
     assert_contains "techblogs template: $tb_t" "$TB_TPL_TEXT" "$tb_t"
 done
+# The title fit: the template shrinks the title to one line, and design-spec.md names the same function
+assert_contains "techblogs template: fits the title on one line (fitTitle)" "$TB_TPL_TEXT" "function fitTitle()"
+assert_contains "techblogs template: a fitted title does not wrap (h1.one)" "$TB_TPL_TEXT" "h1.one{white-space:nowrap}"
+assert_contains "techblogs design-spec.md: describes the title fit" "$(cat "$TB_SPEC" 2>/dev/null)" "fitTitle"
 TB_SPEC_HOOKS=$(sed -n '/^## 블로그 레이아웃과 맞물리는 부분/,/^## meta.json/p' "$TB_SPEC" 2>/dev/null)
 for tb_t in 'div.wrap.page' 'nav.top.theme-bar' 'techblogs-theme' 'techblogs-lang'; do
     assert_contains "techblogs design-spec.md: blog layout hook $tb_t" "$TB_SPEC_HOOKS" "$tb_t"
