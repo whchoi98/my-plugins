@@ -162,7 +162,7 @@ skills/
 ├── pptx-template-fill/  # fill an existing template
 ├── aws-reports/         # benchmark and PoC reports: Word + HTML engine, references, examples
 ├── html-report/         # common-design HTML reports: template, design spec, checker
-├── techblogs/           # personal tech blog posts: template, design spec, import, build, check, place
+├── techblogs/           # personal tech blog posts: storylines, template, design spec, new post, import, build, check, place
 └── setup/               # dependency check and install (scripts/setup.sh)
 commands/                # export-diagram, import-drawio, import-mermaid
 third_party/             # upstream licenses and notices
@@ -344,7 +344,7 @@ skills/
 ├── pptx-template-fill/  # 기존 템플릿 채우기
 ├── aws-reports/         # 벤치마크·PoC 보고서: Word + HTML 변환기, references, 예제
 ├── html-report/         # 공통 디자인 HTML 보고서: 템플릿, 디자인 규격, 검사기
-├── techblogs/           # 개인 기술 블로그 글: 템플릿, 디자인 규격, 가져오기, 빌드, 검사, 배치
+├── techblogs/           # 개인 기술 블로그 글: 스토리라인, 템플릿, 디자인 규격, 새 글 시작, 가져오기, 빌드, 검사, 배치
 └── setup/               # 의존 프로그램 점검과 설치(scripts/setup.sh)
 commands/                # export-diagram, import-drawio, import-mermaid
 third_party/             # 원 저작물의 라이선스와 고지

@@ -103,7 +103,8 @@ tb_place() {
 
 # --- skill files and SKILL.md ---
 for tb_f in SKILL.md references/design-spec.md references/publish.md references/storylines.md assets/template.html \
-            scripts/build_post.py scripts/check_post.py scripts/import_aws_post.py scripts/place_post.py scripts/preview.py; do
+            scripts/build_post.py scripts/check_post.py scripts/import_aws_post.py scripts/new_post.py scripts/place_post.py \
+            scripts/preview.py; do
     assert_file_exists "techblogs: $tb_f" "$TB_DIR/$tb_f"
 done
 assert_eq "techblogs: files sit only in SKILL.md, references/, assets/ and scripts/" "" \
@@ -134,7 +135,9 @@ assert_contains "techblogs SKILL.md: the first and last section titles are not f
     '첫 절과 끝 절의 제목을 "들어가며", "마치며"로 고정하지 않는다'
 assert_contains "techblogs SKILL.md: the user is told which storyline was chosen" "$TB_SKILL" \
     "고른 스토리라인과 이유를 사용자에게 한 줄로 알린다"
-for tb_s in build_post check_post import_aws_post place_post preview; do
+assert_contains "techblogs SKILL.md: the template is chosen from the topic and the material" "$TB_SKILL" \
+    "글의 주제와 소재의 내용을 읽고 그에 맞는 스토리라인 템플릿을 고른다"
+for tb_s in build_post check_post import_aws_post new_post place_post preview; do
     assert_contains "techblogs SKILL.md: calls scripts/$tb_s.py through the skill dir" "$TB_SKILL" \
         "\"\${CLAUDE_SKILL_DIR}/scripts/$tb_s.py\""
 done
@@ -572,6 +575,81 @@ printf '<html><body><p>no article here</p></body></html>\n' > "$TB_W/no-article.
 TB_MSG=$("${TB_PY[@]}" "$TB_IMPORT" "$TB_W/no-article.html" "$TB_W/imp-none" 2>&1); TB_RC=$?
 assert_contains "import_aws_post: a page without the article body is refused" "$TB_MSG" "본문(section.blog-post-content)을 찾지 못했습니다"
 assert_eq "import_aws_post: a page without the article body exits 1" "1" "$TB_RC"
+
+# --- new_post.py: a work folder from the storyline template chosen for the topic and the material ---
+TB_NEW="$TB_DIR/scripts/new_post.py"
+TB_NL=$("${TB_PY[@]}" "$TB_NEW" --list 2>&1); TB_NL_RC=$?
+assert_eq "new_post --list: exit 0" "0" "$TB_NL_RC"
+assert_eq "new_post --list: every storyline with the material it fits, its signals and its section flow" "8 8 8 8" \
+    "$(printf '%s\n' "$TB_NL" | LC_ALL=C awk '/^[a-z]+ \(/{k++} /^  맞는 소재: ./{f++} /^  보이는 신호: ./{g++} /^  절 흐름: ./{w++} END{print k, f, g, w}')"
+for tb_k in qa troubleshoot measure compare build anatomy change retro; do
+    assert_contains "new_post --list: names $tb_k" "$TB_NL" "$tb_k ("
+    TB_NP=$("${TB_PY[@]}" "$TB_NEW" "$TB_W/np-$tb_k" --storyline "$tb_k" --slug "np-$tb_k" --date 2026-01-15 2>&1); TB_NP_RC=$?
+    assert_eq "new_post $tb_k: writes the work folder (exit 0)" "0" "$TB_NP_RC"
+    assert_eq "new_post $tb_k: meta.json has the storyline, slug and date, the rest is TODO" "$tb_k|np-$tb_k|2026-01-15|TODO|TODO" \
+        "$(jq -r '[.storyline, .slug, .date, .title.ko, .category] | join("|")' "$TB_W/np-$tb_k/meta.json" 2>/dev/null)"
+    # grep, not a sed pattern with ".": under C.UTF-8 "." does not match every Hangul syllable
+    tb_n=$(printf '%s\n' "$TB_NP" | grep -o 'sections: [0-9]*$' | head -1 | tr -dc '0-9')
+    assert_eq "new_post $tb_k: one section per step of the flow, the same in both bodies" "$tb_n $tb_n $tb_n" \
+        "$(grep -c 'id="ko-s' "$TB_W/np-$tb_k/ko.body.html" 2>/dev/null) $(grep -c 'id="en-s' "$TB_W/np-$tb_k/en.body.html" 2>/dev/null) $(grep -c '<!-- 안내: ' "$TB_W/np-$tb_k/ko.body.html" 2>/dev/null)"
+    [ "${tb_n:-0}" -ge 5 ] && pass "new_post $tb_k: at least five sections" || fail "new_post $tb_k: at least five sections" "sections: ${tb_n:-none}"
+done
+assert_eq "new_post: the troubleshoot template has the six steps of storylines.md" "6" \
+    "$(grep -c 'id="ko-s' "$TB_W/np-troubleshoot/ko.body.html" 2>/dev/null)"
+TB_BODY=$(cat "$TB_W/np-troubleshoot/ko.body.html" 2>/dev/null)
+assert_contains "new_post: the first section carries the step and how the storyline opens" "$TB_BODY" \
+    '<!-- 안내: 1번째 절. 증상(에러 원문, 화면, 발생 시각) 여는 방식: 증상을 그대로 보여 준다.'
+assert_contains "new_post: the last section carries how the storyline closes" "$TB_BODY" '<!-- 안내: 6번째 절. 재발을 막는 장치 닫는 방식: '
+assert_contains "new_post: the first section has no number, the second is 01" "$TB_BODY" \
+    '<section class="sec" id="ko-s2"><header class="sec-head"><p class="eyebrow">01</p><h2>TODO</h2></header>'
+# The template does not build as it is: meta.json first, then the bodies
+TB_WK="$TB_W/np-troubleshoot" tb_build_fails "a new work folder does not build while meta.json is TODO" 'meta.json: category 가 TODO로 남아 있습니다'
+jq --slurpfile f "$TB_FIX/work/meta.json" '$f[0] + {slug: .slug, storyline: .storyline}' "$TB_W/np-troubleshoot/meta.json" \
+    > "$TB_W/np-troubleshoot/meta.tmp" && mv "$TB_W/np-troubleshoot/meta.tmp" "$TB_W/np-troubleshoot/meta.json"
+TB_WK="$TB_W/np-troubleshoot" tb_build_fails "a template body does not build while TODO and guide comments remain" \
+    'ko.body.html: 템플릿의 TODO나 안내 주석이 남아 있습니다'
+# tb_fill FILE todo|guide: fill in the TODO titles and paragraphs, or take out the guide comments
+tb_fill() {
+    "${TB_PY[@]}" - "$1" "$2" <<'PY'
+import pathlib, re, sys
+p = pathlib.Path(sys.argv[1])
+s = p.read_text(encoding="utf-8")
+if sys.argv[2] == "guide":
+    s = re.sub(r"<!-- 안내: [^\n]*-->\n", "", s)
+else:
+    s = s.replace("<h2>TODO</h2>", "<h2>Sample</h2>").replace("<p>TODO</p>", "<p>Sample.</p>")
+p.write_text(s, encoding="utf-8")
+PY
+}
+tb_fill "$TB_W/np-troubleshoot/ko.body.html" todo
+TB_WK="$TB_W/np-troubleshoot" tb_build_fails "a body with only the guide comments left does not build" \
+    'ko.body.html: 템플릿의 TODO나 안내 주석이 남아 있습니다'
+tb_fill "$TB_W/np-troubleshoot/ko.body.html" guide
+tb_fill "$TB_W/np-troubleshoot/en.body.html" guide
+TB_WK="$TB_W/np-troubleshoot" tb_build_fails "a body with only the TODO text left does not build" \
+    'en.body.html: 템플릿의 TODO나 안내 주석이 남아 있습니다'
+tb_fill "$TB_W/np-troubleshoot/en.body.html" todo
+TB_NP=$("${TB_PY[@]}" "$TB_BUILD" "$TB_W/np-troubleshoot" 2>&1); TB_NP_RC=$?
+assert_eq "new_post: the folder builds once the template is filled in (exit 0)" "0" "$TB_NP_RC"
+assert_contains "new_post: the built post names its storyline" "$TB_NP" "storyline: troubleshoot"
+# Refusals: nothing is overwritten, unknown values stop, the skill folder is not a work folder
+TB_NP=$("${TB_PY[@]}" "$TB_NEW" "$TB_W/np-qa" --storyline measure --slug again 2>&1); TB_NP_RC=$?
+assert_contains "new_post: an existing work folder is not overwritten" "$TB_NP" "이미 있는 파일은 덮어쓰지 않습니다"
+assert_eq "new_post: an existing work folder exits 1" "1" "$TB_NP_RC"
+assert_eq "new_post: the existing meta.json is left as it was" "qa" "$(jq -r '.storyline' "$TB_W/np-qa/meta.json" 2>/dev/null)"
+TB_NP=$("${TB_PY[@]}" "$TB_NEW" "$TB_W/np-bad" --storyline essay --slug bad 2>&1); TB_NP_RC=$?
+assert_contains "new_post: a storyline that is not in the list is refused" "$TB_NP" \
+    "storyline은 qa, troubleshoot, measure, compare, build, anatomy, change, retro 가운데 하나입니다: essay"
+assert_eq "new_post: an unknown storyline exits 1" "1" "$TB_NP_RC"
+[ ! -e "$TB_W/np-bad" ] && pass "new_post: a refused run leaves no folder" || fail "new_post: a refused run leaves no folder" "$TB_W/np-bad exists"
+TB_NP=$("${TB_PY[@]}" "$TB_NEW" "$TB_W/np-slug" --storyline qa --slug Bad_Slug 2>&1); TB_NP_RC=$?
+assert_contains "new_post: a slug with other characters is refused" "$TB_NP" "slug는 영문 소문자, 숫자, 하이픈만 씁니다: Bad_Slug"
+assert_eq "new_post: a bad slug exits 1" "1" "$TB_NP_RC"
+TB_NP=$("${TB_PY[@]}" "$TB_W/skillcopy/techblogs/scripts/new_post.py" "$TB_W/skillcopy/techblogs/newpost" --storyline qa --slug inside 2>&1); TB_NP_RC=$?
+assert_contains "new_post: the skill folder is not a work folder" "$TB_NP" "skill 폴더 안에는 쓰지 않습니다"
+assert_eq "new_post: a work folder inside the skill exits 1" "1" "$TB_NP_RC"
+[ ! -e "$TB_W/skillcopy/techblogs/newpost" ] && pass "new_post: nothing is written inside the skill" \
+    || fail "new_post: nothing is written inside the skill" "newpost exists in the skill copy"
 
 # --- nothing was written into the skill folder ---
 assert_eq "techblogs: the skill folder is unchanged by the scripts" "$TB_FILES_BEFORE" "$(find "$TB_DIR" | sort)"

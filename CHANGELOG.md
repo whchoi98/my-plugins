@@ -17,6 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `techblogs`: a new post follows a storyline chosen for its material instead of one fixed skeleton. `references/storylines.md` describes eight of them (`qa`, `troubleshoot`, `measure`, `compare`, `build`, `anatomy`, `change`, `retro`), each with its section flow, how it opens and closes, where the analogy and the figures go, and what to avoid. SKILL.md step 0 picks one (and looks at the last three posts so that the opening and the closing do not repeat), step 2 orders the sections by it, the first section no longer repeats the conclusion list of the head, and the first and last sections are no longer titled "들어가며" and "마치며" by default. `meta.json` takes a `storyline` key: `build_post.py` rejects an unknown value and warns when a new post has none; republished posts keep the structure of the original. Sixteen tests cover the rule
+- `techblogs`: `scripts/new_post.py` starts a new post from the storyline template chosen for its topic and material. `--list` prints every storyline with the material it fits and the signals to look for; `<work-dir> --storyline KEY --slug NAME` writes `meta.json` and both body fragments with one empty section per step of that storyline's section flow, read from `references/storylines.md`, each with a guide comment. `build_post.py` refuses to build while a template `TODO` or guide comment remains. `storylines.md` gains the signals to look for in the topic and the material and rules for material that fits two storylines. Seventy-one tests cover it
 
 ## [1.4.2] - 2026-11-15
 
@@ -137,6 +138,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 - `techblogs`: 새 글을 하나의 고정된 뼈대 대신 소재에 맞게 고른 스토리라인으로 쓰는 규칙 추가. `references/storylines.md`에 여덟 가지(`qa`, `troubleshoot`, `measure`, `compare`, `build`, `anatomy`, `change`, `retro`)의 절 흐름, 여는 방식과 닫는 방식, 비유와 그림의 자리, 피할 것을 정리. SKILL.md 0단계에서 하나를 고르고(최근 글 세 편과 여는 방식, 닫는 방식이 겹치지 않게 확인) 2단계에서 그 순서로 절을 배열. 본문 첫 절에서 머리의 결론 목록을 되풀이하지 않고, 첫 절과 끝 절의 제목을 "들어가며", "마치며"로 고정하지 않음. `meta.json`에 `storyline` 키 추가: `build_post.py`가 목록에 없는 값은 거부하고 새 글에 값이 없으면 경고. 옮겨 싣는 글은 원문 구성을 유지. 테스트 16개 추가
+- `techblogs`: 주제와 내용에 맞게 고른 스토리라인 템플릿으로 새 글을 시작하는 `scripts/new_post.py` 추가. `--list`는 스토리라인마다 맞는 소재와 소재에서 볼 신호를 출력하고, `<작업 폴더> --storyline 키 --slug 이름`은 `meta.json`과 두 본문 조각을 만들며 본문에는 `references/storylines.md`의 절 흐름대로 안내 주석이 든 빈 절이 들어감. 템플릿의 `TODO`나 안내 주석이 남아 있으면 `build_post.py`가 빌드를 멈춤. `storylines.md`에 주제와 내용에서 볼 신호 표와 두 스토리라인에 걸친 소재를 가르는 기준 추가. 테스트 71개 추가
 
 ## [1.4.2] - 2026-11-15
 

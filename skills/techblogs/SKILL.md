@@ -11,7 +11,7 @@ description: "개인 기술 블로그(whchoi98.github.io)에 올릴 글을 처�
 
 | 파일 | 언제 읽는가 |
 |---|---|
-| [references/storylines.md](references/storylines.md) | 새 글의 구성을 정할 때(0단계). 스토리라인 여덟 가지와 고르는 순서, 여는 방식과 닫는 방식 |
+| [references/storylines.md](references/storylines.md) | 새 글의 구성을 정할 때(0단계). 주제와 내용에서 볼 신호, 스토리라인 템플릿 여덟 가지의 절 흐름과 여는 방식, 닫는 방식 |
 | [references/design-spec.md](references/design-spec.md) | 본문을 쓰기 전에 한 번. `meta.json` 키, 절, 표, 그림, 코드 상자의 마크업, 글자 규칙 |
 | [references/publish.md](references/publish.md) | 블로그 저장소에 배치할 때. 파일 구성, 빌드, 화면 확인, git 규칙 |
 | `../aws-blog-skills/references/style.md` | 한국어 문장을 쓰거나 고치는 모든 단계. 금지어, 용어 표기 |
@@ -35,6 +35,7 @@ $W/
 
 | 할 일 | 방법 |
 |---|---|
+| 새 글의 작업 폴더 만들기 | `python3 "${CLAUDE_SKILL_DIR}/scripts/new_post.py" "$W" --storyline <키> --slug <slug>` (스토리라인 목록은 `--list`) |
 | AWS 블로그 글 가져오기 | `python3 "${CLAUDE_SKILL_DIR}/scripts/import_aws_post.py" <글 주소> "$W"` |
 | 페이지 조립 | `python3 "${CLAUDE_SKILL_DIR}/scripts/build_post.py" "$W"` |
 | 규격 검사 | `python3 "${CLAUDE_SKILL_DIR}/scripts/check_post.py" "$W/out/<slug>-report.html"` |
@@ -67,11 +68,12 @@ $W/
 
 ### 스토리라인 고르기
 
-새 글을 모두 같은 뼈대로 쓰지 않는다. 소재가 독자에게 주는 것(답, 해결, 수치, 선택, 완성물, 구조 이해, 옮겨 가는 방법, 경험)에 따라 절의 순서, 여는 방식, 닫는 방식이 달라진다.
+새 글을 모두 같은 뼈대로 쓰지 않는다. 글의 주제와 소재의 내용을 읽고 그에 맞는 스토리라인 템플릿을 고른다. 소재가 독자에게 주는 것(답, 해결, 수치, 선택, 완성물, 구조 이해, 옮겨 가는 방법, 경험)에 따라 절의 순서, 여는 방식, 닫는 방식이 달라진다.
 
-- 스토리라인은 `qa`(질문과 답), `troubleshoot`(증상에서 원인으로), `measure`(가설과 측정), `compare`(비교와 선택), `build`(따라 만들기), `anatomy`(구조 해부), `change`(이전과 이후), `retro`(시간순 회고) 여덟 가지다. 고르는 순서와 스토리라인별 절 흐름은 [references/storylines.md](references/storylines.md)에 있다.
+- 스토리라인은 `qa`(질문과 답), `troubleshoot`(증상에서 원인으로), `measure`(가설과 측정), `compare`(비교와 선택), `build`(따라 만들기), `anatomy`(구조 해부), `change`(이전과 이후), `retro`(시간순 회고) 여덟 가지다. 소재에서 찾을 신호와 스토리라인별 절 흐름은 [references/storylines.md](references/storylines.md)에 있다.
+- 고른 뒤 `new_post.py`로 작업 폴더를 만든다. 그 스토리라인의 절 흐름대로 빈 절이 든 `ko.body.html`, `en.body.html`과 `storyline`이 적힌 `meta.json`이 생긴다. 절은 소재에 맞게 더하거나 뺄 수 있고, 템플릿의 `TODO`와 안내 주석이 남아 있으면 빌드가 멈춘다.
 - 블로그 저장소에서 최근 글 세 편의 절 제목을 보고, 여는 방식과 닫는 방식이 그 글들과 같아지지 않게 한다.
-- 고른 스토리라인과 이유를 사용자에게 한 줄로 알린다. 사용자가 다른 것을 고르면 그것을 따른다.
+- 고른 스토리라인과 이유를 사용자에게 한 줄로 알린다. 근거가 된 신호를 함께 적는다. 사용자가 다른 것을 고르면 그것을 따른다.
 
 `meta.json`에 남은 `"TODO"`는 이 단계와 2단계에서 모두 채운다.
 

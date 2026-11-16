@@ -113,6 +113,8 @@ def main():
         if not os.path.isfile(p):
             die("%s 가 없습니다." % p)
         bodies[lang] = open(p, encoding="utf-8").read().strip()
+        if "<!-- 안내:" in bodies[lang] or re.search(r"<(h2|h3|p|li)>\s*TODO\s*</\1>", bodies[lang]):
+            die("%s.body.html: 템플릿의 TODO나 안내 주석이 남아 있습니다." % lang)
     secs = {lang: sections(bodies[lang], lang) for lang in ("ko", "en")}
     if len(secs["ko"]) != len(secs["en"]):
         die("절 수가 다릅니다: ko %d, en %d" % (len(secs["ko"]), len(secs["en"])))
