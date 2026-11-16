@@ -5,6 +5,7 @@
   "icon": "sample",
   "date": "2026-01-15",
   "minutes": 0,
+  "storyline": "measure",
   "tags": ["Example", "Batch"],
   "title": {"ko": "예시 배치 작업의 실행 시간 줄이기", "en": "Shortening an example batch job"},
   "excerpt": {"ko": "가상의 집계 배치를 단계별로 재고 읽기 단계를 나누어 실행 시간을 줄인 예시입니다.", "en": "A made-up example that times a batch job stage by stage and splits the read stage."},

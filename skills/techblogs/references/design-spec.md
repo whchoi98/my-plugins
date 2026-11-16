@@ -34,6 +34,7 @@
   "icon": "eks",
   "date": "2026-11-15",
   "minutes": 0,
+  "storyline": "measure",
   "tags": ["Amazon EKS", "Karpenter"],
   "title":   {"ko": "제목", "en": "Title"},
   "excerpt": {"ko": "목록 카드에 보일 한두 문장", "en": "One or two sentences for the list card"},
@@ -52,6 +53,7 @@
 | `category`, `category_dir`, `icon` | 블로그 `_config.yml`의 `blog_categories` 이름과 그 폴더, `assets/icons`의 파일 이름 |
 | `date` | 게시일. 옮겨 싣는 글은 원문 게시일을 쓴다(목록이 원문 순서대로 정렬된다) |
 | `minutes` | 0이면 한국어 본문 글자 수에서 계산한다 |
+| `storyline` | 새 글에서 고른 스토리라인의 키. `qa`, `troubleshoot`, `measure`, `compare`, `build`, `anatomy`, `change`, `retro` 가운데 하나다(storylines.md). 옮겨 싣는 글에는 쓰지 않는다. 새 글에 없으면 빌드가 `WARN`을 낸다 |
 | `thesis` | 머리의 요약 문단. 본문에 있는 내용만으로 쓴다 |
 | `facts` | 선택. 요점 목록 3~5개. 값은 인라인 HTML(`<b>`, `<code>`)을 쓸 수 있다 |
 | `origin` | 선택. 다른 곳에 먼저 게시한 글을 옮길 때만. 있으면 canonical이 원문 주소가 되고 머리와 끝에 원문 링크가 붙는다 |
@@ -76,7 +78,7 @@
 ```
 
 - id는 `ko-s1`부터 순서대로 붙인다. 이동 메뉴는 `h2` 글자로 만들어진다.
-- `p.eyebrow`는 절 번호(두 자리)나 짧은 꼬리표다. 번호가 없는 절(들어가며, 마치며)은 생략한다.
+- `p.eyebrow`는 절 번호(두 자리)나 짧은 꼬리표다. 번호가 없는 절은 생략한다. 첫 절과 끝 절의 제목은 "들어가며", "마치며"로 고정하지 않고 스토리라인의 여는 방식과 닫는 방식에 맞춰 짓는다(storylines.md).
 - 본문 요소는 `div.prose` 바로 아래에 둔다. 쓸 수 있는 인라인 태그는 `a`, `b`, `em`, `code`, `br`, `sup`, `sub`다.
 - 바깥 링크는 `target="_blank" rel="noopener"`를 붙인다.
 - 강조 문단은 `<blockquote><p>…</p></blockquote>`로 쓰고 절마다 하나를 넘기지 않는다.

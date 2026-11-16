@@ -102,7 +102,7 @@ tb_place() {
 }
 
 # --- skill files and SKILL.md ---
-for tb_f in SKILL.md references/design-spec.md references/publish.md assets/template.html \
+for tb_f in SKILL.md references/design-spec.md references/publish.md references/storylines.md assets/template.html \
             scripts/build_post.py scripts/check_post.py scripts/import_aws_post.py scripts/place_post.py scripts/preview.py; do
     assert_file_exists "techblogs: $tb_f" "$TB_DIR/$tb_f"
 done
@@ -125,6 +125,15 @@ assert_contains "techblogs SKILL.md: a new post explains its core concept with a
 assert_contains "techblogs SKILL.md: an analogy does not replace the facts" "$TB_SKILL" "비유는 사실을 대신하지 않는다"
 assert_contains "techblogs SKILL.md: polishing keeps the explanatory analogy" "$TB_SKILL" \
     "2단계에서 넣은 설명용 비유는 윤문하면서 지우지 않는다"
+assert_contains "techblogs SKILL.md: new posts do not all share one skeleton" "$TB_SKILL" "새 글을 모두 같은 뼈대로 쓰지 않는다"
+assert_contains "techblogs SKILL.md: the section order follows the chosen storyline" "$TB_SKILL" \
+    "절의 순서는 0단계에서 고른 스토리라인을 따른다"
+assert_contains "techblogs SKILL.md: the first section does not repeat the conclusion list" "$TB_SKILL" \
+    "본문 첫 절에서 같은 결론을 목록으로 되풀이하지 않는다"
+assert_contains "techblogs SKILL.md: the first and last section titles are not fixed" "$TB_SKILL" \
+    '첫 절과 끝 절의 제목을 "들어가며", "마치며"로 고정하지 않는다'
+assert_contains "techblogs SKILL.md: the user is told which storyline was chosen" "$TB_SKILL" \
+    "고른 스토리라인과 이유를 사용자에게 한 줄로 알린다"
 for tb_s in build_post check_post import_aws_post place_post preview; do
     assert_contains "techblogs SKILL.md: calls scripts/$tb_s.py through the skill dir" "$TB_SKILL" \
         "\"\${CLAUDE_SKILL_DIR}/scripts/$tb_s.py\""
@@ -223,6 +232,41 @@ print(" ".join(missing))
 PY
 )
 assert_eq "techblogs design-spec.md: the meta.json example parses and has the required keys" "" "$TB_EXAMPLE"
+# The storyline keys: build_post.py is the list; storylines.md has one table row and one section per key, in the
+# same order, each section with its six lines; SKILL.md and design-spec.md name every key
+TB_STORY=$("${TB_PY[@]}" - "$TB_BUILD" "$TB_DIR/references/storylines.md" "$TB_SPEC" "$TB_DIR/SKILL.md" 2>&1 <<'PY' || true
+import re, sys
+build, story, spec, skill = (open(p, encoding="utf-8").read() for p in sys.argv[1:5])
+m = re.search(r"^STORYLINES = \((.*?)\)$", build, re.M)
+keys = re.findall(r'"([a-z]+)"', m.group(1)) if m else []
+if len(keys) < 2:
+    sys.exit("no STORYLINES tuple in build_post.py")
+heads = re.findall(r"^## ([a-z]+): ", story, re.M)
+rows = re.findall(r"^\| `([a-z]+)` \|", story, re.M)
+if heads != keys:
+    print("storylines.md sections %s differ from build_post.py %s" % (heads, keys))
+if rows != keys:
+    print("storylines.md table %s differs from build_post.py %s" % (rows, keys))
+for k in keys:
+    for name, text in (("design-spec.md", spec), ("SKILL.md", skill)):
+        if "`%s`" % k not in text:
+            print("%s does not name `%s`" % (name, k))
+for sec in re.split(r"^## ", story, flags=re.M)[1:]:
+    name = sec.split("\n", 1)[0]
+    if not re.match(r"[a-z]+: ", name):
+        continue
+    for label in ("절 흐름", "여는 방식", "닫는 방식", "비유의 자리", "그림", "피할 것"):
+        if "- **%s**:" % label not in sec:
+            print("storylines.md '%s': no '%s' line" % (name, label))
+ex = re.search(r'"storyline": "([a-z]+)"', spec)
+if not ex or ex.group(1) not in keys:
+    print("design-spec.md: the meta.json example has no known storyline")
+PY
+)
+assert_eq "techblogs: the storyline keys agree in build_post.py, storylines.md, design-spec.md and SKILL.md" "" \
+    "$(printf '%s' "$TB_STORY" | tr '\n' ' ')"
+assert_contains "techblogs storylines.md: a republished post keeps the structure of the original" \
+    "$(cat "$TB_DIR/references/storylines.md" 2>/dev/null)" '옮겨 싣는 글(`origin`이 있는 글)에는 적용하지 않는다'
 
 # --- build_post.py: the fixture builds; the result passes check_post.py and lint_prose.py ---
 tb_work work
@@ -230,6 +274,8 @@ TB_OUT="$TB_WK/out"
 TB_MSG=$("${TB_PY[@]}" "$TB_BUILD" "$TB_WK" 2>&1); TB_RC=$?
 assert_eq "build_post: the fixture builds (exit 0)" "0" "$TB_RC"
 assert_contains "build_post: lists the deliverables" "$TB_MSG" "deliverables:"
+assert_contains "build_post: names the storyline of the post" "$TB_MSG" "storyline: measure"
+assert_not_contains "build_post: no warning when the storyline is set" "$TB_MSG" "WARN"
 if [ "$TB_RC" -eq 0 ] && [ -f "$TB_OUT/$TB_SLUG-report.html" ]; then
     assert_file_exists "build_post: front matter file" "$TB_OUT/$TB_SLUG.md"
     assert_file_exists "build_post: image copied to the assets folder" "$TB_OUT/$TB_SLUG-assets/fig01-flow.png"
@@ -421,6 +467,19 @@ tb_work secid && tb_edit "$TB_WK/ko.body.html" 'id="ko-s2"' 'id="ko-s3"'
 tb_build_fails "section id out of sequence" 'ko.body.html: 2번째 절의 id가 ko-s2 가 아니라 ko-s3 입니다'
 tb_work seccount && tb_resub "$TB_WK/en.body.html" '<section class="sec" id="en-s2">.*?</section>\n' ''
 tb_build_fails "English fragment with fewer sections" '절 수가 다릅니다: ko 2, en 1'
+tb_work storyline-unknown; tb_meta '.storyline = "essay"'
+tb_build_fails "a storyline that is not in the list" \
+    'meta.json: storyline은 qa, troubleshoot, measure, compare, build, anatomy, change, retro 가운데 하나입니다: essay'
+tb_work storyline-missing; tb_meta 'del(.storyline)'
+TB_SL=$("${TB_PY[@]}" "$TB_BUILD" "$TB_WK" 2>&1); TB_SL_RC=$?
+assert_eq "build_post: a new post without a storyline still builds (exit 0)" "0" "$TB_SL_RC"
+assert_contains "build_post: warns when a new post has no storyline" "$TB_SL" \
+    "WARN  meta.json에 storyline이 없습니다. 새 글은 references/storylines.md에서 스토리라인을 골라 적습니다."
+tb_work storyline-origin
+tb_meta 'del(.storyline) | .origin = {"name": {"ko": "예시 블로그", "en": "Example blog"}, "url": "https://example.com/original", "date": "2026-01-10"}'
+TB_SL=$("${TB_PY[@]}" "$TB_BUILD" "$TB_WK" 2>&1); TB_SL_RC=$?
+assert_eq "build_post: a republished post without a storyline builds (exit 0)" "0" "$TB_SL_RC"
+assert_not_contains "build_post: a republished post gets no storyline warning" "$TB_SL" "WARN"
 # The --out guard is tried on a copy of the skill, so a broken guard cannot write into skills/
 mkdir -p "$TB_W/skillcopy" && cp -a "$TB_DIR" "$TB_W/skillcopy/techblogs"
 tb_work guard

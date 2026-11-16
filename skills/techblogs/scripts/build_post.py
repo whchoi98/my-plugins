@@ -23,6 +23,10 @@ TEMPLATE = os.path.join(HERE, "..", "assets", "template.html")
 SITE = "https://whchoi98.github.io"
 
 
+# The storylines a new post can follow (references/storylines.md); design-spec.md lists the same keys
+STORYLINES = ("qa", "troubleshoot", "measure", "compare", "build", "anatomy", "change", "retro")
+
+
 def die(msg):
     print("ERROR " + msg)
     sys.exit(1)
@@ -97,6 +101,9 @@ def main():
         die("meta.json: date는 YYYY-MM-DD 형식입니다.")
     if not re.match(r"^[a-z0-9-]+$", meta["category_dir"]):
         die("meta.json: category_dir는 블로그 docs/techblog 아래의 폴더 이름입니다.")
+    storyline = str(meta.get("storyline") or "").strip()
+    if storyline and storyline not in STORYLINES:
+        die("meta.json: storyline은 %s 가운데 하나입니다: %s" % (", ".join(STORYLINES), storyline))
     title_ko, title_en = both(meta, "title")
     excerpt_ko, excerpt_en = both(meta, "excerpt")
     thesis_ko, thesis_en = both(meta, "thesis")
@@ -206,6 +213,10 @@ def main():
              "icon: " + meta["icon"], "minutes: %d" % minutes, "excerpt: " + q(excerpt_ko), "excerpt_en: " + q(excerpt_en), "---", ""]
     md = os.path.join(out, slug + ".md")
     open(md, "w", encoding="utf-8").write("\n".join(front))
+    if storyline:
+        print("storyline: " + storyline)
+    elif not origin.get("url"):
+        print("WARN  meta.json에 storyline이 없습니다. 새 글은 references/storylines.md에서 스토리라인을 골라 적습니다.")
     print("deliverables:")
     print("  " + report)
     print("  " + md)

@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `techblogs`: a new post follows a storyline chosen for its material instead of one fixed skeleton. `references/storylines.md` describes eight of them (`qa`, `troubleshoot`, `measure`, `compare`, `build`, `anatomy`, `change`, `retro`), each with its section flow, how it opens and closes, where the analogy and the figures go, and what to avoid. SKILL.md step 0 picks one (and looks at the last three posts so that the opening and the closing do not repeat), step 2 orders the sections by it, the first section no longer repeats the conclusion list of the head, and the first and last sections are no longer titled "들어가며" and "마치며" by default. `meta.json` takes a `storyline` key: `build_post.py` rejects an unknown value and warns when a new post has none; republished posts keep the structure of the original. Sixteen tests cover the rule
+
 ## [1.4.2] - 2026-11-15
 
 ### Added
@@ -131,6 +134,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+- `techblogs`: 새 글을 하나의 고정된 뼈대 대신 소재에 맞게 고른 스토리라인으로 쓰는 규칙 추가. `references/storylines.md`에 여덟 가지(`qa`, `troubleshoot`, `measure`, `compare`, `build`, `anatomy`, `change`, `retro`)의 절 흐름, 여는 방식과 닫는 방식, 비유와 그림의 자리, 피할 것을 정리. SKILL.md 0단계에서 하나를 고르고(최근 글 세 편과 여는 방식, 닫는 방식이 겹치지 않게 확인) 2단계에서 그 순서로 절을 배열. 본문 첫 절에서 머리의 결론 목록을 되풀이하지 않고, 첫 절과 끝 절의 제목을 "들어가며", "마치며"로 고정하지 않음. `meta.json`에 `storyline` 키 추가: `build_post.py`가 목록에 없는 값은 거부하고 새 글에 값이 없으면 경고. 옮겨 싣는 글은 원문 구성을 유지. 테스트 16개 추가
 
 ## [1.4.2] - 2026-11-15
 
