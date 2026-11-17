@@ -202,6 +202,11 @@ done
 assert_contains "techblogs template: fits the title on one line (fitTitle)" "$TB_TPL_TEXT" "function fitTitle()"
 assert_contains "techblogs template: a fitted title does not wrap (h1.one)" "$TB_TPL_TEXT" "h1.one{white-space:nowrap}"
 assert_contains "techblogs design-spec.md: describes the title fit" "$(cat "$TB_SPEC" 2>/dev/null)" "fitTitle"
+# "Changelog" is written in English: SKILL.md step 3 and the text rules of design-spec.md both say so
+TB_STEP3=$(sed -n '/^## 3\. 문장 규칙/,/^## 4\. /p' "$TB_DIR/SKILL.md" 2>/dev/null)
+assert_contains "techblogs SKILL.md step 3: Changelog stays in English" "$TB_STEP3" '"변경 기록"으로 옮기지 않고 "Changelog"'
+TB_SPEC_TEXT=$(sed -n '/^## 글자 규칙/,/^## 템플릿에 있지만/p' "$TB_SPEC" 2>/dev/null)
+assert_contains "techblogs design-spec.md: the text rules name the Changelog check" "$TB_SPEC_TEXT" '"Changelog"로 쓴다(WARN)'
 TB_SPEC_HOOKS=$(sed -n '/^## 블로그 레이아웃과 맞물리는 부분/,/^## meta.json/p' "$TB_SPEC" 2>/dev/null)
 for tb_t in 'div.wrap.page' 'nav.top.theme-bar' 'techblogs-theme' 'techblogs-lang'; do
     assert_contains "techblogs design-spec.md: blog layout hook $tb_t" "$TB_SPEC_HOOKS" "$tb_t"
@@ -381,6 +386,13 @@ if [ "$TB_RC" -eq 0 ] && [ -f "$TB_OUT/$TB_SLUG-report.html" ]; then
         && tb_check "middle dot inside inline code is allowed" '결과: ERROR 0 / WARN 0' 0
     tb_case arrow && tb_edit "$TB_R" '<p>Timing each stage shows' '<p>Timing → each stage shows' \
         && tb_check "arrow in a sentence warns" '문장 안의 화살표(→)는 말로 풉니다' 0
+    # "Changelog" stays in English. lint_prose.py does not read tables, so the page check looks at every text node
+    tb_case term && tb_edit "$TB_R" '웹 문서' '변경 기록' \
+        && tb_check "변경 기록 in a table cell warns and names Changelog" "'변경 기록'은 Changelog로 씁니다" 0
+    tb_case termns && tb_edit "$TB_R" '<h3>단계별 시간</h3>' '<h3>단계별 변경기록</h3>' \
+        && tb_check "변경기록 without the space warns" "'변경기록'은 Changelog로 씁니다" 0
+    tb_case termok && tb_edit "$TB_R" '웹 문서' 'Changelog' \
+        && tb_check "Changelog in English is not flagged" '결과: ERROR 0 / WARN 0' 0
     tb_case altdot && tb_resub "$TB_R" 'alt="([^"]{3})' 'alt="\\1·' \
         && tb_check "middle dot in an image alt" '은 그림 alt에도 쓰지 않습니다' 1
     tb_case descdash && tb_resub "$TB_R" '<meta name="description" content="([^"]{3})' '<meta name="description" content="\\1—' \

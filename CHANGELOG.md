@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- `aws-blog-skills`: "Changelog" is written in English. The banned-word table in `references/style.md` lists its translations "변경 기록" and "변경기록" (the document that records what changed in each version) with `Changelog` as the word to write, without a translation in parentheses; a sentence about something else, such as an audit log, says "변경 내역" or "변경을 기록한다". `lint_prose.py` reports both spellings as HARD findings, so techblogs, html-report and aws-reports, which run the same check, follow the rule too (confirmed 2026-11-17). 9 tests added
+- `techblogs`: `check_post.py` warns about "변경 기록" and "변경기록" anywhere in the page text, including the tables, captions and source kind names that `lint_prose.py` does not read, and names `Changelog` as the word to write. SKILL.md step 3 and the text rules of `references/design-spec.md` state the rule; it also covers `note` and the `kind` of `sources` in `meta.json`. 8 tests added
+- `kor-deslop`: `Changelog` joins the English terms the polish leaves untouched, and SKILL.md says not to turn it into "변경 기록". 2 tests added
+
 ## [1.5.1] - 2026-11-17
 
 ### Changed
@@ -144,6 +149,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Changed
+- `aws-blog-skills`: "Changelog"를 영어 그대로 쓰는 규칙 추가. `references/style.md` 금지어 표에 번역어 "변경 기록"과 "변경기록"(버전마다 바뀐 내용을 적은 문서)을 올리고 대체어를 `Changelog`로 지정. 괄호로 번역을 덧붙이지 않으며, 감사 로그처럼 다른 것을 가리키는 문장은 "변경 내역", "변경을 기록한다"로 씀. `lint_prose.py`가 두 표기를 HARD로 잡으므로 같은 검사를 쓰는 techblogs, html-report, aws-reports에도 적용됨(2026-11-17 확정). 테스트 9개 추가
+- `techblogs`: `check_post.py`가 페이지 글 어디에서든 "변경 기록"과 "변경기록"을 WARN으로 알리고 `Changelog`로 쓰라고 안내함. `lint_prose.py`가 읽지 않는 표, 캡션, 참고 자료의 종류 이름까지 봄. SKILL.md 3단계와 `references/design-spec.md`의 글자 규칙에 같은 기준을 적었고, `meta.json`의 `note`와 `sources`의 `kind`에도 적용함. 테스트 8개 추가
+- `kor-deslop`: 윤문할 때 건드리지 않는 영어 용어에 `Changelog` 추가. SKILL.md에 "변경 기록"으로 바꾸지 않는다고 명시. 테스트 2개 추가
 
 ## [1.5.1] - 2026-11-17
 

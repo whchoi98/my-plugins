@@ -64,6 +64,10 @@ assert_contains "kor-deslop: description keeps exclusions" "$KD_DESC" "맞춤법
 for kd_section in "우선순위" "의미 보존 규칙" "절차" "자체 점검" "결과 전달" "출처"; do
     assert_contains "kor-deslop: section '$kd_section'" "$KD_BODY" "## $kd_section"
 done
+# The English terms the polish leaves as they are include "Changelog" (not translated to "변경 기록")
+KD_KEEP=$(grep -m1 -F -- '- **건드리지 않는 것**' "$KD_SKILL" || true)
+assert_contains "kor-deslop: Changelog is among the English terms left untouched" "$KD_KEEP" "Changelog"
+assert_contains "kor-deslop: says not to translate Changelog to 변경 기록" "$KD_KEEP" "변경 기록"
 assert_contains "kor-deslop: points to references/patterns.md" "$KD_BODY" "references/patterns.md"
 assert_contains "kor-deslop: points to its notice under third_party/" "$KD_BODY" "$KD_NOTICE"
 

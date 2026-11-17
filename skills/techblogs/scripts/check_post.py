@@ -21,6 +21,9 @@ TEMPLATE = os.path.join(HERE, "..", "assets", "template.html")
 VOID = {"br", "img", "hr", "col", "input", "meta", "link", "wbr"}
 HANGUL = re.compile(r"[가-힣]")
 BANNED = {"·": "가운뎃점", "—": "엠 대시", "–": "엔 대시"}
+# 번역하지 않고 영어 그대로 쓰는 말. ../aws-blog-skills/references/style.md의 금지어 표와 같다.
+# lint_prose.py는 표를 읽지 않으므로 표, 캡션, 참고 자료의 종류 이름은 여기서 본다.
+KEEP_ENGLISH = [(re.compile(r"변경\s?기록"), "Changelog")]
 
 
 class Node:
@@ -298,6 +301,11 @@ def main():
                 E("%s(%s)은 쓰지 않습니다: %s" % (name, ch, squash(t)[:60]))
         if "→" in t and n.tag in ("p", "li") and not n.inside("table"):
             W("문장 안의 화살표(→)는 말로 풉니다: %s" % squash(t)[:60])
+        for pat, use in KEEP_ENGLISH:
+            m = pat.search(t)
+            if m and (squash(m.group(0)), squash(t)[:30]) not in seen:
+                seen.add((squash(m.group(0)), squash(t)[:30]))
+                W("'%s'은 %s로 씁니다. 다른 것을 가리키는 말이면 둡니다: %s" % (squash(m.group(0)), use, squash(t)[:60]))
     for img in root.find("img"):
         for ch, name in BANNED.items():
             if ch in img.attrs.get("alt", ""):
