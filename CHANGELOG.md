@@ -15,6 +15,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.1] - 2026-11-17
+
+### Changed
+- `techblogs`: the report page fits its title on one line. The title of the visible language shrinks until it fits (not below 30px; a title that is still too long wraps at 30px) and is fitted again on resize and on a language switch (`fitTitle` in `assets/template.html`, `h1.one`). SKILL.md step 0 and design-spec.md say to keep a new title to one line (about 45 Korean characters at 44px in a 1440px-wide window). Posts built with an earlier template need a rebuild to get it. 3 tests added
+
 ## [1.5.0] - 2026-11-16
 
 ### Added
@@ -116,7 +121,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.5.1...HEAD
+[1.5.1]: https://github.com/whchoi98/my-plugins/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/whchoi98/my-plugins/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/whchoi98/my-plugins/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/whchoi98/my-plugins/compare/v1.4.0...v1.4.1
@@ -138,6 +144,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.5.1] - 2026-11-17
+
+### Changed
+- `techblogs`: 리포트 페이지가 제목을 한 줄에 맞춤. 보이는 언어의 제목이 한 줄에 들어갈 때까지 글자 크기를 줄이고(30px 아래로는 줄이지 않으며 그래도 긴 제목은 30px에서 줄을 바꿈) 창 크기와 언어가 바뀌면 다시 맞춤(`assets/template.html`의 `fitTitle`, `h1.one`). SKILL.md 0단계와 design-spec.md에 새 글의 제목을 한 줄 길이로 정하라는 기준 추가(창 폭 1440px, 44px에서 한국어 45자 안팎). 이전 템플릿으로 만든 글은 다시 빌드해야 적용됨. 테스트 3개 추가
 
 ## [1.5.0] - 2026-11-16
 
@@ -240,7 +251,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.5.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.5.1...HEAD
+[1.5.1]: https://github.com/whchoi98/my-plugins/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/whchoi98/my-plugins/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/whchoi98/my-plugins/compare/v1.4.1...v1.4.2
 [1.4.1]: https://github.com/whchoi98/my-plugins/compare/v1.4.0...v1.4.1
