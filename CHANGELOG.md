@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.5.2] - 2026-11-17
+
 ### Changed
 - `aws-blog-skills`: "Changelog" is written in English. The banned-word table in `references/style.md` lists its translations "변경 기록" and "변경기록" (the document that records what changed in each version) with `Changelog` as the word to write, without a translation in parentheses; a sentence about something else, such as an audit log, says "변경 내역" or "변경을 기록한다". `lint_prose.py` reports both spellings as HARD findings, so techblogs, html-report and aws-reports, which run the same check, follow the rule too (confirmed 2026-11-17). 9 tests added
 - `techblogs`: `check_post.py` warns about "변경 기록" and "변경기록" anywhere in the page text, including the tables, captions and source kind names that `lint_prose.py` does not read, and names `Changelog` as the word to write. SKILL.md step 3 and the text rules of `references/design-spec.md` state the rule; it also covers `note` and the `kind` of `sources` in `meta.json`. 8 tests added
@@ -126,7 +128,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.5.1...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.5.2...HEAD
+[1.5.2]: https://github.com/whchoi98/my-plugins/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/whchoi98/my-plugins/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/whchoi98/my-plugins/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/whchoi98/my-plugins/compare/v1.4.1...v1.4.2
@@ -149,6 +152,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.5.2] - 2026-11-17
 
 ### Changed
 - `aws-blog-skills`: "Changelog"를 영어 그대로 쓰는 규칙 추가. `references/style.md` 금지어 표에 번역어 "변경 기록"과 "변경기록"(버전마다 바뀐 내용을 적은 문서)을 올리고 대체어를 `Changelog`로 지정. 괄호로 번역을 덧붙이지 않으며, 감사 로그처럼 다른 것을 가리키는 문장은 "변경 내역", "변경을 기록한다"로 씀. `lint_prose.py`가 두 표기를 HARD로 잡으므로 같은 검사를 쓰는 techblogs, html-report, aws-reports에도 적용됨(2026-11-17 확정). 테스트 9개 추가
@@ -261,7 +266,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.5.1...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.5.2...HEAD
+[1.5.2]: https://github.com/whchoi98/my-plugins/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/whchoi98/my-plugins/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/whchoi98/my-plugins/compare/v1.4.2...v1.5.0
 [1.4.2]: https://github.com/whchoi98/my-plugins/compare/v1.4.1...v1.4.2
