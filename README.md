@@ -16,8 +16,9 @@ One Claude Code plugin that bundles aws-blog-skills, aws-diagrams, kor-writing, 
 
 `my-plugins` merges five plugins into one install: the AWS Korea Tech Blog drafting workflow, AWS architecture
 and structure diagrams, Korean AI-tell removal, AWS PowerPoint decks, and customer reports as MS Word + HTML
-(benchmarks and PoC results), and adds a common design for single-file bilingual HTML reports and a workflow for posts
-on the author's personal tech blog. The skills call each other inside
+(benchmarks and PoC results), and adds a common design for single-file bilingual HTML reports, a workflow for posts
+on the author's personal tech blog, and fact-checked technical infographics that also come as an editable PowerPoint
+deck. The skills call each other inside
 the same plugin, so a blog post can draw its diagrams and run the 윤문 check without a second plugin, and a
 deck can embed the same diagrams. A `setup` skill checks and installs every external tool and font the skills
 need, including the cases that broke on Amazon Linux 2023.
@@ -37,6 +38,7 @@ need, including the cases that broke on Amazon Linux 2023.
 | `/my-plugins:aws-reports` | aws-reports 1.0.0 | Customer reports as MS Word + standalone HTML from one Markdown draft: benchmarks, and PoC results with success criteria, verdicts and next steps |
 | `/my-plugins:html-report` | new | One shareable HTML page in a common report design: Korean and English in one file, light and dark, a 1440px column, and a source table and method for research reports |
 | `/my-plugins:techblogs` | new | Posts for the author's personal tech blog (whchoi98.github.io, Jekyll): fact check, Korean and English text, a bilingual report page built from a fixed template, checks, placing into the blog repository and the Jekyll build |
+| `/my-plugins:aws-infographic` | new (replaces the claude.ai-synced aws-infographic skill) | Fact-checked technical infographics in the AWS palette: 16:9 dark and light SVG and PNG (4:5 on request), and the same content as an editable PowerPoint deck made of text boxes, shapes, tables, charts and icon pictures |
 | `/my-plugins:setup` | new | Checks and installs the external tools and fonts above |
 
 ## What Changed from the Four Plugins
@@ -96,7 +98,9 @@ claude plugin marketplace remove aws-reports
 If the same plugins are also attached to your claude.ai account, Claude Code loads those synced copies
 (`aws-diagrams@synced`, `kor-writing@synced`, `aws-deck@synced`) once the local plugins with the same names are
 gone. Remove them from the claude.ai account, or turn their skills off with `skillOverrides` in
-`~/.claude/settings.json`.
+`~/.claude/settings.json`. The same goes for a claude.ai skill named `aws-infographic`
+(`anthropic-skills:aws-infographic`): it answers the same requests as `/my-plugins:aws-infographic` and has no deck
+step.
 
 ### Update
 
@@ -125,6 +129,9 @@ NanumSquareOTF font; `setup` installs them (`npm install -g` at fixed versions, 
 techblogs places its result into a local clone of the blog repository and builds the site there with that
 repository's own Bundler and Jekyll (`bundle exec jekyll build`). `setup` does not install Ruby, Bundler or Jekyll.
 
+aws-infographic draws with Pillow and Playwright Chromium and measures text with the NanumSquareOTF fonts; its deck
+step uses the deck tools of aws-ppt-skills (pptxgenjs, python-pptx, LibreOffice). `setup` installs all of them.
+
 Then ask in plain Korean, or call a skill directly:
 
 ```text
@@ -136,6 +143,7 @@ Then ask in plain Korean, or call a skill directly:
 PoC 결과를 성공 기준별 판정으로 정리해서 보고서로 만들어줘
 이 조사 내용을 한영 전환되는 HTML 보고서로 만들어줘
 이 측정 결과를 내 블로그에 올릴 글로 정리해줘
+LLM 추론 과정을 인포그래픽으로 만들고 편집 가능한 PPT로도 만들어줘
 /my-plugins:pptx-template-fill
 ```
 
@@ -163,6 +171,7 @@ skills/
 ├── aws-reports/         # benchmark and PoC reports: Word + HTML engine, references, examples
 ├── html-report/         # common-design HTML reports: template, design spec, checker
 ├── techblogs/           # personal tech blog posts: storylines, template, design spec, new post, import, build, check, place
+├── aws-infographic/     # fact-checked infographics: SVG builder, build and QA, page template, editable deck rules and checks
 └── setup/               # dependency check and install (scripts/setup.sh)
 commands/                # export-diagram, import-drawio, import-mermaid
 third_party/             # upstream licenses and notices
@@ -199,8 +208,8 @@ WooHyung Choi, [github.com/whchoi98](https://github.com/whchoi98)
 
 `my-plugins`는 플러그인 다섯 개를 하나로 합친 Claude Code 플러그인입니다. AWS Korea Tech Blog 원고 작성, AWS
 아키텍처와 구조 다이어그램, 한국어 AI 티 제거 윤문, AWS PowerPoint 덱 제작, 벤치마크·PoC 결과 보고서(MS Word +
-HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고서 skill과 개인 기술 블로그 글을 만드는 skill을
-더했습니다. skill끼리 같은
+HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고서 skill, 개인 기술 블로그 글을 만드는 skill, 사실 검증한
+기술 인포그래픽을 편집 가능한 PowerPoint 덱과 함께 만드는 skill을 더했습니다. skill끼리 같은
 플러그인 안에서 서로를 부르므로 블로그 원고가 다른 플러그인 없이 다이어그램을 그리고 윤문 점검을 하며, 덱도 같은
 다이어그램을 넣습니다. `setup` skill은 skill들이 쓰는 외부 프로그램과 폰트를 점검하고 설치하며, Amazon Linux
 2023에서 막혔던 경우도 처리합니다.
@@ -220,6 +229,7 @@ HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고�
 | `/my-plugins:aws-reports` | aws-reports 1.0.0 | Markdown 원고 하나로 만드는 고객 공유용 Word + 단일 HTML 보고서: 벤치마크, 성공 기준별 판정과 다음 단계를 담은 PoC 결과 |
 | `/my-plugins:html-report` | 신규 | 공통 디자인의 공유용 단일 HTML 보고서: 한국어와 영어를 한 파일에, 라이트와 다크, 1440px 한 컬럼, 조사 보고서의 출처 표와 조사 방법 |
 | `/my-plugins:techblogs` | 신규 | 글쓴이 개인 기술 블로그(whchoi98.github.io, Jekyll)에 올릴 글: 사실 검증, 한국어와 영어 본문, 고정 템플릿으로 빌드하는 한영 리포트 페이지, 규격 검사, 블로그 저장소 배치와 Jekyll 빌드 |
+| `/my-plugins:aws-infographic` | 신규 (claude.ai 동기화 skill aws-infographic을 대체) | 사실 검증한 AWS 팔레트 기술 인포그래픽: 16:9 다크와 라이트 SVG, PNG(요청하면 4:5 세로), 같은 내용을 텍스트 상자, 도형, 표, 차트, 아이콘 그림으로 만든 편집 가능한 PowerPoint 덱 |
 | `/my-plugins:setup` | 신규 | 위 skill들의 외부 프로그램과 폰트 점검·설치 |
 
 ## 네 플러그인에서 달라진 점
@@ -278,7 +288,9 @@ claude plugin marketplace remove aws-reports
 
 같은 플러그인이 claude.ai 계정에도 연결되어 있으면, 이름이 같은 로컬 플러그인이 사라진 뒤 Claude Code가 동기화
 사본(`aws-diagrams@synced`, `kor-writing@synced`, `aws-deck@synced`)을 불러옵니다. claude.ai 계정에서 제거하거나
-`~/.claude/settings.json`의 `skillOverrides`로 해당 skill을 끕니다.
+`~/.claude/settings.json`의 `skillOverrides`로 해당 skill을 끕니다. claude.ai의 skill `aws-infographic`
+(`anthropic-skills:aws-infographic`)도 같습니다. `/my-plugins:aws-infographic`과 같은 요청에 반응하고 덱 단계가
+없습니다.
 
 ### 갱신
 
@@ -307,6 +319,9 @@ aws-reports는 npm 패키지 docx, marked, docx-preview, jszip과 NanumSquareOTF
 techblogs는 결과물을 블로그 저장소의 로컬 클론에 배치하고 그 저장소의 Bundler와 Jekyll로 사이트를
 빌드합니다(`bundle exec jekyll build`). Ruby, Bundler, Jekyll은 `setup`이 설치하지 않습니다.
 
+aws-infographic은 Pillow와 Playwright Chromium으로 그리고 NanumSquareOTF 폰트로 글자 폭을 잽니다. 덱 단계는
+aws-ppt-skills의 덱 도구(pptxgenjs, python-pptx, LibreOffice)를 씁니다. 모두 `setup`이 설치합니다.
+
 그다음 한국어로 요청하거나 skill을 직접 부릅니다.
 
 ```text
@@ -318,6 +333,7 @@ techblogs는 결과물을 블로그 저장소의 로컬 클론에 배치하고 �
 PoC 결과를 성공 기준별 판정으로 정리해서 보고서로 만들어줘
 이 조사 내용을 한영 전환되는 HTML 보고서로 만들어줘
 이 측정 결과를 내 블로그에 올릴 글로 정리해줘
+LLM 추론 과정을 인포그래픽으로 만들고 편집 가능한 PPT로도 만들어줘
 /my-plugins:pptx-template-fill
 ```
 
@@ -345,6 +361,7 @@ skills/
 ├── aws-reports/         # 벤치마크·PoC 보고서: Word + HTML 변환기, references, 예제
 ├── html-report/         # 공통 디자인 HTML 보고서: 템플릿, 디자인 규격, 검사기
 ├── techblogs/           # 개인 기술 블로그 글: 스토리라인, 템플릿, 디자인 규격, 새 글 시작, 가져오기, 빌드, 검사, 배치
+├── aws-infographic/     # 사실 검증 인포그래픽: SVG 빌더, 빌드와 QA, 장 템플릿, 편집 가능한 덱 규칙과 검사
 └── setup/               # 의존 프로그램 점검과 설치(scripts/setup.sh)
 commands/                # export-diagram, import-drawio, import-mermaid
 third_party/             # 원 저작물의 라이선스와 고지

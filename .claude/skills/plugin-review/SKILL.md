@@ -64,6 +64,15 @@ Everything in the repo root ships to users (`marketplace.json` has `"source": ".
 - `build_post.py` writes nothing into the skill folder; `import_aws_post.py` fetches only from the AWS blog hosts;
   `place_post.py` never runs git
 
+**aws-infographic**
+- The code is in `scripts/` (copied into the work folder), never pasted into SKILL.md; the icon bundle lookup in
+  `infokit.py` matches the `.aws-icon-bundle` step in SKILL.md; nothing is written into the skill folder
+- The deck of an infographic holds text boxes, shapes, native tables, native charts and `icon:` PNG pictures only:
+  no `addDiagram()`, no SVG, no picture of the infographic. `references/ppt-deck.md`, `scripts/check_editable.py`
+  and the aws-ppt-skills `addIcon()` and `check_deck.py` change together and share `ICON_MAX_IN`
+- The helper and example blocks in `references/ppt-deck.md` build with the aws-ppt-skills helper block
+  (`bash tests/run-all.sh aws-infographic` builds the example when the deck tools are installed)
+
 **Deck skills (aws-ppt-skills, consulting-ppt-white-ppt, pptx-template-fill)**
 - Slides keep the template's background, logo, footer and page numbers; no `·` or `—` in slide copy
 - `node` build steps set `NODE_PATH="$(npm root -g)"` first; templates in `assets/templates/` are never edited

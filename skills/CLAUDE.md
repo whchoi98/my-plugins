@@ -15,6 +15,7 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 | `aws-reports/` | aws-reports 1.0.0 | SKILL.md (report type, then one procedure), `references/` (markdown-spec, style-rules, benchmark-structure, poc-structure, poc-verdict-rules), `scripts/` (report.mjs, check_report.py, chart_style.py, fonts.py, preview.py, svg2png.py, style_terms.json), `assets/examples/` (benchmark, poc) |
 | `html-report/` | new | SKILL.md, `references/design-spec.md` (tokens, page order, language pairs, components), `assets/template.html`, `scripts/` (check_html, embed_images, preview) |
 | `techblogs/` | new (replaces the user-level techblogs skill) | SKILL.md, `references/design-spec.md` (meta.json keys, fragment markup, text rules), `references/publish.md` (placing, build, viewing, git rules), `assets/template.html`, `scripts/` (import_aws_post, build_post, check_post, place_post, preview) |
+| `aws-infographic/` | new (replaces the claude.ai-synced aws-infographic skill) | SKILL.md, `scripts/` (infokit: SVG builder; buildkit: render, layout QA, text lint; icon_png: icons for a deck; check_editable: deck made of editable objects only), `assets/page_template.py`, `references/ppt-deck.md` (content mapping, deck helpers, example) |
 | `setup/` | new | SKILL.md, `scripts/setup.sh` (check, install, install --sudo) |
 
 ## Cross-skill links
@@ -29,6 +30,11 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 - techblogs → `my-plugins:kor-deslop` (check-only), `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design`
   (figures), `my-plugins:setup` (Playwright); `../aws-blog-skills/scripts/lint_prose.py` and `check_urls.py`,
   `../aws-blog-skills/references/style.md`, `humanize-checklist.md` and `verification.md`
+- aws-infographic → `my-plugins:aws-ppt-skills` (the editable deck), `my-plugins:setup` (Pillow, Playwright, fonts,
+  deck tools); `../aws-diagram/assets/icons.json` and `scripts/find_icon.py` (icons), `../aws-ppt-skills/scripts/`
+  `apply_template.py` and `check_deck.py`
+- aws-ppt-skills → `../aws-infographic/scripts/icon_png.py`, `check_editable.py` and `references/ppt-deck.md`
+  (editable decks, `addIcon()`)
 - setup → `../aws-diagram-design/assets/fonts/ttf` (Amazon Ember), `../aws-ppt-skills/scripts/install_fonts.sh`
 
 ## Rules
@@ -36,4 +42,5 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 - Renaming or moving a skill breaks the relative links above and the `my-plugins:<name>` calls; update both
   and the README skill table.
 - Trigger phrases of aws-blog-skills overlap with the claude.ai-synced `anthropic-skills:aws-blog-skills` and
-  `blog-writing`; README explains how to turn the synced copies off.
+  `blog-writing`, and those of aws-infographic with `anthropic-skills:aws-infographic`; README explains how to turn
+  the synced copies off.

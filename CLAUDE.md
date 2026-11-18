@@ -4,8 +4,9 @@
 `my-plugins` 1.5.2 is one Claude Code plugin that bundles five earlier plugins by WooHyung Choi:
 aws-blog-skills (AWS Korea Tech Blog drafts), aws-diagrams (AWS architecture and structure diagrams),
 kor-writing (Korean AI-tell removal), aws-deck (AWS PowerPoint decks) and aws-reports (benchmark and PoC
-reports as MS Word + HTML), plus the new html-report skill (common-design bilingual HTML reports) and the new
-techblogs skill (posts for the author's personal tech blog). It ships eleven
+reports as MS Word + HTML), plus the new html-report skill (common-design bilingual HTML reports), the new
+techblogs skill (posts for the author's personal tech blog) and the new aws-infographic skill (fact-checked
+infographics and an editable deck of the same content). It ships twelve
 skills, three slash commands, and Python, Bash and Node.js scripts that Claude runs on the user's machine. The `setup`
 skill checks and installs the external tools and fonts the other skills need.
 
@@ -17,7 +18,7 @@ Public repo `github.com/whchoi98/my-plugins`, MIT (bundled third-party files kee
 - **Content** — Markdown skills (`skills/<name>/SKILL.md`) with on-demand references, templates and assets
 - **Shipped scripts** — Python 3 (blog lint, structure, URL, diagram generation; icon lookup and embedding;
   diagram self-checks; python-pptx template tools; HTML report checks and image embedding; personal blog post import,
-  build, check and placement), Playwright for Python (`uv run --no-project --with playwright`),
+  build, check and placement; infographic SVG builder, render QA and the editable-deck check), Playwright for Python (`uv run --no-project --with playwright`),
   Node.js + pptxgenjs v4 (deck builds), Node.js + docx 9 + marked 18 (report builds, `report.mjs`),
   Bash (`package_blog.sh`, `install_fonts.sh`, `setup.sh`)
 - **Render QA tools** — LibreOffice `soffice`, Poppler `pdftoppm`/`pdftotext`, `rsvg-convert` or cairosvg
@@ -30,7 +31,8 @@ Public repo `github.com/whchoi98/my-plugins`, MIT (bundled third-party files kee
 .claude-plugin/   - plugin.json (name, version) + marketplace.json (source ./)        [ships, loaded]
 skills/           - Shipped skills; module doc skills/CLAUDE.md                        [ships, loaded]
   aws-blog-skills/  aws-diagram/  aws-diagram-design/  kor-deslop/
-  aws-ppt-skills/  consulting-ppt-white-ppt/  pptx-template-fill/  aws-reports/  html-report/  techblogs/  setup/
+  aws-ppt-skills/  consulting-ppt-white-ppt/  pptx-template-fill/  aws-reports/  html-report/  techblogs/
+  aws-infographic/  setup/
 commands/         - export-diagram, import-drawio, import-mermaid (aws-diagram-design)  [ships, loaded]
 third_party/      - upstream licenses and notices                                        [ships, inert]
 LICENSE, NOTICE.md, README.md, CHANGELOG.md                                              [ships, inert]
@@ -82,6 +84,11 @@ a plugin component there. Everything under `.claude/` is only active when this r
   - techblogs: a design rule goes into `references/design-spec.md`, `assets/template.html` and
     `scripts/check_post.py` together; a report keeps the template's `<style>` and `<script>`; the page body is
     built from the fragment files in the work folder (`meta.json`, `ko.body.html`, `en.body.html`).
+  - aws-infographic: the code lives in `scripts/` and is copied into the work folder, never pasted into SKILL.md;
+    the icon bundle lookup in `infokit.py` and the `.aws-icon-bundle` step in SKILL.md change together; the deck
+    of an infographic holds text boxes, shapes, tables, charts and `icon:` PNG pictures only, so a rule about it
+    goes into `references/ppt-deck.md`, `scripts/check_editable.py` and the aws-ppt-skills `addIcon()` and
+    `check_deck.py` together (one `ICON_MAX_IN`).
 - **Module docs**: never put `CLAUDE.md` inside `skills/<name>/`; that directory ships as the skill.
 - **Docs**: user-facing docs are bilingual (English first, `<a id="english">` / `<a id="korean">`),
   Korean sections in 합니다체, skill text in 한다체, no emojis, Mermaid for diagrams.
@@ -127,6 +134,7 @@ After exiting Plan mode (`/plan`), before starting implementation:
 - New skill under `skills/` -> Update `skills/CLAUDE.md`, README skill table (both languages), `docs/reference/agent-llm.md`
 - New external tool or font -> Update `skills/setup/scripts/setup.sh`, `skills/setup/SKILL.md`, README (both languages)
 - New or changed aws-blog-skills script -> Update its SKILL.md and `tests/structure/test-aws-blog-skills-scripts.sh`
+- Changed deck helper in `skills/aws-infographic/references/ppt-deck.md` or `addIcon()` -> Run `bash tests/run-all.sh aws-infographic` with the deck tools installed (the example deck is built there)
 - Anything under `skills/` or `commands/` changed -> Version bump + CHANGELOG `[Unreleased]` (both languages)
 - Harness changed (`.claude/`, `tests/`, `scripts/`) -> Update `tests/CLAUDE.md` and `docs/reference/security.md`
 

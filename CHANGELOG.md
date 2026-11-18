@@ -15,6 +15,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `aws-infographic`: new skill, moved into the plugin from the author's claude.ai skill of the same name. It makes fact-checked technical infographics in the AWS palette: per page a 16:9 dark and light SVG with embedded icons and a 2x PNG, and 4:5 on request. The code the old SKILL.md carried as pasted blocks now ships as files (`scripts/infokit.py`, `scripts/buildkit.py`, `assets/page_template.py`) and is copied into the work folder. `infokit.py` finds the aws-diagram icon bundle (`AWS_ICON_BUNDLE`, a `.aws-icon-bundle` file next to the copy, the sibling skill, installed copies) and the fonts by file name (`INFOKIT_FONTS`, fontconfig, the user font folders); Pillow and Playwright are imported only where they are used. The drawing API is unchanged, so page modules written for the earlier skill build the same SVG
+- `aws-infographic`: step 9 makes an editable PowerPoint deck of the same content through `my-plugins:aws-ppt-skills`. The infographic's SVG or PNG never goes on a slide. Each section becomes one content slide rebuilt from text boxes, shapes, PowerPoint tables, native charts and AWS icon PNGs, with the wording taken from the page module's `T` dict. `references/ppt-deck.md` holds the content mapping, the helpers `addGrid()`, `addSteps()`, `addIconRow()` and `addLanes()`, and an example deck for the page template. `scripts/icon_png.py` exports bundle icons as PNG, and `scripts/check_editable.py` fails a deck that links an SVG, holds a picture that is not an icon, or holds an icon larger than 1.2 in ([ADR-006](docs/decisions/ADR-006-infographic-editable-deck.md)). 163 tests added
+
+### Changed
+- `aws-ppt-skills`: `addIcon()` places an AWS icon as one small PNG picture named `icon:<set/name>`, and `check_deck.py` no longer asks such a picture (up to 1.2 in) for a vector SVG. "Charts and Diagrams" says how an editable deck is built: no `addDiagram()`, no SVG, and `check_editable.py` at the end
+- `setup`: the render group of the check names aws-infographic, which uses the same tools and fonts. Nothing new is installed
+
 ## [1.5.2] - 2026-11-17
 
 ### Changed
@@ -152,6 +160,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+- `aws-infographic`: 새 skill 추가. 글쓴이의 claude.ai skill(같은 이름)을 플러그인으로 옮김. 사실 검증한 AWS 팔레트 기술 인포그래픽을 장마다 16:9 다크와 라이트 SVG(아이콘 내장)와 2x PNG로 만들고 요청하면 4:5 세로를 더함. 예전 SKILL.md에 코드 블록으로 들어 있던 코드를 파일(`scripts/infokit.py`, `scripts/buildkit.py`, `assets/page_template.py`)로 배포하고 작업 폴더에 복사해 씀. `infokit.py`가 aws-diagram 아이콘 번들을 `AWS_ICON_BUNDLE`, 사본 옆의 `.aws-icon-bundle` 파일, 옆 skill, 설치된 사본 순서로 찾고 폰트는 파일 이름으로 찾음(`INFOKIT_FONTS`, fontconfig, 사용자 폰트 폴더). Pillow와 Playwright는 쓰는 곳에서만 불러옴. 그리기 API는 그대로여서 예전 skill로 쓴 장 모듈이 같은 SVG를 만듦
+- `aws-infographic`: 9단계에서 같은 내용을 `my-plugins:aws-ppt-skills`로 편집 가능한 PowerPoint 덱으로 만듦. 인포그래픽 SVG, PNG는 슬라이드에 넣지 않음. 섹션 하나를 내용 슬라이드 한 장으로 옮기고 텍스트 상자, 도형, PowerPoint 표, 차트, AWS 아이콘 PNG로 다시 만들며 문구는 장 모듈의 `T` dict에서 가져옴. `references/ppt-deck.md`에 내용 대응표, helper `addGrid()`, `addSteps()`, `addIconRow()`, `addLanes()`, 장 템플릿의 예시 덱을 둠. `scripts/icon_png.py`가 번들 아이콘을 PNG로 내보내고, `scripts/check_editable.py`가 SVG가 연결된 덱, 아이콘이 아닌 그림이 든 덱, 1.2 in보다 큰 아이콘이 든 덱을 실패로 처리함([ADR-006](docs/decisions/ADR-006-infographic-editable-deck.md)). 테스트 163개 추가
+
+### Changed
+- `aws-ppt-skills`: `addIcon()` 추가. AWS 아이콘을 `icon:<set/name>` 이름의 작은 PNG 그림 하나로 놓음. `check_deck.py`는 이런 그림(1.2 in 이하)에 벡터 SVG 경고를 내지 않음. "Charts and Diagrams"에 편집 가능한 덱을 만드는 방법(`addDiagram()`과 SVG 없이, 마지막에 `check_editable.py`)을 적음
+- `setup`: 점검의 렌더 묶음 이름에 aws-infographic 추가. 같은 도구와 폰트를 쓰며 새로 설치하는 것은 없음
 
 ## [1.5.2] - 2026-11-17
 

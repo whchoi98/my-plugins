@@ -9,7 +9,8 @@ Checks
   WARN   presentation time on the Agenda or in speaker notes (10분, 30분 동안, 시간 관계상),
          slide text ending in a predicate (~합니다, ~입니다 ...) instead of a noun phrase,
          fonts other than NanumSquareOTF Bold / D2Coding, top-anchored text outside code boxes,
-         speaker notes shorter than 4 lines, pictures without a vector SVG (charts must be native)
+         speaker notes shorter than 4 lines, pictures without a vector SVG (charts must be native;
+         an icon picture named "icon:<set/name>" by addIcon(), up to 1.2 in, needs none)
 
 Usage
   python3 check_deck.py <Deck>.pptx
@@ -25,6 +26,7 @@ A = "{http://schemas.openxmlformats.org/drawingml/2006/main}"
 C = "{http://schemas.openxmlformats.org/drawingml/2006/chart}"
 P = "{http://schemas.openxmlformats.org/presentationml/2006/main}"
 ALLOWED_FONTS = {"NanumSquareOTF Bold", "D2Coding"}
+ICON_MAX_IN = 1.2   # same limit as ../../aws-infographic/scripts/check_editable.py
 BAD_CHARS = {"·": "middle dot", "—": "em-dash"}
 # Slide copy must end in a noun phrase ("컨테이너 이미지로 배포"), not a predicate ("배포합니다.").
 PREDICATE_END = re.compile(r"(습니다|합니다|입니다|됩니다|있습니다|없습니다|십시오|하세요|해요|이다|한다|된다)[.!?]?\s*$")
@@ -90,6 +92,10 @@ def main() -> int:
                 warns.append(f"{tag}: top-anchored text box (use valign middle; code boxes excepted)")
         for pic in sp_tree.iter(f"{P}pic"):
             name = pic.find(f"{P}nvPicPr/{P}cNvPr").get("name", "")
+            ext = pic.find(f"{P}spPr/{A}xfrm/{A}ext")
+            side = max(int(ext.get("cx", "0")), int(ext.get("cy", "0"))) / 914400 if ext is not None else 0.0
+            if name.startswith("icon:") and side <= ICON_MAX_IN:
+                continue  # AWS icon placed by addIcon(): a small PNG, not a chart or a diagram
             if not any(e.tag.endswith("}svgBlip") for e in pic.iter()):
                 warns.append(f"{tag}: picture '{name}' has no vector SVG - charts must use addNativeChart, diagrams addDiagram")
         for gf in slide.shapes:

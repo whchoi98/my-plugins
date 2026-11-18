@@ -1,7 +1,7 @@
 # Tests Module
 
 ## Role
-Harness tests for the dev hooks, for invariants of the shipped my-plugins plugin (eleven skills, three
+Harness tests for the dev hooks, for invariants of the shipped my-plugins plugin (twelve skills, three
 commands, manifests, licenses, docs), and for the behavior of the scripts it ships. Bash + `jq` + Python 3;
 no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL checker. Optional tools
 (`node`, `claude`) are skipped when absent. Run with `bash tests/run-all.sh [filter]`.
@@ -78,6 +78,20 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   references; an image on another host is warned about, not fetched); `place_post.py` runs on a fake blog repository
   with `git` and `bundle` stubbed (existing slug, `--replace`, category and icon checks). `preview.py` and `--build`
   are not run.
+- `structure/test-aws-infographic.sh` — aws-infographic: skill files, description routing, sections, the script
+  calls in SKILL.md and no claude.ai-only paths, the PPT step (deck through `my-plugins:aws-ppt-skills`, no picture of
+  the infographic, `addIcon()`, `check_editable.py`) and the same rule in `references/ppt-deck.md`, whose code blocks
+  call neither `addDiagram()` nor an SVG. `infokit.py`: icon bundle lookup (sibling skill, `.aws-icon-bundle` next to
+  a copy, `AWS_ICON_BUNDLE`, exit 1 with a scratch `HOME`), font lookup by file name under `INFOKIT_FONTS`, and no
+  module-level Pillow or Playwright import. With Pillow: the page template rendered in both themes and sizes with a
+  clean `buildkit.lint`, the lint rules on a made-up SVG, and `icon_png.py` (unknown name, a PNG icon without a
+  browser). `check_editable.py` on decks zipped in `$TEST_TMP`, one per rule (linked SVG, SVG inside a picture,
+  picture that is not an icon, oversized icon, `--icon-max`, no slides, XML with a DTD). The aws-ppt-skills side:
+  `addIcon()`, one `ICON_MAX_IN`, and with python-pptx the `icon:` exemption in `check_deck.py`. With node, pptxgenjs,
+  python-pptx and lxml: the example deck assembled from the aws-ppt-skills helper block and the two blocks of
+  `ppt-deck.md`, built, templated, passed through `check_deck.py` (0 errors, 0 warnings) and `check_editable.py`; the
+  same deck with a timeline (`addLanes()`) and a table without a header row (`addGrid(s, null, rows)`); and the same
+  deck with one pasted picture refused. Skipped parts say why. `buildkit.py build` (Playwright) is not run.
 - `structure/test-integration.sh` — behavior of the merge fixes, each run with `HOME` on a scratch folder:
   `diagram_lib.py` asset lookup order (sibling skill, `AWS_DIAGRAM_ASSETS`, `.aws-diagram-assets`, plugin
   caches in numeric version order), `skills/setup/scripts/setup.sh` check mode and usage exit codes, sudo
@@ -94,7 +108,7 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   non-zero (`|| true`, or capture `$?`). Run `cd` only in a subshell.
 - Sourcing shares the runner's scope. Never assign `TOTAL`, `PASSED`, `FAILED`, `SKIPPED`, `FAILURES`,
   `FILTER`, `TEST_TMP`, `PROJECT_ROOT` or `SCRIPT_DIR`; a structure test rejects it. Prefix test-local
-  names per file (`PS_`, `AB_`, `SCR_`, `KD_`, `IT_`, `HK_`, `SP_`, `AR_`, `HR_`, `TB_`). Never export or assign `HOME`; pass it
+  names per file (`PS_`, `AB_`, `SCR_`, `KD_`, `IT_`, `HK_`, `SP_`, `AR_`, `HR_`, `TB_`, `IG_`). Never export or assign `HOME`; pass it
   per command (`env HOME="$TEST_TMP/..." ...`).
 - Never write a complete secret literal anywhere; split it into prefix and body.
 - Use `$TEST_TMP` for scratch files and repos; it is removed on exit. Never write into `skills/`

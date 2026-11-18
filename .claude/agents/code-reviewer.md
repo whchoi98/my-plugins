@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Review changes to the my-plugins plugin (eleven skills, three commands, bundled scripts, setup.sh, manifests, harness) for broken invariants, contradictions, and release-hygiene gaps with confidence-based filtering. Reports only high-confidence issues (75+). Use proactively after editing skills/ or commands/, or before committing.
+description: Review changes to the my-plugins plugin (twelve skills, three commands, bundled scripts, setup.sh, manifests, harness) for broken invariants, contradictions, and release-hygiene gaps with confidence-based filtering. Reports only high-confidence issues (75+). Use proactively after editing skills/ or commands/, or before committing.
 tools: Read, Glob, Grep, Bash(git diff:*), Bash(git log:*)
 model: sonnet
 color: green
@@ -37,6 +37,10 @@ as `my-plugins@my-plugins` and call `/my-plugins:<skill>`.
      changes in all three; the template's `[[tokens]]` are the keys `build_post.py` fills; `build_post.py` writes
      nothing into the skill folder, `import_aws_post.py` fetches only from the AWS blog hosts and `place_post.py`
      never runs git.
+   - aws-infographic: the scripts are files under `scripts/`, not code pasted into SKILL.md; `infokit.py` and
+     `icon_png.py` write nothing into the skill folder; the deck step never places the infographic, an SVG or any
+     picture other than an `icon:` PNG, and `references/ppt-deck.md`, `check_editable.py`, the aws-ppt-skills
+     `addIcon()` and `check_deck.py` agree on that rule and on `ICON_MAX_IN`.
    - aws-ppt-skills and the deck skills: slides keep the template's background, logo, footer and page numbers;
      no `·` or `—` in slide copy; build steps set `NODE_PATH="$(npm root -g)"` before `node`.
    - aws-diagram-design and `commands/`: the commands follow `references/export.md`, `import-drawio.md`,

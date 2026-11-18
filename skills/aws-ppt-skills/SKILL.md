@@ -50,7 +50,7 @@ Source material the user supplies or that you fetch (GitHub repos, documents, PD
 | `assets/fonts/D2Coding-Ver1.3.2-20180524.ttf` | Code font (naver/d2codingfont, SIL OFL 1.1) |
 | `scripts/install_fonts.sh` | Installs both fonts and the fontconfig aliases so LibreOffice QA renders the real typefaces |
 | `scripts/apply_template.py` | Stage 2: re-homes built slides onto the template layouts |
-| `scripts/check_deck.py` | Rule lint: template applied, no drawn footer, punctuation, noun phrases, fonts, chart workbooks, notes |
+| `scripts/check_deck.py` | Rule lint: template applied, no drawn footer, punctuation, noun phrases, fonts, chart workbooks, notes, pictures (vector SVG, or an `icon:` picture of icon size) |
 | `scripts/svg_to_png.py` | PNG preview for SVG diagrams (the SVG itself is embedded by `apply_template.py`) |
 | `references/diagrams.md` | Chart and diagram routing, `/my-plugins:aws-diagram` and `/my-plugins:aws-diagram-design` settings, theme skin tokens |
 
@@ -733,6 +733,15 @@ function addDiagram(s, d) {
   s.addImage({ path: d.png, x: box.x + (box.w - w) / 2, y: box.y + (box.h - h) / 2, w: w, h: h,
     altText: d.alt || "", objectName: d.svg ? "svg:" + d.svg : undefined });
 }
+
+// ── AWS icon beside a label: one small PNG picture (no SVG), for decks where every element stays editable ──
+// i = { png: "icons/service-Amazon-Bedrock.png", ref: "service/Amazon-Bedrock", x, y, size: 0.40, alt }
+// PNG from ../aws-infographic/scripts/icon_png.py. The picture is named "icon:<ref>": only a picture with that
+// name, up to 1.2 in, passes check_deck.py without a vector SVG. Charts, diagrams and figures never go here.
+function addIcon(s, i) {
+  const size = i.size ?? 0.40;
+  s.addImage({ path: i.png, x: i.x, y: i.y, w: size, h: size, altText: i.alt || i.ref, objectName: "icon:" + i.ref });
+}
 ```
 
 Deck content then follows this shape:
@@ -769,10 +778,12 @@ pres.writeFile({ fileName: "<DeckName>_raw.pptx" });
 | AWS architecture / cloud infrastructure | `/my-plugins:aws-diagram` | Official-icon SVG → `svg_to_png.py` → `addDiagram()` |
 | Structure of a slide's content: flowchart, sequence, timeline, swimlane, quadrant, funnel/pyramid, Venn, loop, tree, org chart, layer stack, ER, state | `/my-plugins:aws-diagram-design` | Its visual-type selection (§3) decides the form → SVG export → `svg_to_png.py` → `addDiagram()` |
 | Simple 2-4 element structures | `addSplitCompare()`, `addBudgetBars()`, 4-layer and step-flow patterns | Native shapes |
+| AWS service icon beside a label | `addIcon()` | One PNG picture per icon, named `icon:<set/name>`, 0.30-0.60 design. PNG from `../aws-infographic/scripts/icon_png.py` |
 
 - Graphs are always native: when `/my-plugins:aws-diagram-design` points to a bar, line, scatter, Gantt or radar type, keep its type choice and emphasis but build the chart with `addNativeChart()` from the same data.
 - Invoke `/my-plugins:aws-diagram` and `/my-plugins:aws-diagram-design` through the Skill tool, with the theme settings in `references/diagrams.md` (dark variants on black, light on white, `NanumSquareOTF Bold` labels, accent = `C.subtitleOrange`, full-canvas background in the slide color). On the black theme use the white-stroke `agentcore-light` icons; `agentcore-dark` icons are black and disappear on dark slides.
 - Size each diagram's viewBox to its box (full body 9.16 x 3.00 design ≈ 3:1, e.g. `0 0 1200 400`).
+- **Editable decks** (the user asks for a deck whose elements can all be edited, or `/my-plugins:aws-infographic` builds one from an infographic): no `addDiagram()` and no SVG anywhere. Build every structure from text boxes, shapes, native tables and native charts, place AWS icons with `addIcon()`, and finish with `python3 "$SKILL_DIR/../aws-infographic/scripts/check_editable.py" <DeckName>.pptx` (0 errors). The content mapping and the extra helpers are in `../aws-infographic/references/ppt-deck.md`.
 - `addDiagram()` names the picture `svg:<file>`; `apply_template.py` embeds that SVG next to the PNG so PowerPoint shows the vector (and can convert it to shapes). The embedded copy gets an opaque slide-color backdrop and `xlink:href`, and the PNG fallback is flattened, so dark-theme diagrams stay visible in viewers that draw transparency as white.
 
 ---

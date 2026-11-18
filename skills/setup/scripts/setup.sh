@@ -123,7 +123,7 @@ check_reports() {
 
 run_checks() {
   echo "== 기본 도구"; check_base
-  echo "== 다이어그램 렌더 (aws-blog-skills, aws-diagram-design export)"; check_render
+  echo "== 다이어그램 렌더 (aws-blog-skills, aws-diagram-design export, aws-infographic)"; check_render
   echo "== 폰트"; check_fonts
   echo "== 덱 (aws-ppt-skills, consulting-ppt-white-ppt, pptx-template-fill)"; check_deck
   echo "== 보고서 (aws-reports)"; check_reports
