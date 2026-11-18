@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.6.0] - 2026-11-18
+
 ### Added
 - `aws-infographic`: new skill, moved into the plugin from the author's claude.ai skill of the same name. It makes fact-checked technical infographics in the AWS palette: per page a 16:9 dark and light SVG with embedded icons and a 2x PNG, and 4:5 on request. The code the old SKILL.md carried as pasted blocks now ships as files (`scripts/infokit.py`, `scripts/buildkit.py`, `assets/page_template.py`) and is copied into the work folder. `infokit.py` finds the aws-diagram icon bundle (`AWS_ICON_BUNDLE`, a `.aws-icon-bundle` file next to the copy, the sibling skill, installed copies) and the fonts by file name (`INFOKIT_FONTS`, fontconfig, the user font folders); Pillow and Playwright are imported only where they are used. The drawing API is unchanged, so page modules written for the earlier skill build the same SVG
 - `aws-infographic`: step 9 makes an editable PowerPoint deck of the same content through `my-plugins:aws-ppt-skills`. The infographic's SVG or PNG never goes on a slide. Each section becomes one content slide rebuilt from text boxes, shapes, PowerPoint tables, native charts and AWS icon PNGs, with the wording taken from the page module's `T` dict. `references/ppt-deck.md` holds the content mapping, the helpers `addGrid()`, `addSteps()`, `addIconRow()` and `addLanes()`, and an example deck for the page template. `scripts/icon_png.py` exports bundle icons as PNG, and `scripts/check_editable.py` fails a deck that links an SVG, holds a picture that is not an icon, or holds an icon larger than 1.2 in ([ADR-006](docs/decisions/ADR-006-infographic-editable-deck.md)). 163 tests added
@@ -136,7 +138,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.5.2...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/whchoi98/my-plugins/compare/v1.5.2...v1.6.0
 [1.5.2]: https://github.com/whchoi98/my-plugins/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/whchoi98/my-plugins/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/whchoi98/my-plugins/compare/v1.4.2...v1.5.0
@@ -160,6 +163,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.6.0] - 2026-11-18
 
 ### Added
 - `aws-infographic`: 새 skill 추가. 글쓴이의 claude.ai skill(같은 이름)을 플러그인으로 옮김. 사실 검증한 AWS 팔레트 기술 인포그래픽을 장마다 16:9 다크와 라이트 SVG(아이콘 내장)와 2x PNG로 만들고 요청하면 4:5 세로를 더함. 예전 SKILL.md에 코드 블록으로 들어 있던 코드를 파일(`scripts/infokit.py`, `scripts/buildkit.py`, `assets/page_template.py`)로 배포하고 작업 폴더에 복사해 씀. `infokit.py`가 aws-diagram 아이콘 번들을 `AWS_ICON_BUNDLE`, 사본 옆의 `.aws-icon-bundle` 파일, 옆 skill, 설치된 사본 순서로 찾고 폰트는 파일 이름으로 찾음(`INFOKIT_FONTS`, fontconfig, 사용자 폰트 폴더). Pillow와 Playwright는 쓰는 곳에서만 불러옴. 그리기 API는 그대로여서 예전 skill로 쓴 장 모듈이 같은 SVG를 만듦
@@ -282,7 +287,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.5.2...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/whchoi98/my-plugins/compare/v1.5.2...v1.6.0
 [1.5.2]: https://github.com/whchoi98/my-plugins/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/whchoi98/my-plugins/compare/v1.5.0...v1.5.1
 [1.5.0]: https://github.com/whchoi98/my-plugins/compare/v1.4.2...v1.5.0
