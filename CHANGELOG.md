@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.7.0] - 2026-11-21
+
 ### Added
 - `aws-ppt-skills`: HTML deck. The skill asks the output format first (`PPT만`, `HTML만`, `PPT와 HTML 둘 다`). `scripts/deck_to_html.py` converts the finished `.pptx` into one self-contained `.html` presented in a browser: text, shapes and tables as HTML at the deck's coordinates, charts as SVG drawn from the chart data, diagrams as their vector SVG, the template background, logo and page numbers as pictures rendered from the template, subset fonts, and the notes for a presenter view. The page (`assets/html/deck.css`, `deck.js`) has keyboard navigation, a presenter window with the notes, the next slide and a timer (`N`), a slide list (`G`), a laser pointer (`P`), a blank screen (`B`), fullscreen (`F`) and a one-slide-per-page print layout for a PDF backup. `--no-notes` leaves the notes out of a page that will be published. `scripts/preview_html_deck.py` screenshots every slide, the list and the presenter view in Chromium and fails when the keys, the presenter window or the fonts do not work. `references/html-deck.md` holds the options, warnings, limits and the presenter guide. Decision in ADR-007. 155 tests added
 - `setup`: checks and installs fonttools (`pip install --user`), which `deck_to_html.py` uses to embed only the characters a deck needs
@@ -150,7 +152,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/whchoi98/my-plugins/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/whchoi98/my-plugins/compare/v1.5.2...v1.6.0
 [1.5.2]: https://github.com/whchoi98/my-plugins/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/whchoi98/my-plugins/compare/v1.5.0...v1.5.1
@@ -175,6 +178,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.7.0] - 2026-11-21
 
 ### Added
 - `aws-ppt-skills`: HTML 덱 추가. 출력 형식(`PPT만`, `HTML만`, `PPT와 HTML 둘 다`)을 가장 먼저 물음. `scripts/deck_to_html.py`가 완성한 `.pptx`를 브라우저에서 발표하는 한 파일짜리 `.html`로 변환. 글자, 도형, 표는 덱의 좌표 그대로 HTML로, 차트는 차트 데이터에서 그린 SVG로, 다이어그램은 벡터 SVG로, 템플릿의 배경, 로고, 쪽 번호는 템플릿에서 렌더한 그림으로 넣고, 글꼴은 쓰인 글자만 포함하며, 노트는 발표자 보기에 표시. 페이지(`assets/html/deck.css`, `deck.js`)는 키보드 이동, 노트와 다음 슬라이드와 시간이 나오는 발표자 창(`N`), 슬라이드 목록(`G`), 레이저 포인터(`P`), 화면 가리기(`B`), 전체 화면(`F`), 슬라이드 한 장이 한 쪽인 인쇄 배치(PDF 백업)를 제공. `--no-notes`는 게시할 페이지에서 노트를 뺌. `scripts/preview_html_deck.py`가 Chromium에서 슬라이드, 목록, 발표자 보기를 캡처하고 키, 발표자 창, 글꼴이 동작하지 않으면 실패. `references/html-deck.md`에 옵션, 경고, 한계, 발표자 안내 수록. 결정은 ADR-007. 테스트 155개 추가
@@ -311,7 +316,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.6.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.7.0...HEAD
+[1.7.0]: https://github.com/whchoi98/my-plugins/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/whchoi98/my-plugins/compare/v1.5.2...v1.6.0
 [1.5.2]: https://github.com/whchoi98/my-plugins/compare/v1.5.1...v1.5.2
 [1.5.1]: https://github.com/whchoi98/my-plugins/compare/v1.5.0...v1.5.1
