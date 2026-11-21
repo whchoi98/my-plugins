@@ -106,6 +106,15 @@ done
 # "Changelog" stays in English: the row that bans its translation names the word to write instead
 assert_eq "style.md: the 변경 기록 row says to write Changelog" "1" \
     "$(printf '%s\n' "$AB_STYLE" | grep -cE '^\| 변경 기록, 변경기록 [^|]*\| Changelog \|' || true)"
+# Word rule of 2026-11-18: a part of a text is 챕터 or 장 (not 절), and 비교하다 (not 견주다)
+assert_eq "style.md: the 절 row says to write 챕터, 장" "1" \
+    "$(printf '%s\n' "$AB_STYLE" | grep -cE '^\| 절 \([^|]*\| 챕터, 장 \|' || true)"
+assert_eq "style.md: the 견주다 row says to write 비교하다" "1" \
+    "$(printf '%s\n' "$AB_STYLE" | grep -cE '^\| 견주다 [^|]*\| 비교하다 \|' || true)"
+for ab_hint in '"챕터, 장 (2026-11-18 확정)"' '"비교하다 (2026-11-18 확정)"'; do
+    grep -qF -- "$ab_hint" "$SKILL_DIR/scripts/lint_prose.py" && pass "lint_prose.py HARD_RE has the hint $ab_hint" \
+        || fail "lint_prose.py HARD_RE has the hint $ab_hint" "style.md has the row but lint_prose.py does not"
+done
 
 # --- Shipped scripts: shebang means executable ---
 for ab_f in "$SKILL_DIR"/scripts/*; do

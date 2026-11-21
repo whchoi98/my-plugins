@@ -30,7 +30,7 @@ as `my-plugins@my-plugins` and call `/my-plugins:<skill>`.
      `package_blog.sh` writes only under its out directory and no zip on failure; `check_urls.py` keeps the
      final-URL comparison; the step 0 source-material rule is intact; the `find_assets()` order and the
      `.aws-diagram-assets` pointer step in SKILL.md stay in step.
-   - kor-deslop: the pattern count (80) is the same in SKILL.md, its rulebook under `references/` and the README.
+   - kor-deslop: the pattern count (81) is the same in SKILL.md, its rulebook under `references/` and the README.
    - html-report: a design value in `references/design-spec.md`, `assets/template.html` and `scripts/check_html.py`
      changes in all three; `embed_images.py` reads only files inside the page's folder.
    - techblogs: a design value in `references/design-spec.md`, `assets/template.html` and `scripts/check_post.py`

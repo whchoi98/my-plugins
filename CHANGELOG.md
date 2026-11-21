@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `aws-blog-skills`, `techblogs`, `kor-deslop`: word rule confirmed on 2026-11-18. A part of a text is written "챕터" or "장", not "절", and "비교하다" replaces "견주다". `style.md` lists both words. `lint_prose.py` reports them as HARD findings: "절" as a word of its own, with or without a particle, and every form of "견주다". Compounds such as 절차 and 절반, grammar terms such as 관형절, and an SQL clause after an English word ("WHERE 절") are left out. `check_post.py` warns about both words in every text node, tables and headings included. kor-deslop gains pattern D-9 (81 patterns). 38 tests added
+
+### Changed
+- `aws-blog-skills`: `lint_prose.py` counts "이 챕터에서는" as a heading guide sentence (C-6) and reports a numbered reference with 챕터 ("챕터 3에서", "2챕터의") as a section-number reference, like "3.1절"
+- `techblogs`, `html-report`, `kor-deslop`, `aws-blog-skills`: the skills' own documents and script messages (`check_post.py`, `build_post.py`, `new_post.py`, `check_html.py`), the storyline label ("챕터 흐름") and the sample text of the html-report template say "챕터". html-report follows because its Korean text runs through the same `lint_prose.py`. The `<style>` and `<script>` of both templates are unchanged, so published pages still pass their checks
+
+### Fixed
+- `tests/run-all.sh`: `assert_contains` and `assert_not_contains` compare inside the shell. Under `pipefail`, `printf | grep -q` failed by SIGPIPE when grep exited on an early match in a long text, so a correct check could fail at random and `assert_not_contains` could pass when it had to fail
+
 ## [1.6.0] - 2026-11-18
 
 ### Added
@@ -163,6 +173,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+- `aws-blog-skills`, `techblogs`, `kor-deslop`: 2026-11-18에 확정한 낱말 규칙 추가. 글의 한 부분은 "절"이 아니라 "챕터"나 "장"으로, "견주다"는 "비교하다"로 씀. `style.md`에 두 낱말을 올림. `lint_prose.py`가 HARD로 잡음(조사가 붙거나 붙지 않은 낱말 "절", "견주다"의 모든 활용형). 절차, 절반 같은 합성어, 관형절 같은 문법 용어, 영어 낱말 뒤의 SQL 절("WHERE 절")은 제외. `check_post.py`가 표와 제목을 포함한 모든 글에서 두 낱말을 WARN으로 알림. kor-deslop에 패턴 D-9 추가(패턴 81개). 테스트 38개 추가
+
+### Changed
+- `aws-blog-skills`: `lint_prose.py`가 "이 챕터에서는"을 헤딩 아래 안내문(C-6)으로 세고, 번호를 붙여 가리키는 챕터("챕터 3에서", "2챕터의")를 "3.1절"과 같은 섹션 번호 참조로 잡음
+- `techblogs`, `html-report`, `kor-deslop`, `aws-blog-skills`: skill 문서와 스크립트 메시지(`check_post.py`, `build_post.py`, `new_post.py`, `check_html.py`), 스토리라인 항목 이름("챕터 흐름"), html-report 템플릿의 예시 문장을 "챕터"로 바꿈. html-report는 한국어 글이 같은 `lint_prose.py`를 거치므로 함께 맞춤. 두 템플릿의 `<style>`과 `<script>`는 그대로여서 이미 게시한 페이지의 검사 결과는 바뀌지 않음
+
+### Fixed
+- `tests/run-all.sh`: `assert_contains`와 `assert_not_contains`가 셸 안에서 비교하도록 수정. `pipefail`에서 `printf | grep -q`는 긴 글의 앞쪽에서 일치해 grep이 먼저 끝나면 SIGPIPE로 실패해, 맞는 검사가 가끔 실패하고 `assert_not_contains`는 실패해야 할 때 통과할 수 있었음
 
 ## [1.6.0] - 2026-11-18
 

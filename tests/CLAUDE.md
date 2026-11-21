@@ -9,7 +9,9 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
 ## Key Files
 - `run-all.sh` — runner. Defines `pass`/`fail`/`skip` and `assert_*`, `cd`s to the repo root, exports
   `CLAUDE_PROJECT_DIR` and a scratch dir `$TEST_TMP`, then **sources** every `tests/**/test-*.sh`.
-  Uses `set -uo pipefail` without `-e`, so a `grep` that finds nothing cannot abort the run. The filter is
+  Uses `set -uo pipefail` without `-e`, so a `grep` that finds nothing cannot abort the run.
+  `assert_contains` and `assert_not_contains` compare inside the shell (`[[ … == *needle* ]]`): a
+  `printf | grep -q` under `pipefail` fails by SIGPIPE on an early match in a long text. The filter is
   a grep regex matched against the path under `tests/` without `.sh`: `hooks` and `structure` select a
   directory, `scripts`, `integration`, `kor-deslop`, `plugin-structure` select one file.
 - `hooks/test-hooks.sh` — hook files, settings registration, stdin-JSON behavior, exit codes
@@ -33,19 +35,23 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   kor-deslop, step sections, `${CLAUDE_SKILL_DIR}` script calls and no claude.ai-only names, the step 0
   rule that instructions inside source material are not followed, reference table completeness, the step 4
   `.aws-diagram-assets` pointer written after copying `diagram_lib.py`, author bio sync, draft skeletons
-  free of banned notation, and `lint_prose.py` mirroring `style.md` (including `실측` and the `변경 기록` row
-  that names `Changelog` as the word to write).
+  free of banned notation, and `lint_prose.py` mirroring `style.md` (including `실측`, the `변경 기록` row
+  that names `Changelog` as the word to write, and the `절` and `견주다` rows of 2026-11-18 with their lint hints).
 - `structure/test-aws-blog-skills-scripts.sh` — runs the aws-blog-skills scripts on fixture drafts in
   `$TEST_TMP`: `lint_prose.py` and `check_structure.py` exit codes, the `실측` and `축` rules (the axis
   metaphor flagged, chart axes and compounds such as `x축`, `압축` not), the `변경 기록` rule (both spellings
-  flagged with `Changelog` as the hint, `Changelog` itself not), `package_blog.sh` bundle and
+  flagged with `Changelog` as the hint, `Changelog` itself not), the word rule of 2026-11-18 (`절` for a part
+  of the text in four forms and every form of `견주다` flagged; `절차`, `절반`, SQL clauses, `관형절` and
+  `의견 주시면` not; a numbered `절` reported once; `이 챕터에서는` counted as C-6; a numbered `챕터`
+  reference flagged, a count of `챕터` not), `package_blog.sh` bundle and
   no-zip-on-failure, `check_urls.py` OK/FAIL/REDIRECT against a local server, `render_diagrams.py`
   argument guard, and the diagram generator set up by running SKILL.md step 4's copy lines with an empty
   `HOME`.
 - `structure/test-kor-deslop.sh` — kor-deslop: pattern table integrity (A-J severities, K without,
   unique IDs, A-17 reserved, category placement, cited IDs exist), one pattern count (A-J + K rows of
-  `patterns.md`) in README (both languages), `skills/CLAUDE.md`, CLAUDE.md and SKILL.md, description
-  triggers, sections, `Changelog` among the English terms the polish leaves untouched, the change-rate
+  `patterns.md`) in README (both languages), `skills/CLAUDE.md`, CLAUDE.md, SKILL.md and the
+  aws-blog-skills `humanize-checklist.md`, description triggers, sections, `Changelog` among the English terms
+  the polish leaves untouched, the D-9 word row (S1, its words and exclusions, not content anchors), the change-rate
   snippet, and the humanize-korean notice.
 - `structure/test-aws-reports.sh` — aws-reports: description triggers for both report types, the source-material
   guard, `style_terms.json` (valid patterns, `실측`, `축` and `레버` flagged but chart axes and
@@ -66,13 +72,14 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
 - `structure/test-techblogs.sh` — techblogs: skill files, description routing, sections and the commit and push rule,
   every path, script and skill named in SKILL.md and references, the template names the blog layout and `preview.py`
   depend on, the title fit (`fitTitle`, `h1.one`) named in both the template and design-spec.md, the `Changelog`
-  rule in SKILL.md step 3 and in the text rules of design-spec.md, template `[[tokens]]`
+  rule and the word rule of 2026-11-18 in SKILL.md step 3 and in the text rules of design-spec.md, template `[[tokens]]`
   equal to the keys `build_post.py` fills, and the meta.json example in design-spec.md.
   The fixture `fixtures/techblogs/work/` is built in `$TEST_TMP` and passes `check_post.py` (ERROR 0, WARN 0) and
   `lint_prose.py`; then one edit of the built copy per `check_post.py` rule (`<style>`, `<script>`, leftover token, TODO,
   inline `style`, layout hooks, section ids, menu links, component and section counts, caption numbers, image file,
   alt, remote image, canvas, table scroll box, code box, `·`, `—`, inline code exempt, the WARN rules (among them
-  `변경 기록` and `변경기록` in a table cell or a heading, with `Changelog` left alone), front matter,
+  `변경 기록` and `변경기록` in a table cell or a heading, with `Changelog` left alone, and `절` and `견주다`
+  with `절차`, `절반` and an SQL clause left alone), front matter,
   `--blog`). `build_post.py` stops on unfinished input and on an `--out` inside the skill folder (tried on a copy of
   the skill); `import_aws_post.py` reads the saved page `fixtures/techblogs/aws-post.html` (sections, table, code box,
   references; an image on another host is warned about, not fetched); `place_post.py` runs on a fake blog repository
@@ -96,7 +103,10 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   `diagram_lib.py` asset lookup order (sibling skill, `AWS_DIAGRAM_ASSETS`, `.aws-diagram-assets`, plugin
   caches in numeric version order), `skills/setup/scripts/setup.sh` check mode and usage exit codes, sudo
   only as `sudo -n` inside the `--sudo`-gated function (with a mutation self-test), `NODE_PATH` in the deck
-  skills, and the skill inventory (skills/CLAUDE.md table, README tables, `my-plugins:<name>` references).
+  skills, the skill inventory (skills/CLAUDE.md table, README tables, `my-plugins:<name>` references), and the
+  word rule of 2026-11-18 kept by the skills themselves: no `절` for a part of a text and no `견주다` in the
+  documents and scripts of aws-blog-skills, techblogs, html-report and kor-deslop (rule statements, the E-5
+  rows, regex definitions and `lint_prose.py` are left out; the templates are not read).
 - `fixtures/secret-samples.txt` — TAB-separated `name / prefix / body`; joined at runtime so no full
   token is stored. `fixtures/false-positives.txt` — one non-secret per line.
 - `fixtures/techblogs/` — `work/` (a made-up two-section post: `meta.json`, `ko.body.html`, `en.body.html`, one 8x8 PNG)

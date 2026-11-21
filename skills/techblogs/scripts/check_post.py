@@ -21,9 +21,14 @@ TEMPLATE = os.path.join(HERE, "..", "assets", "template.html")
 VOID = {"br", "img", "hr", "col", "input", "meta", "link", "wbr"}
 HANGUL = re.compile(r"[가-힣]")
 BANNED = {"·": "가운뎃점", "—": "엠 대시", "–": "엔 대시"}
-# 번역하지 않고 영어 그대로 쓰는 말. ../aws-blog-skills/references/style.md의 금지어 표와 같다.
+# 낱말 규칙: (정규식, 메시지에 보일 낱말, 대신 쓸 말). 낱말이 None이면 찾은 글자를 그대로 보인다.
+# ../aws-blog-skills/references/style.md의 금지어 표와 같고, 정규식은 lint_prose.py의 HARD_RE와 같다.
 # lint_prose.py는 표를 읽지 않으므로 표, 캡션, 참고 자료의 종류 이름은 여기서 본다.
-KEEP_ENGLISH = [(re.compile(r"변경\s?기록"), "Changelog")]
+WORDING = [
+    (re.compile(r"변경\s?기록"), None, "Changelog로"),
+    (re.compile(r"(?<![가-힣A-Za-z0-9])(?<![A-Za-z`] )절(?:은|이|을|의|에|에서|에는|에서는|로|과|만|마다|별|부터|까지|들)?(?![가-힣])"), "절", "챕터나 장으로"),
+    (re.compile(r"(?<![가-힣])견[주줍줘줬준줄줌]"), "견주다", "비교하다로"),
+]
 
 
 class Node:
@@ -92,6 +97,12 @@ def blocks(s, tag):
 
 def squash(s):
     return re.sub(r"\s+", " ", s).strip()
+
+
+def topic(word):
+    """The topic particle after a Hangul word: 은 after a final consonant, 는 otherwise."""
+    c = word[-1:]
+    return "은" if "가" <= c <= "힣" and (ord(c) - 0xAC00) % 28 else "는"
 
 
 def dump_ko(root, path):
@@ -210,7 +221,7 @@ def main():
     for d in sorted({i for i in ids if ids.count(i) > 1}):
         E("id가 겹칩니다: %s" % d)
 
-    # 3. 두 언어의 절과 구성 요소
+    # 3. 두 언어의 챕터와 구성 요소
     cols = {}
     for lang in ("ko", "en"):
         c = [n for n in root.find("div", "col") if "l-" + lang in n.cls()]
@@ -221,7 +232,7 @@ def main():
         secs = [n for n in col.kids if isinstance(n, Node) and n.tag == "section"]
         for n, s in enumerate(secs, 1):
             if s.attrs.get("id") != "%s-s%d" % (lang, n):
-                E("%s %d번째 절의 id가 %s-s%d 가 아닙니다: %s" % (lang, n, lang, n, s.attrs.get("id")))
+                E("%s %d번째 챕터의 id가 %s-s%d 가 아닙니다: %s" % (lang, n, lang, n, s.attrs.get("id")))
             if len(s.find("h2")) != 1 or not s.find("header", "sec-head") or not s.find("div", "prose"):
                 E("%s 절 %s: header.sec-head 안의 h2 하나와 div.prose가 필요합니다." % (lang, s.attrs.get("id")))
         shape[lang] = [(len(s.find("h3")), len(s.find("figure", "fig")), len(s.find("table")), len(s.find("div", "snippet")),
@@ -234,15 +245,15 @@ def main():
                 E("%s 목차 링크가 가리키는 곳이 없습니다: %s" % (lang, h))
         for s in secs:
             if "#" + s.attrs.get("id", "") not in hrefs:
-                E("%s 목차에 절이 빠졌습니다: %s" % (lang, s.attrs.get("id")))
+                E("%s 목차에 챕터가 빠졌습니다: %s" % (lang, s.attrs.get("id")))
     if len(shape["ko"]) != len(shape["en"]):
-        E("절 수가 다릅니다: ko %d, en %d" % (len(shape["ko"]), len(shape["en"])))
+        E("챕터 수가 다릅니다: ko %d, en %d" % (len(shape["ko"]), len(shape["en"])))
     else:
         names = ("h3", "그림", "표", "코드 상자", "인용 상자")
         for n, (a, b) in enumerate(zip(shape["ko"], shape["en"]), 1):
             for name, x, y in zip(names, a, b):
                 if x != y:
-                    E("절 %d의 %s 수가 다릅니다: ko %d, en %d" % (n, name, x, y))
+                    E("챕터 %d의 %s 수가 다릅니다: ko %d, en %d" % (n, name, x, y))
     imgs = {lang: [i.attrs.get("src", "") for i in col.find("img")] for lang, col in cols.items()}
     # The English side shows the same file or its English version: <name>-en.<ext> for <name>.<ext>.
     if len(imgs["ko"]) != len(imgs["en"]) or any(e not in (k, "%s-en%s" % os.path.splitext(k))
@@ -301,11 +312,14 @@ def main():
                 E("%s(%s)은 쓰지 않습니다: %s" % (name, ch, squash(t)[:60]))
         if "→" in t and n.tag in ("p", "li") and not n.inside("table"):
             W("문장 안의 화살표(→)는 말로 풉니다: %s" % squash(t)[:60])
-        for pat, use in KEEP_ENGLISH:
-            m = pat.search(t)
-            if m and (squash(m.group(0)), squash(t)[:30]) not in seen:
-                seen.add((squash(m.group(0)), squash(t)[:30]))
-                W("'%s'은 %s로 씁니다. 다른 것을 가리키는 말이면 둡니다: %s" % (squash(m.group(0)), use, squash(t)[:60]))
+        # 낱말 규칙은 인라인 코드를 남긴 글에서 찾는다. <code>WHERE</code> 절의 "절"은 SQL의 절이다.
+        tc = n.text(skip=("pre",))
+        for pat, word, use in WORDING:
+            m = pat.search(tc)
+            shown = word or (squash(m.group(0)) if m else "")
+            if m and (shown, squash(t)[:30]) not in seen:
+                seen.add((shown, squash(t)[:30]))
+                W("'%s'%s %s 씁니다. 다른 것을 가리키는 말이면 둡니다: %s" % (shown, topic(shown), use, squash(t)[:60]))
     for img in root.find("img"):
         for ch, name in BANNED.items():
             if ch in img.attrs.get("alt", ""):

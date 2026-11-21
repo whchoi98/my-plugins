@@ -128,11 +128,11 @@ assert_contains "techblogs SKILL.md: polishing keeps the explanatory analogy" "$
     "2단계에서 넣은 설명용 비유는 윤문하면서 지우지 않는다"
 assert_contains "techblogs SKILL.md: new posts do not all share one skeleton" "$TB_SKILL" "새 글을 모두 같은 뼈대로 쓰지 않는다"
 assert_contains "techblogs SKILL.md: the section order follows the chosen storyline" "$TB_SKILL" \
-    "절의 순서는 0단계에서 고른 스토리라인을 따른다"
+    "챕터의 순서는 0단계에서 고른 스토리라인을 따른다"
 assert_contains "techblogs SKILL.md: the first section does not repeat the conclusion list" "$TB_SKILL" \
-    "본문 첫 절에서 같은 결론을 목록으로 되풀이하지 않는다"
+    "본문 첫 챕터에서 같은 결론을 목록으로 되풀이하지 않는다"
 assert_contains "techblogs SKILL.md: the first and last section titles are not fixed" "$TB_SKILL" \
-    '첫 절과 끝 절의 제목을 "들어가며", "마치며"로 고정하지 않는다'
+    '첫 챕터와 끝 챕터의 제목을 "들어가며", "마치며"로 고정하지 않는다'
 assert_contains "techblogs SKILL.md: the user is told which storyline was chosen" "$TB_SKILL" \
     "고른 스토리라인과 이유를 사용자에게 한 줄로 알린다"
 assert_contains "techblogs SKILL.md: the template is chosen from the topic and the material" "$TB_SKILL" \
@@ -207,6 +207,11 @@ TB_STEP3=$(sed -n '/^## 3\. 문장 규칙/,/^## 4\. /p' "$TB_DIR/SKILL.md" 2>/de
 assert_contains "techblogs SKILL.md step 3: Changelog stays in English" "$TB_STEP3" '"변경 기록"으로 옮기지 않고 "Changelog"'
 TB_SPEC_TEXT=$(sed -n '/^## 글자 규칙/,/^## 템플릿에 있지만/p' "$TB_SPEC" 2>/dev/null)
 assert_contains "techblogs design-spec.md: the text rules name the Changelog check" "$TB_SPEC_TEXT" '"Changelog"로 쓴다(WARN)'
+# Word rule of 2026-11-18: 챕터 or 장 for a part of the text, 비교하다 for 견주다
+assert_contains "techblogs SKILL.md step 3: 절 is written 챕터 or 장" "$TB_STEP3" '"절"은 "챕터"나 "장"으로'
+assert_contains "techblogs SKILL.md step 3: 견주다 is written 비교하다" "$TB_STEP3" '"견주다"는 "비교하다"로'
+assert_contains "techblogs design-spec.md: the text rules name the 절 check" "$TB_SPEC_TEXT" '"절"은 "챕터"나 "장"으로 쓴다(WARN)'
+assert_contains "techblogs design-spec.md: the text rules name the 견주다 check" "$TB_SPEC_TEXT" '"견주다"는 "비교하다"로 쓴다(WARN)'
 TB_SPEC_HOOKS=$(sed -n '/^## 블로그 레이아웃과 맞물리는 부분/,/^## meta.json/p' "$TB_SPEC" 2>/dev/null)
 for tb_t in 'div.wrap.page' 'nav.top.theme-bar' 'techblogs-theme' 'techblogs-lang'; do
     assert_contains "techblogs design-spec.md: blog layout hook $tb_t" "$TB_SPEC_HOOKS" "$tb_t"
@@ -267,7 +272,7 @@ for sec in re.split(r"^## ", story, flags=re.M)[1:]:
     name = sec.split("\n", 1)[0]
     if not re.match(r"[a-z]+: ", name):
         continue
-    for label in ("절 흐름", "여는 방식", "닫는 방식", "비유의 자리", "그림", "피할 것"):
+    for label in ("챕터 흐름", "여는 방식", "닫는 방식", "비유의 자리", "그림", "피할 것"):
         if "- **%s**:" % label not in sec:
             print("storylines.md '%s': no '%s' line" % (name, label))
 ex = re.search(r'"storyline": "([a-z]+)"', spec)
@@ -349,13 +354,13 @@ if [ "$TB_RC" -eq 0 ] && [ -f "$TB_OUT/$TB_SLUG-report.html" ]; then
     tb_case bar && tb_edit "$TB_R" '<nav class="top theme-bar">' '<nav class="top">' \
         && tb_check "nav.top.theme-bar renamed" 'nav.top.theme-bar (블로그 레이아웃이 숨기는 상단 막대): 0개' 1
     tb_case secid && tb_edit "$TB_R" 'id="en-s2"' 'id="en-s9"' \
-        && tb_check "section id out of sequence" 'en 2번째 절의 id가 en-s2 가 아닙니다' 1
+        && tb_check "section id out of sequence" 'en 2번째 챕터의 id가 en-s2 가 아닙니다' 1
     tb_case toc && tb_edit "$TB_R" '<a href="#ko-s2">' '<a href="#ko-s7">' \
         && tb_check "menu link to a missing section" 'ko 목차 링크가 가리키는 곳이 없습니다: #ko-s7' 1
     tb_case entable && tb_resub "$TB_R" '(id="en-s1".*?)<table>.*?</table>' '\1' \
-        && tb_check "English table removed (component counts differ)" '절 1의 표 수가 다릅니다: ko 1, en 0' 1
+        && tb_check "English table removed (component counts differ)" '챕터 1의 표 수가 다릅니다: ko 1, en 0' 1
     tb_case ensec && tb_resub "$TB_R" '<section class="sec" id="en-s2">.*?</section>\n' '' \
-        && tb_check "English section removed" '절 수가 다릅니다: ko 2, en 1' 1
+        && tb_check "English section removed" '챕터 수가 다릅니다: ko 2, en 1' 1
     tb_case enfig && cp "$TB_C/$TB_SLUG-assets/fig01-flow.png" "$TB_C/$TB_SLUG-assets/fig01-flow-en.png" \
         && tb_resub "$TB_R" '(id="en-s1".*?)fig01-flow\.png' '\1fig01-flow-en.png' \
         && tb_check "the English side may show the English version of a figure (<name>-en.<ext>)" '결과: ERROR 0 / WARN 0' 0
@@ -393,6 +398,13 @@ if [ "$TB_RC" -eq 0 ] && [ -f "$TB_OUT/$TB_SLUG-report.html" ]; then
         && tb_check "변경기록 without the space warns" "'변경기록'은 Changelog로 씁니다" 0
     tb_case termok && tb_edit "$TB_R" '웹 문서' 'Changelog' \
         && tb_check "Changelog in English is not flagged" '결과: ERROR 0 / WARN 0' 0
+    # Word rule of 2026-11-18, also in table cells and headings
+    tb_case wordsec && tb_edit "$TB_R" '웹 문서' '다음 절' \
+        && tb_check "절 for a part of the text warns and names 챕터, 장" "'절'은 챕터나 장으로 씁니다" 0
+    tb_case wordsecok && tb_edit "$TB_R" '웹 문서' '절차의 절반과 WHERE 절' \
+        && tb_check "절차, 절반 and an SQL clause are not flagged" '결과: ERROR 0 / WARN 0' 0
+    tb_case wordcmp && tb_edit "$TB_R" '<h3>단계별 시간</h3>' '<h3>단계를 견주어 본 시간</h3>' \
+        && tb_check "견주다 warns and names 비교하다" "'견주다'는 비교하다로 씁니다" 0
     tb_case altdot && tb_resub "$TB_R" 'alt="([^"]{3})' 'alt="\\1·' \
         && tb_check "middle dot in an image alt" '은 그림 alt에도 쓰지 않습니다' 1
     tb_case descdash && tb_resub "$TB_R" '<meta name="description" content="([^"]{3})' '<meta name="description" content="\\1—' \
@@ -483,9 +495,9 @@ tb_build_fails "slug with other characters" 'meta.json: slug는 영문 소문자
 tb_work noimg && rm -f "$TB_WK/images/fig01-flow.png"
 tb_build_fails "image file missing" '그림 파일이 없습니다: images/fig01-flow.png'
 tb_work secid && tb_edit "$TB_WK/ko.body.html" 'id="ko-s2"' 'id="ko-s3"'
-tb_build_fails "section id out of sequence" 'ko.body.html: 2번째 절의 id가 ko-s2 가 아니라 ko-s3 입니다'
+tb_build_fails "section id out of sequence" 'ko.body.html: 2번째 챕터의 id가 ko-s2 가 아니라 ko-s3 입니다'
 tb_work seccount && tb_resub "$TB_WK/en.body.html" '<section class="sec" id="en-s2">.*?</section>\n' ''
-tb_build_fails "English fragment with fewer sections" '절 수가 다릅니다: ko 2, en 1'
+tb_build_fails "English fragment with fewer sections" '챕터 수가 다릅니다: ko 2, en 1'
 tb_work storyline-unknown; tb_meta '.storyline = "essay"'
 tb_build_fails "a storyline that is not in the list" \
     'meta.json: storyline은 qa, troubleshoot, measure, compare, build, anatomy, change, retro 가운데 하나입니다: essay'
@@ -597,7 +609,7 @@ TB_NEW="$TB_DIR/scripts/new_post.py"
 TB_NL=$("${TB_PY[@]}" "$TB_NEW" --list 2>&1); TB_NL_RC=$?
 assert_eq "new_post --list: exit 0" "0" "$TB_NL_RC"
 assert_eq "new_post --list: every storyline with the material it fits, its signals and its section flow" "8 8 8 8" \
-    "$(printf '%s\n' "$TB_NL" | LC_ALL=C awk '/^[a-z]+ \(/{k++} /^  맞는 소재: ./{f++} /^  보이는 신호: ./{g++} /^  절 흐름: ./{w++} END{print k, f, g, w}')"
+    "$(printf '%s\n' "$TB_NL" | LC_ALL=C awk '/^[a-z]+ \(/{k++} /^  맞는 소재: ./{f++} /^  보이는 신호: ./{g++} /^  챕터 흐름: ./{w++} END{print k, f, g, w}')"
 for tb_k in qa troubleshoot measure compare build anatomy change retro; do
     assert_contains "new_post --list: names $tb_k" "$TB_NL" "$tb_k ("
     TB_NP=$("${TB_PY[@]}" "$TB_NEW" "$TB_W/np-$tb_k" --storyline "$tb_k" --slug "np-$tb_k" --date 2026-01-15 2>&1); TB_NP_RC=$?
@@ -614,8 +626,8 @@ assert_eq "new_post: the troubleshoot template has the six steps of storylines.m
     "$(grep -c 'id="ko-s' "$TB_W/np-troubleshoot/ko.body.html" 2>/dev/null)"
 TB_BODY=$(cat "$TB_W/np-troubleshoot/ko.body.html" 2>/dev/null)
 assert_contains "new_post: the first section carries the step and how the storyline opens" "$TB_BODY" \
-    '<!-- 안내: 1번째 절. 증상(에러 원문, 화면, 발생 시각) 여는 방식: 증상을 그대로 보여 준다.'
-assert_contains "new_post: the last section carries how the storyline closes" "$TB_BODY" '<!-- 안내: 6번째 절. 재발을 막는 장치 닫는 방식: '
+    '<!-- 안내: 1번째 챕터. 증상(에러 원문, 화면, 발생 시각) 여는 방식: 증상을 그대로 보여 준다.'
+assert_contains "new_post: the last section carries how the storyline closes" "$TB_BODY" '<!-- 안내: 6번째 챕터. 재발을 막는 장치 닫는 방식: '
 assert_contains "new_post: the first section has no number, the second is 01" "$TB_BODY" \
     '<section class="sec" id="ko-s2"><header class="sec-head"><p class="eyebrow">01</p><h2>TODO</h2></header>'
 # The template does not build as it is: meta.json first, then the bodies

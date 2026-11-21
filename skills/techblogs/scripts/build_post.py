@@ -67,9 +67,9 @@ def sections(body, lang):
     found = re.findall(r'<section class="sec" id="([^"]+)">\s*<header class="sec-head">.*?<h2>(.*?)</h2>', body, re.S)
     for n, (sid, _) in enumerate(found, 1):
         if sid != "%s-s%d" % (lang, n):
-            die("%s.body.html: %d번째 절의 id가 %s-s%d 가 아니라 %s 입니다." % (lang, n, lang, n, sid))
+            die("%s.body.html: %d번째 챕터의 id가 %s-s%d 가 아니라 %s 입니다." % (lang, n, lang, n, sid))
     if not found:
-        die("%s.body.html: 절(section.sec)이 없습니다." % lang)
+        die("%s.body.html: 챕터(section.sec)가 없습니다." % lang)
     return found
 
 
@@ -117,7 +117,7 @@ def main():
             die("%s.body.html: 템플릿의 TODO나 안내 주석이 남아 있습니다." % lang)
     secs = {lang: sections(bodies[lang], lang) for lang in ("ko", "en")}
     if len(secs["ko"]) != len(secs["en"]):
-        die("절 수가 다릅니다: ko %d, en %d" % (len(secs["ko"]), len(secs["en"])))
+        die("챕터 수가 다릅니다: ko %d, en %d" % (len(secs["ko"]), len(secs["en"])))
 
     assets = slug + "-assets"
     used = sorted(set(re.findall(r'src="images/([^"]+)"', bodies["ko"] + bodies["en"])))

@@ -51,7 +51,7 @@ which reads icons and fonts from `../aws-diagram-design/assets` (see [architectu
 
 | Component | Always-on | On invoke |
 |---|---|---|
-| aws-blog-skills | ~510 | ~5.3k |
+| aws-blog-skills | ~510 | ~5.4k |
 | aws-diagram | ~660 | ~4k |
 | aws-diagram-design | ~610 | ~23.1k |
 | kor-deslop | ~160 | ~1.5k |
@@ -60,7 +60,7 @@ which reads icons and fonts from `../aws-diagram-design/assets` (see [architectu
 | pptx-template-fill | ~550 | ~4k |
 | aws-reports | ~520 | ~4.2k |
 | html-report | ~350 | ~3.1k |
-| techblogs | ~460 | ~5.7k |
+| techblogs | ~460 | ~5.8k |
 | aws-infographic | ~380 | ~5.4k |
 | setup | ~390 | ~1.6k |
 | export-diagram, import-drawio, import-mermaid | ~70, ~70, ~70 | ~830, ~1.7k, ~1.5k |
@@ -177,7 +177,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 
 | 구성 요소 | 항상 로드 | 호출할 때 |
 |---|---|---|
-| aws-blog-skills | ~510 | ~5.3k |
+| aws-blog-skills | ~510 | ~5.4k |
 | aws-diagram | ~660 | ~4k |
 | aws-diagram-design | ~610 | ~23.1k |
 | kor-deslop | ~160 | ~1.5k |
@@ -186,7 +186,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 | pptx-template-fill | ~550 | ~4k |
 | aws-reports | ~520 | ~4.2k |
 | html-report | ~350 | ~3.1k |
-| techblogs | ~460 | ~5.7k |
+| techblogs | ~460 | ~5.8k |
 | aws-infographic | ~380 | ~5.4k |
 | setup | ~390 | ~1.6k |
 | export-diagram, import-drawio, import-mermaid | ~70, ~70, ~70 | ~830, ~1.7k, ~1.5k |

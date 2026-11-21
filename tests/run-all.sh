@@ -52,14 +52,16 @@ assert_eq() {
     [ "$expected" = "$actual" ] && pass "$desc" || fail "$desc" "expected '$expected', got '$actual'"
 }
 
+# Both compare inside the shell. `printf ... | grep -q` under pipefail fails by SIGPIPE when grep exits on an early
+# match in a long text: assert_contains then fails at random and assert_not_contains passes when it must fail.
 assert_contains() {
     local desc="$1" haystack="$2" needle="$3"
-    printf '%s\n' "$haystack" | grep -qF -- "$needle" && pass "$desc" || fail "$desc" "output does not contain '$needle'"
+    [[ "$haystack" == *"$needle"* ]] && pass "$desc" || fail "$desc" "output does not contain '$needle'"
 }
 
 assert_not_contains() {
     local desc="$1" haystack="$2" needle="$3"
-    printf '%s\n' "$haystack" | grep -qF -- "$needle" && fail "$desc" "output unexpectedly contains '$needle'" || pass "$desc"
+    [[ "$haystack" == *"$needle"* ]] && fail "$desc" "output unexpectedly contains '$needle'" || pass "$desc"
 }
 
 assert_file_exists() {

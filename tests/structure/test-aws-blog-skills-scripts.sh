@@ -82,6 +82,30 @@ assert_contains "lint_prose: flags 변경기록 written without the space" "$SCR
 sed 's/샘플 구성은 서브넷 두 개로 시작합니다./새 버전의 Changelog를 먼저 확인합니다./' "$SCR_MD" > "$TEST_TMP/lint-changelog-ok.md"
 SCR_OUT=$(python3 -I "$SCR/lint_prose.py" "$TEST_TMP/lint-changelog-ok.md" 2>&1)
 assert_contains "lint_prose: Changelog in English is not flagged" "$SCR_OUT" "hard_findings=0"
+# Word rule of 2026-11-18. "절" for a part of the text is written 챕터 or 장; "견주다" is written 비교하다
+scr_lint_line() { sed "s/샘플 구성은 서브넷 두 개로 시작합니다./$1/" "$SCR_MD" > "$TEST_TMP/lint-word.md"
+    SCR_OUT=$(python3 -I "$SCR/lint_prose.py" "$TEST_TMP/lint-word.md" 2>&1); SCR_RC=$?; }
+scr_lint_line '이 절은 짧습니다. 절 제목과 절마다 붙는 표는 다음 절로 넘깁니다.'
+assert_eq "lint_prose: 절 for a part of the text exits 1" "1" "$SCR_RC"
+assert_contains "lint_prose: flags every 절 (four forms) and names 챕터, 장" "$SCR_OUT" "×4 → 챕터, 장 (2026-11-18 확정)"
+scr_lint_line '절차의 절반을 조절하고 WHERE 절과 `GROUP BY` 절, 관형절을 적절히 다룹니다. 비용 절감도 됩니다.'
+assert_contains "lint_prose: 절차, 절반, 조절, SQL clauses and 관형절 are not flagged" "$SCR_OUT" "hard_findings=0"
+scr_lint_line '3.1절의 설정을 다시 봅니다.'
+assert_contains "lint_prose: a numbered 절 is a section-number reference" "$SCR_OUT" "섹션 번호 참조 금지"
+assert_not_contains "lint_prose: a numbered 절 is reported once, not as the word rule too" "$SCR_OUT" "챕터, 장 (2026-11-18 확정)"
+scr_lint_line '두 방식을 견주어 봅니다. 견줘 보면 다릅니다. 견준 결과와 견줄 대상을 견줍니다.'
+assert_eq "lint_prose: 견주다 exits 1" "1" "$SCR_RC"
+assert_contains "lint_prose: flags every form of 견주다 and names 비교하다" "$SCR_OUT" "×5 → 비교하다 (2026-11-18 확정)"
+scr_lint_line '두 방식을 비교해 봅니다. 의견 주시면 반영하고, 의견주신 내용도 봅니다.'
+assert_contains "lint_prose: 비교하다 and 의견 주시면 are not flagged" "$SCR_OUT" "hard_findings=0"
+# The rules that named 절 follow the new word: a heading guide sentence and a numbered reference with 챕터
+scr_lint_line '이 챕터에서는 설정을 다룹니다.'
+assert_contains "lint_prose: '이 챕터에서는' counts as a heading guide sentence (C-6)" "$SCR_OUT" "[!] 이 (섹션|절|장|챕터)에서는 ×1"
+scr_lint_line '챕터 3에서 본 설정과 2챕터의 표를 다시 봅니다.'
+assert_eq "lint_prose: a numbered 챕터 reference exits 1" "1" "$SCR_RC"
+assert_contains "lint_prose: a numbered 챕터 is a section-number reference (two forms)" "$SCR_OUT" "×2 → 섹션 번호 참조 금지"
+scr_lint_line '글을 챕터 3개로 나눴습니다.'
+assert_contains "lint_prose: a count of 챕터 is not a reference" "$SCR_OUT" "hard_findings=0"
 SCR_LONG=$(printf '가%.0s' $(seq 1 150))
 sed "s/샘플 구성은 서브넷 두 개로 시작합니다./${SCR_LONG}입니다./" "$SCR_MD" > "$TEST_TMP/lint-long.md"
 SCR_OUT=$(python3 -I "$SCR/lint_prose.py" "$TEST_TMP/lint-long.md" 2>&1); SCR_RC=$?

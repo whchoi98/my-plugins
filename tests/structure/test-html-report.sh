@@ -68,7 +68,7 @@ assert_eq "check_html: placeholders exit 1" "1" "$HR_RC"
 # Fixed fills for the text the mutations below point at, then every other template sample sentence is broken
 # (a "Q" after its second character) through the checker's own template_samples() list.
 HR_FILL=("보고서 제목을 한 줄로 작성합니다" "S3 스토리지 클래스 비용 비교" "Write the report title on one line" "Comparing S3 storage class costs"
-         "첫 번째 절 제목" "요금 구성" "두 번째 절 제목" "클래스별 비교" "First section title" "How pricing works"
+         "첫 번째 챕터 제목" "요금 구성" "두 번째 챕터 제목" "클래스별 비교" "First section title" "How pricing works"
          "Second section title" "Class by class"
          "요약 문단입니다. 이 보고서가 답하는 질문과 결론을 두세 문장으로 적습니다. 결론을 받치는 숫자가 있으면 결론 문장에 함께 적습니다."
          "S3 스토리지 클래스별 요금을 비교했습니다. 자주 읽지 않는 데이터는 Glacier 계열의 저장 비용이 가장 낮습니다."

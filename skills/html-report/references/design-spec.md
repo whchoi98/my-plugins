@@ -13,7 +13,7 @@
 | 표와 스니펫 상자 | `--surface` | #ffffff | #151c25 |
 | 그림 상자 | `--fig` | #ffffff | #ffffff |
 | 테두리 | `--line` | #d9dfe6 | #2a3441 |
-| 절 구분선 | `--rule` | #c9d1db | #3a4655 |
+| 챕터 구분선 | `--rule` | #c9d1db | #3a4655 |
 | 강조 문단 바탕 | `--callout` | #e8f0fc | #17243a |
 | 스니펫 바탕 | `--code` | #f6f8fa | #121922 |
 | 상태 초록 글자 | `--ok` | #17703c | #7fd6a1 |
@@ -36,7 +36,7 @@
 |---|---|---|---|
 | ① | 상단 막대 `header.topbar`(`main` 앞): 목록 링크 `a.list-link`, 언어 버튼 `[data-set-lang]` 두 개, 테마 버튼 `[data-set-theme]` 두 개 | 필수 | 필수 |
 | ② | 머리 `header.doc-head`: 기준일 `.meta time`, 검색한 곳 `[data-meta="searched"]`, 제목 `h1`, 요약 문단 `.lead`, 태그 `.tags`, 출처 구성 목록 `.source-mix` | 모두 필수. 태그가 없으면 WARN | 기준일, 제목, 요약 문단 필수. 나머지는 해당할 때 |
-| ③ | 절 `section.sec`: 2px 구분선(CSS), 출처 종류 `p.src-kind`, `h2` | 출처 종류 필수 | 출처 종류는 해당할 때 |
+| ③ | 챕터 `section.sec`: 2px 구분선(CSS), 출처 종류 `p.src-kind`, `h2` | 출처 종류 필수 | 출처 종류는 해당할 때 |
 | ④ | 참조 원문 데이터 출처 표 `section.sources` | 필수 | 인용 번호가 있으면 필수 |
 | ⑤ | 조사 방법 `section.method` | 필수 | 해당할 때 |
 | ⑥ | 공유 범위 `p.share` 한 줄 | 필수 | 필수 |
@@ -48,7 +48,7 @@
 ```html
 <p lang="ko">한국어 문단입니다.</p>
 <p lang="en">The English paragraph.</p>
-<h2><span lang="ko">1. 절 제목</span><span lang="en">1. Section title</span></h2>
+<h2><span lang="ko">1. 챕터 제목</span><span lang="en">1. Section title</span></h2>
 <ul lang="ko"><li>항목</li></ul>
 <ul lang="en"><li>Item</li></ul>
 ```
@@ -61,12 +61,12 @@
 
 ## 구성 요소
 
-절:
+챕터:
 
 ```html
 <section class="sec" id="s3">
   <p class="src-kind"><span lang="ko">공식 문서</span><span lang="en">Official docs</span></p>
-  <h2><span lang="ko">3. 절 제목</span><span lang="en">3. Section title</span></h2>
+  <h2><span lang="ko">3. 챕터 제목</span><span lang="en">3. Section title</span></h2>
   …
 </section>
 ```
@@ -89,7 +89,7 @@
 </figure>
 ```
 
-강조 문단은 연한 파랑 바탕이고 왼쪽 막대가 없다. 절마다 하나를 넘기지 않는다.
+강조 문단은 연한 파랑 바탕이고 왼쪽 막대가 없다. 챕터마다 하나를 넘기지 않는다.
 
 ```html
 <div class="callout"><p lang="ko">…</p><p lang="en">…</p></div>
@@ -125,7 +125,7 @@
 
 ## 모바일
 
-640px 이하에서는 좌우 여백이 16px로, 절 사이 간격이 줄어든다. 그림은 720px 폭을 유지하고 상자 안에서 가로로 밀어 본다. 표도 상자 안에서 가로로 민다. 페이지 자체는 가로로 밀리지 않아야 한다. `preview.py`가 확인한다.
+640px 이하에서는 좌우 여백이 16px로, 챕터 사이 간격이 줄어든다. 그림은 720px 폭을 유지하고 상자 안에서 가로로 밀어 본다. 표도 상자 안에서 가로로 민다. 페이지 자체는 가로로 밀리지 않아야 한다. `preview.py`가 확인한다.
 
 ## 문장
 
@@ -138,6 +138,6 @@
 
 `scripts/check_html.py`가 다음을 확인한다.
 
-- ERROR: `data-report` 값, 기본 언어, CSS 토큰과 크기와 폭(이 파일의 값), 템플릿과 다른 `<style>`과 `<script>`, 인라인 `style` 속성과 외부 스타일시트, 왼쪽 막대(`border-left`), 페이지 순서, 상단 막대와 머리의 필수 요소, 절의 `h2`와 출처 종류, 두 언어 짝, 짝 밖이나 영어 쪽의 한국어, 본문과 속성 글(`<title data-ko data-en>`, `alt`, `data-alt-en`, `aria-label`)의 금지 기호, 그림과 표의 상자와 캡션 번호, 인용 번호와 출처 표 번호, 출처 구성 목록의 건수, 상대 경로 그림, 템플릿 자리 표시와 예시 문장(템플릿에서 직접 읽는다. 라벨, 태그, 검색한 곳, 출처 구성 목록, 공유 범위 줄은 빼고)
+- ERROR: `data-report` 값, 기본 언어, CSS 토큰과 크기와 폭(이 파일의 값), 템플릿과 다른 `<style>`과 `<script>`, 인라인 `style` 속성과 외부 스타일시트, 왼쪽 막대(`border-left`), 페이지 순서, 상단 막대와 머리의 필수 요소, 챕터의 `h2`와 출처 종류, 두 언어 짝, 짝 밖이나 영어 쪽의 한국어, 본문과 속성 글(`<title data-ko data-en>`, `alt`, `data-alt-en`, `aria-label`)의 금지 기호, 그림과 표의 상자와 캡션 번호, 인용 번호와 출처 표 번호, 출처 구성 목록의 건수, 상대 경로 그림, 템플릿 자리 표시와 예시 문장(템플릿에서 직접 읽는다. 라벨, 태그, 검색한 곳, 출처 구성 목록, 공유 범위 줄은 빼고)
 - WARN: 한다체나 해요체로 끝나는 문장(문단과 목록 항목은 마침표 없이 끝나도), "~하세요"와 "권장", 인용하지 않은 출처, 링크 없는 출처, 외부 그림, `alt`나 `data-alt-en` 없는 그림, 상자 없는 스니펫, 태그 없음
 - 원래 제목처럼 `translate="no"`를 붙인 글은 원문 그대로 두므로 금지 기호를 검사하지 않는다

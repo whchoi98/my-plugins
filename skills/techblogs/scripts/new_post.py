@@ -70,7 +70,7 @@ def load():
         if not m or m.group(1) not in rows:
             continue
         item = dict(rows[m.group(1)], key=m.group(1))
-        for label, field in (("절 흐름", "flow"), ("여는 방식", "opening"), ("닫는 방식", "closing")):
+        for label, field in (("챕터 흐름", "flow"), ("여는 방식", "opening"), ("닫는 방식", "closing")):
             lm = re.search(r"^- \*\*%s\*\*: (.+)$" % label, body, re.M)
             if not lm:
                 die("storylines.md의 %s에 '%s' 줄이 없습니다." % (item["key"], label))
@@ -84,7 +84,7 @@ def load():
 
 def section(lang, n, total, step, extra):
     eyebrow = "" if n == 1 else '<p class="eyebrow">%02d</p>' % (n - 1)
-    guide = "<!-- %s %d번째 절. %s%s -->" % (GUIDE, n, step, extra)
+    guide = "<!-- %s %d번째 챕터. %s%s -->" % (GUIDE, n, step, extra)
     return ('<section class="sec" id="%s-s%d"><header class="sec-head">%s<h2>TODO</h2></header><div class="prose">\n'
             "%s\n<p>TODO</p>\n</div></section>\n" % (lang, n, eyebrow, guide))
 
@@ -111,7 +111,7 @@ def main():
             print("%s (%s)" % (i["key"], i["name"]))
             print("  맞는 소재: " + i["fits"])
             print("  보이는 신호: " + i["signals"])
-            print("  절 흐름: " + ", ".join(i["flow"]))
+            print("  챕터 흐름: " + ", ".join(i["flow"]))
         return
     opts = {}
     for name in ("--storyline", "--slug", "--date"):
@@ -153,7 +153,7 @@ def main():
     print("work folder: " + work)
     for n, step in enumerate(item["flow"], 1):
         print("  %d. %s" % (n, step))
-    print("TODO와 안내 주석을 모두 채우고 지운 뒤 build_post.py를 실행합니다. 절은 소재에 맞게 더하거나 뺄 수 있습니다.")
+    print("TODO와 안내 주석을 모두 채우고 지운 뒤 build_post.py를 실행합니다. 챕터는 소재에 맞게 더하거나 뺄 수 있습니다.")
 
 
 if __name__ == "__main__":

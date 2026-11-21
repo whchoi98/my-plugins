@@ -47,9 +47,10 @@ assert_contains "count: README Korean says '패턴 ${KD_TOTAL}개'" "$KD_README_
 assert_contains "count: skills/CLAUDE.md says '${KD_TOTAL} patterns'" "$(cat skills/CLAUDE.md)" "${KD_TOTAL} patterns"
 assert_contains "count: CLAUDE.md convention says '(${KD_TOTAL})'" "$(cat CLAUDE.md)" "pattern count (${KD_TOTAL})"
 # No other count may be quoted anywhere these files talk about kor-deslop patterns
-KD_STALE=$(grep -noE '[0-9]+ patterns|패턴 [0-9]+개|[0-9]+개 패턴' README.md skills/CLAUDE.md "$KD_SKILL" "$KD_PATTERNS" 2>/dev/null \
+KD_STALE=$(grep -noE '[0-9]+ patterns|패턴 [0-9]+개|[0-9]+개 패턴' README.md skills/CLAUDE.md "$KD_SKILL" "$KD_PATTERNS" \
+    skills/aws-blog-skills/references/humanize-checklist.md 2>/dev/null \
     | grep -vE "(^|[^0-9])${KD_TOTAL} patterns|패턴 ${KD_TOTAL}개|(^|[^0-9])${KD_TOTAL}개 패턴" | tr '\n' ' ')
-assert_eq "count: no conflicting pattern count in README, skills/CLAUDE.md, SKILL.md, patterns.md" "" "$KD_STALE"
+assert_eq "count: no conflicting pattern count in README, skills/CLAUDE.md, SKILL.md, patterns.md, humanize-checklist.md" "" "$KD_STALE"
 if printf '%s\n' "$KD_BODY" | grep -qE '[0-9]+ patterns|패턴 [0-9]+개|[0-9]+개 패턴'; then
     pass "count: SKILL.md quotes the pattern count"
 else
@@ -68,6 +69,14 @@ done
 KD_KEEP=$(grep -m1 -F -- '- **건드리지 않는 것**' "$KD_SKILL" || true)
 assert_contains "kor-deslop: Changelog is among the English terms left untouched" "$KD_KEEP" "Changelog"
 assert_contains "kor-deslop: says not to translate Changelog to 변경 기록" "$KD_KEEP" "변경 기록"
+# Word rule of 2026-11-18 (D-9): a part of a text is 챕터 or 장, not 절; 비교하다, not 견주다
+KD_D9=$(grep -m1 -E '^\| D-9 \| S1 \|' "$KD_PATTERNS" || true)
+[ -n "$KD_D9" ] && pass "patterns.md: D-9 is an S1 row" || fail "patterns.md: D-9 is an S1 row" "no '| D-9 | S1 |' row"
+for kd_w in '"절"' '"챕터"' '"장"' '"견주다"' '"비교하다"' 'WHERE 절' '관형절'; do
+    assert_contains "patterns.md D-9 names $kd_w" "$KD_D9" "$kd_w"
+done
+KD_ANCHOR=$(grep -m1 -F -- '- **내용 앵커**' "$KD_SKILL" || true)
+assert_contains "kor-deslop: the D-9 words are not content anchors" "$KD_ANCHOR" 'D-9 낱말("절", "견주다")'
 assert_contains "kor-deslop: points to references/patterns.md" "$KD_BODY" "references/patterns.md"
 assert_contains "kor-deslop: points to its notice under third_party/" "$KD_BODY" "$KD_NOTICE"
 

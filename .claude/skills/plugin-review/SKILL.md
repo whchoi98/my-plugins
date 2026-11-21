@@ -49,7 +49,7 @@ Everything in the repo root ships to users (`marketplace.json` has `"source": ".
   (env, pointer, sibling skill, caches by numeric version, synced copies, claude.ai paths)
 
 **kor-deslop**
-- One pattern count (80) in SKILL.md, `references/patterns.md`, the README (both languages), `skills/CLAUDE.md`
+- One pattern count (81) in SKILL.md, `references/patterns.md`, the README (both languages), `skills/CLAUDE.md`
   and CLAUDE.md; existing pattern IDs are never renumbered
 
 **html-report**

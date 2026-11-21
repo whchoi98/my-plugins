@@ -52,7 +52,7 @@ CSS_RULES = [
     (r"h2\{[^}]*font-size:26px", "H2 26px"), (r"h3\{[^}]*font-size:17px", "H3 17px"),
     (r"\.lead\{[^}]*font-size:17px", "요약 문단 17px"),
     (r"\.wrap\{[^}]*max-width:1440px", "최대 폭 1440px"),
-    (r"\.sec,\.sources,\.method\{[^}]*border-top:2px solid", "절마다 2px 구분선"),
+    (r"\.sec,\.sources,\.method\{[^}]*border-top:2px solid", "챕터마다 2px 구분선"),
     (r"\.box\{[^}]*border:1px solid[^}]*border-radius:10px", "상자 1px 테두리와 둥근 모서리 10px"),
     (r"\.callout\{[^}]*background:var\(--callout\)", "강조 문단 연한 파랑 바탕"),
     (r"\.pill\{[^}]*border-radius:999px", "상태 알약"),
@@ -298,7 +298,7 @@ def check(path):
         codes += ("H" if has(n, "doc-head") else "S" if has(n, "sec") else "R" if has(n, "sources")
                   else "M" if has(n, "method") else "X" if has(n, "share") else "?")
     if not re.match(ORDER[kind], codes):
-        want = "머리, 절, 출처 표, 조사 방법, 공유 범위" if kind == "research" else "머리, 절, (출처 표), (조사 방법), 공유 범위"
+        want = "머리, 챕터, 출처 표, 조사 방법, 공유 범위" if kind == "research" else "머리, 챕터, (출처 표), (조사 방법), 공유 범위"
         errs.append(f"<main> 바로 아래 순서가 규격과 다르다 ({kind}: {want}). 지금: {codes} "
                     "(H 머리, S 절, R 출처 표, M 조사 방법, X 공유 범위, ? 그 밖의 요소)")
 
@@ -329,7 +329,7 @@ def check(path):
         h2 = next((k for k in kids if k.tag == "h2"), None)
         name = sec.attrs.get("id") or f"L{sec.line}"
         if h2 is None:
-            errs.append(f"{name}: 절 바로 아래에 h2가 없다")
+            errs.append(f"{name}: 챕터 바로 아래에 h2가 없다")
         elif has(sec, "sec") and kind == "research" and not any(has(k, "src-kind") for k in kids[:kids.index(h2)]):
             errs.append(f"{name}: h2 앞에 출처 종류(p.src-kind)가 없다")
 

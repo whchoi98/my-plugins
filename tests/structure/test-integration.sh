@@ -219,3 +219,20 @@ IT_OUT=$(python3 -I "$IT_SC" "$TEST_TMP/it-dot.html" 2>&1); IT_RC=$?
 assert_contains "self_check: names the middle dot" "$IT_OUT" "middle dot in SVG text"
 IT_OUT=$(python3 -I "$IT_SC" "$TEST_TMP/it-slash.html" 2>&1); IT_RC=$?
 assert_eq "self_check: passes the same text with a slash" "0" "$IT_RC"
+
+# --- The skills whose Korean text runs through lint_prose.py, and kor-deslop, follow their own word rule (2026-11-18) ---
+# A part of a text is 챕터 (or 장), not 절, and 비교하다, not 견주다. Left out: lines that state the rule (they quote
+# "절" or "견주다", or are the style.md rows), the E-5 rows (절 = clause), regex definitions and alternations such as
+# (절|장), and lint_prose.py, which holds the patterns. The templates are not read here: a published techblogs post must keep the template's <style> and
+# <script> byte for byte, and the html-report template's sample text is linted by its own test.
+IT_WORD_FILES=$(find skills/aws-blog-skills skills/techblogs skills/html-report skills/kor-deslop -type f \( -name '*.md' -o -name '*.py' \) \
+    ! -name lint_prose.py | sort)
+IT_SEC_RX='(?<![가-힣A-Za-z0-9])(?<![A-Za-z`] )절(?:은|이|을|의|에|에서|에는|에서는|로|과|만|마다|별|부터|까지|들)?(?![가-힣])'
+IT_OUT=$(printf '%s\n' "$IT_WORD_FILES" | xargs grep -nP "$IT_SEC_RX" 2>/dev/null \
+    | grep -vE '"절"|^[^:]+:[0-9]+:\| 절 \(|\| E-5 \||re\.compile\(|\(절\|' || true)
+assert_eq "word rule: no 절 for a part of a text in the writing skills" "" "$IT_OUT"
+IT_OUT=$(printf '%s\n' "$IT_WORD_FILES" | xargs grep -nP '(?<![가-힣])견[주줍줘줬준줄줌]' 2>/dev/null \
+    | grep -vE '"견주다"|^[^:]+:[0-9]+:\| 견주다 |re\.compile\(' || true)
+assert_eq "word rule: no 견주다 in the writing skills" "" "$IT_OUT"
+[ "$(printf '%s\n' "$IT_WORD_FILES" | grep -c .)" -ge 20 ] && pass "word rule: the four skills' documents and scripts were read" \
+    || fail "word rule: the four skills' documents and scripts were read" "found only $(printf '%s\n' "$IT_WORD_FILES" | grep -c .) files"

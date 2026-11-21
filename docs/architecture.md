@@ -32,7 +32,7 @@ Output goes to the user's current directory, never into the plugin cache.
 | `aws-blog-skills` | aws-blog-skills 1.2.2 | AWS Korea Tech Blog draft from source to zip, steps 0-7, references per step |
 | `aws-diagram` | aws-diagrams 1.0.0 | AWS architecture SVG with the official AWS and Bedrock AgentCore icon bundle |
 | `aws-diagram-design` | aws-diagrams 1.0.0 | Structure diagrams (27 visual types) as HTML/SVG/PNG; holds the shared `assets/` |
-| `kor-deslop` | kor-writing 1.0.0 | Korean AI-tell removal in one pass from a 80-pattern rulebook, content unchanged |
+| `kor-deslop` | kor-writing 1.0.0 | Korean AI-tell removal in one pass from an 81-pattern rulebook, content unchanged |
 | `aws-ppt-skills` | aws-deck 1.0.0 | Seminar decks on the bundled 2026 black or white template with pptxgenjs |
 | `consulting-ppt-white-ppt` | aws-deck 1.0.0 | Dense, light consulting-report decks with a customer brand accent |
 | `pptx-template-fill` | aws-deck 1.0.0 | Fills a user-supplied .pptx in place with python-pptx |
@@ -237,7 +237,7 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 | `aws-blog-skills` | aws-blog-skills 1.2.2 | 소재부터 zip까지 AWS Korea Tech Blog 원고. 0~7단계, 단계별 참조 파일 |
 | `aws-diagram` | aws-diagrams 1.0.0 | 공식 AWS 아이콘과 Bedrock AgentCore 아이콘 묶음으로 그리는 AWS 아키텍처 SVG |
 | `aws-diagram-design` | aws-diagrams 1.0.0 | 구조 다이어그램(시각 유형 27가지) HTML/SVG/PNG. 공용 `assets/`를 가짐 |
-| `kor-deslop` | kor-writing 1.0.0 | 패턴 80개 규칙집으로 한국어 AI 티를 한 번에 제거. 내용은 그대로 |
+| `kor-deslop` | kor-writing 1.0.0 | 패턴 81개 규칙집으로 한국어 AI 티를 한 번에 제거. 내용은 그대로 |
 | `aws-ppt-skills` | aws-deck 1.0.0 | 포함된 2026 블랙·화이트 템플릿 위에 pptxgenjs로 만드는 세미나 덱 |
 | `consulting-ppt-white-ppt` | aws-deck 1.0.0 | 고객 브랜드 색을 쓰는 밝은 고밀도 컨설팅 리포트 덱 |
 | `pptx-template-fill` | aws-deck 1.0.0 | 사용자가 준 .pptx를 python-pptx로 제자리에서 채우기 |
