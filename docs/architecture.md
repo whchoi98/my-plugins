@@ -33,7 +33,7 @@ Output goes to the user's current directory, never into the plugin cache.
 | `aws-diagram` | aws-diagrams 1.0.0 | AWS architecture SVG with the official AWS and Bedrock AgentCore icon bundle |
 | `aws-diagram-design` | aws-diagrams 1.0.0 | Structure diagrams (27 visual types) as HTML/SVG/PNG; holds the shared `assets/` |
 | `kor-deslop` | kor-writing 1.0.0 | Korean AI-tell removal in one pass from an 81-pattern rulebook, content unchanged |
-| `aws-ppt-skills` | aws-deck 1.0.0 | Seminar decks on the bundled 2026 black or white template with pptxgenjs |
+| `aws-ppt-skills` | aws-deck 1.0.0 | Seminar decks on the bundled 2026 black or white template with pptxgenjs, delivered as PowerPoint, as one HTML file presented in a browser, or both |
 | `consulting-ppt-white-ppt` | aws-deck 1.0.0 | Dense, light consulting-report decks with a customer brand accent |
 | `pptx-template-fill` | aws-deck 1.0.0 | Fills a user-supplied .pptx in place with python-pptx |
 | `aws-reports` | aws-reports 1.0.0 | Benchmark and PoC result reports as MS Word + standalone HTML from one Markdown draft |
@@ -49,7 +49,7 @@ Output goes to the user's current directory, never into the plugin cache.
 - aws-diagram — `find_icon.py`, `embed.py` (inline icons as base64), `build_bundle.py` (maintainer)
 - aws-diagram-design — `self_check.py`, `verify-geometry.py`, `drawio_extract.py`, `mermaid_extract.py`,
   `build_aws_icons.py` (maintainer)
-- aws-ppt-skills — `apply_template.py`, `check_deck.py`, `svg_to_png.py`, `install_fonts.sh`
+- aws-ppt-skills — `apply_template.py`, `check_deck.py`, `svg_to_png.py`, `install_fonts.sh`, `deck_to_html.py`, `preview_html_deck.py`
 - consulting-ppt-white-ppt — `lib/consult_helpers.js`, `tools/extract_brand_color.py`, `fix_pptx.py`, `fix_notes.py`
 - pptx-template-fill — `tfill.py`, `inventory.py`, `swap_font.py`, `qa_check.py`, `example_fill.py`
 - aws-reports — `report.mjs` (Markdown to docx + HTML, Node.js), `check_report.py` (style contract, `--profile benchmark|poc`),
@@ -66,7 +66,7 @@ Output goes to the user's current directory, never into the plugin cache.
 
 ### Dependency Layer
 - `skills/setup/scripts/setup.sh` checks uv, Playwright Chromium, Amazon Ember, Noto Sans CJK KR,
-  NanumSquareOTF, D2Coding, pptxgenjs, python-pptx, lxml, Pillow, cairosvg, LibreOffice, Poppler,
+  NanumSquareOTF, D2Coding, pptxgenjs, python-pptx, lxml, Pillow, cairosvg, fonttools, LibreOffice, Poppler,
   rsvg-convert and the aws-reports packages (docx, marked, docx-preview, jszip, NanumSquareOTF Regular), and installs them into the user's home; system packages only with `--sudo`, through `sudo -n`
   ([runbook](runbooks/setup-dependencies.md))
 
@@ -205,6 +205,10 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
   rebuilds each section from text boxes, shapes, native tables, native charts and icon PNGs. The picture of the
   infographic never goes on a slide, and `check_editable.py` refuses a deck that has one
   ([ADR-006](decisions/ADR-006-infographic-editable-deck.md)).
+- **HTML deck converted from the finished deck** — aws-ppt-skills asks for the output format first (PPT, HTML or
+  both). The HTML deck is never authored: `deck_to_html.py` reads the final `.pptx` and writes one self-contained
+  page with the slide content as HTML and SVG, the template chrome as pictures rendered by LibreOffice, subset
+  fonts and the notes for a presenter view ([ADR-007](decisions/ADR-007-html-deck-converted-from-pptx.md)).
 - **aws-blog-skills targets Claude Code** — `${CLAUDE_SKILL_DIR}` paths, a work folder, checks on the assembled
   bundle ([ADR-001](decisions/ADR-001-claude-code-skill-conventions.md)).
 - **Scripts for mechanical rules** — banned words, structure, URLs, diagram geometry and deck lint are scripts
@@ -238,7 +242,7 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 | `aws-diagram` | aws-diagrams 1.0.0 | 공식 AWS 아이콘과 Bedrock AgentCore 아이콘 묶음으로 그리는 AWS 아키텍처 SVG |
 | `aws-diagram-design` | aws-diagrams 1.0.0 | 구조 다이어그램(시각 유형 27가지) HTML/SVG/PNG. 공용 `assets/`를 가짐 |
 | `kor-deslop` | kor-writing 1.0.0 | 패턴 81개 규칙집으로 한국어 AI 티를 한 번에 제거. 내용은 그대로 |
-| `aws-ppt-skills` | aws-deck 1.0.0 | 포함된 2026 블랙·화이트 템플릿 위에 pptxgenjs로 만드는 세미나 덱 |
+| `aws-ppt-skills` | aws-deck 1.0.0 | 포함된 2026 블랙·화이트 템플릿 위에 pptxgenjs로 만드는 세미나 덱. PowerPoint, 브라우저에서 발표하는 HTML 한 파일, 또는 둘 다로 전달 |
 | `consulting-ppt-white-ppt` | aws-deck 1.0.0 | 고객 브랜드 색을 쓰는 밝은 고밀도 컨설팅 리포트 덱 |
 | `pptx-template-fill` | aws-deck 1.0.0 | 사용자가 준 .pptx를 python-pptx로 제자리에서 채우기 |
 | `aws-reports` | aws-reports 1.0.0 | Markdown 원고 하나로 만드는 벤치마크·PoC 결과 보고서(MS Word + 단일 HTML) |
@@ -252,7 +256,7 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 - aws-blog-skills — `lint_prose.py`, `check_structure.py`, `check_urls.py`, `diagram_lib.py` + `example_diagrams.py`, `render_diagrams.py`(Playwright), `package_blog.sh`
 - aws-diagram — `find_icon.py`, `embed.py`(아이콘을 base64로 내장), `build_bundle.py`(관리자용)
 - aws-diagram-design — `self_check.py`, `verify-geometry.py`, `drawio_extract.py`, `mermaid_extract.py`, `build_aws_icons.py`(관리자용)
-- aws-ppt-skills — `apply_template.py`, `check_deck.py`, `svg_to_png.py`, `install_fonts.sh`
+- aws-ppt-skills — `apply_template.py`, `check_deck.py`, `svg_to_png.py`, `install_fonts.sh`, `deck_to_html.py`, `preview_html_deck.py`
 - consulting-ppt-white-ppt — `lib/consult_helpers.js`, `tools/extract_brand_color.py`, `fix_pptx.py`, `fix_notes.py`
 - pptx-template-fill — `tfill.py`, `inventory.py`, `swap_font.py`, `qa_check.py`, `example_fill.py`
 - aws-reports — `report.mjs`(Markdown을 docx + HTML로, Node.js), `check_report.py`(스타일 계약, `--profile benchmark|poc`), `chart_style.py`, `fonts.py`(글꼴 부분집합), `preview.py`(Playwright), `svg2png.py`
@@ -262,7 +266,7 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 - setup — `scripts/setup.sh`(점검, `install`, `install --sudo`)
 
 ### Dependency Layer
-- `skills/setup/scripts/setup.sh`가 uv, Playwright Chromium, Amazon Ember, Noto Sans CJK KR, NanumSquareOTF, D2Coding, pptxgenjs, python-pptx, lxml, Pillow, cairosvg, LibreOffice, Poppler, rsvg-convert와 aws-reports 패키지(docx, marked, docx-preview, jszip, NanumSquareOTF Regular)를 점검하고 사용자 홈에 설치합니다. 시스템 패키지는 `--sudo`를 줄 때만 `sudo -n`으로 설치합니다([런북](runbooks/setup-dependencies.md))
+- `skills/setup/scripts/setup.sh`가 uv, Playwright Chromium, Amazon Ember, Noto Sans CJK KR, NanumSquareOTF, D2Coding, pptxgenjs, python-pptx, lxml, Pillow, cairosvg, fonttools, LibreOffice, Poppler, rsvg-convert와 aws-reports 패키지(docx, marked, docx-preview, jszip, NanumSquareOTF Regular)를 점검하고 사용자 홈에 설치합니다. 시스템 패키지는 `--sudo`를 줄 때만 `sudo -n`으로 설치합니다([런북](runbooks/setup-dependencies.md))
 
 ### Security Layer
 - `.claude/settings.json` deny 목록과 비운 attribution, `.claude/hooks/secret-scan.sh`(PreToolUse, exit 2)
@@ -376,6 +380,7 @@ flowchart LR
 - **고정 템플릿으로 만드는 HTML 보고서** — html-report는 `assets/template.html`을 복사해 내용만 채웁니다. 디자인 규격, 템플릿, 검사기가 같은 값을 갖고, 한국어와 영어는 한 파일 안의 요소 짝입니다([ADR-004](decisions/ADR-004-html-report-template-fill.md)).
 - **조각 파일로 빌드하는 블로그 글** — techblogs는 `meta.json`과 언어별 본문 조각을 쓰고 `build_post.py`가 skill의 템플릿에 채웁니다. 이 템플릿은 블로그의 report 레이아웃이 의존하는 이름을 유지해야 하므로 html-report와 공유하지 않습니다([ADR-005](decisions/ADR-005-techblogs-personal-blog-workflow.md)).
 - **인포그래픽 내용을 편집 가능한 덱으로 다시 만들기** — aws-infographic은 내용을 aws-ppt-skills에 넘겨 섹션마다 텍스트 상자, 도형, 표, 차트, 아이콘 PNG로 다시 만듭니다. 인포그래픽 그림은 슬라이드에 넣지 않고, 그림이 들어간 덱은 `check_editable.py`가 거부합니다([ADR-006](decisions/ADR-006-infographic-editable-deck.md)).
+- **완성한 덱을 변환해 만드는 HTML 덱** — aws-ppt-skills는 출력 형식(PPT, HTML, 둘 다)을 먼저 묻습니다. HTML 덱은 따로 작성하지 않습니다. `deck_to_html.py`가 최종 `.pptx`를 읽어 한 파일짜리 페이지를 만듭니다. 슬라이드 내용은 HTML과 SVG로, 템플릿의 배경과 로고는 LibreOffice가 그린 그림으로 들어가고, 글꼴은 쓰인 글자만 포함하며, 노트는 발표자 보기에 나옵니다([ADR-007](decisions/ADR-007-html-deck-converted-from-pptx.md)).
 - **옆 skill 기준 상대 경로** — 다른 skill의 파일은 `../<skill>/...`로 찾고, 플러그인 캐시 glob은 대비책으로만 씁니다([ADR-002](decisions/ADR-002-merge-four-plugins-into-one.md)).
 - **의존 프로그램은 `setup`으로** — 스크립트 하나가 모든 외부 프로그램과 폰트를 점검하고 설치하며, sudo는 요청할 때만 씁니다([런북](runbooks/setup-dependencies.md)).
 - **aws-blog-skills는 Claude Code 대상** — `${CLAUDE_SKILL_DIR}` 경로, 작업 폴더, 조립한 번들 검사([ADR-001](decisions/ADR-001-claude-code-skill-conventions.md)).

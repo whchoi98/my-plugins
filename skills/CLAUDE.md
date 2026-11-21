@@ -9,7 +9,7 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 | `aws-diagram/` | aws-diagrams 1.0.0 | SKILL.md, `scripts/find_icon.py`, `embed.py`, `build_bundle.py`, `assets/` (icon bundle) |
 | `aws-diagram-design/` | aws-diagrams 1.0.0 | SKILL.md, `references/` (style guide, types, export, import), `scripts/` (self_check, verify-geometry, extractors), `assets/aws-icons/`, `assets/fonts/` |
 | `kor-deslop/` | kor-writing 1.0.0 | SKILL.md, `references/patterns.md` (A~K, 81 patterns) |
-| `aws-ppt-skills/` | aws-deck 1.0.0 | SKILL.md, `scripts/` (apply_template, check_deck, svg_to_png, install_fonts.sh), `assets/templates/`, `assets/fonts/` |
+| `aws-ppt-skills/` | aws-deck 1.0.0 | SKILL.md (output format asked first: PPT, HTML or both), `scripts/` (apply_template, check_deck, svg_to_png, install_fonts.sh; deck_to_html and preview_html_deck for the HTML deck), `assets/templates/`, `assets/fonts/`, `assets/html/` (deck.css, deck.js: the page's stage, controls and presenter view), `references/` (diagrams, html-deck) |
 | `consulting-ppt-white-ppt/` | aws-deck 1.0.0 | SKILL.md, `lib/consult_helpers.js`, `tools/` (fix_pptx, fix_notes, extract_brand_color), `examples/` |
 | `pptx-template-fill/` | aws-deck 1.0.0 | SKILL.md, `scripts/` (tfill, inventory, qa_check, swap_font) |
 | `aws-reports/` | aws-reports 1.0.0 | SKILL.md (report type, then one procedure), `references/` (markdown-spec, style-rules, benchmark-structure, poc-structure, poc-verdict-rules), `scripts/` (report.mjs, check_report.py, chart_style.py, fonts.py, preview.py, svg2png.py, style_terms.json), `assets/examples/` (benchmark, poc) |
@@ -21,7 +21,8 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 ## Cross-skill links
 - aws-blog-skills → `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design`, `my-plugins:kor-deslop`,
   `my-plugins:setup`; `scripts/diagram_lib.py` reads `../aws-diagram-design/assets` (fonts, icons)
-- aws-ppt-skills → `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design`, `my-plugins:setup`
+- aws-ppt-skills → `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design`, `my-plugins:setup`;
+  `scripts/deck_to_html.py` reads `../aws-diagram-design/assets/fonts/ttf` (Amazon Ember, for diagram SVGs that name it)
 - aws-reports → `my-plugins:aws-diagram` (architecture figures), `my-plugins:setup` (npm packages, fonts);
   `../aws-blog-skills/scripts/lint_prose.py` (prose check)
 - html-report → `my-plugins:aws-diagram`, `my-plugins:aws-diagram-design` (figures), `my-plugins:kor-deslop`

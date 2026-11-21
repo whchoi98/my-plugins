@@ -42,7 +42,7 @@ the dev harness cannot be bypassed silently.
 | aws-blog-skills | drafts, sibling `aws-diagram-design/assets` | work folder `<YYYY-MM-DD>-<slug>/` only | Playwright Chromium on local files; GET on draft URLs |
 | aws-diagram | bundled `assets/icons.json`, the draft SVG | output SVG in the working directory | nothing |
 | aws-diagram-design | the HTML, `.drawio` or `.mmd` given | HTML/SVG/PNG next to the source or at `--output` | Playwright Chromium for export |
-| aws-ppt-skills | bundled templates and fonts, built deck | deck and QA images in the working directory; fonts in the home | `node`, `soffice`, `pdftoppm`; `svg_to_png.py` tries Playwright, cairosvg, `rsvg-convert`, `convert` |
+| aws-ppt-skills | bundled templates and fonts, built deck | deck, HTML deck and QA images in the working directory; fonts in the home | `node`, `soffice`, `pdftoppm`; `svg_to_png.py` tries Playwright, cairosvg, `rsvg-convert`, `convert`; `deck_to_html.py` runs `soffice` (a LibreOffice profile of its own in a temporary folder) and `pdftoppm`; `preview_html_deck.py` opens the page in Playwright Chromium. The HTML deck loads nothing from the network, escapes slide and note text, keeps only `http`, `https` and `mailto` links, and holds the speaker notes as readable text unless `--no-notes` is given |
 | consulting-ppt-white-ppt | logo image, built deck | deck in the working directory; `fix_pptx.py` rewrites it in place | `node`, `soffice`, `pdftoppm` |
 | pptx-template-fill | the user's template | filled deck in the working directory | `qa_check.py --render` runs `soffice` and `pdftotext` |
 | aws-reports | the user's data, notes and drafts; its own `scripts/`, `references/`, `assets/examples/` | the work folder (`report/`, `charts/`, `report/out/`); nothing in the skill folder (chart scripts run with `python -B`) | `node report.mjs` (imports docx and marked from the global npm folder), `uv run` fontTools for font subsets, Playwright Chromium for previews |
@@ -63,7 +63,7 @@ from an icon package. They are maintainer tools for a clone; no workflow step ru
 | Noto Sans CJK KR (3 OTF) | `github.com/notofonts/noto-cjk` raw files | HTTPS only |
 | LibreOffice (dnf without a package) | `download.documentfoundation.org/libreoffice/stable/` RPM bundle | `sha256sum -c` against the `.sha256` from the same server; aborts on mismatch |
 | Playwright and Chromium | PyPI through `uv run --with` (pinned version), then `playwright install chromium` | Playwright's own download |
-| pptxgenjs; python-pptx, lxml, Pillow, cairosvg | npm registry (`npm install -g`); PyPI (`pip install --user`) | Registry defaults |
+| pptxgenjs; python-pptx, lxml, Pillow, cairosvg, fonttools | npm registry (`npm install -g`); PyPI (`pip install --user`) | Registry defaults |
 | docx, marked, docx-preview, jszip (aws-reports) | npm registry (`npm install -g`, exact versions in `REPORT_NPM`) | Registry defaults |
 | NanumSquareOTF (aws-reports) | npm registry `@kfonts/nanum-square-otf@0.2.0` through `npm pack`; only `src/*.otf` is copied | npm checks the tarball against the registry's sha512 integrity |
 | System packages | the configured dnf, apt or Homebrew repositories | Package manager signatures |
@@ -168,7 +168,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 | aws-blog-skills | 원고, 옆 skill의 `aws-diagram-design/assets` | 작업 폴더 `<YYYY-MM-DD>-<slug>/`만 | 로컬 파일을 여는 Playwright Chromium, 원고 URL에 GET |
 | aws-diagram | 포함된 `assets/icons.json`, 초안 SVG | 작업 디렉터리의 결과 SVG | 없음 |
 | aws-diagram-design | 지정한 HTML, `.drawio`, `.mmd` | 원본 옆이나 `--output`의 HTML/SVG/PNG | 내보내기용 Playwright Chromium |
-| aws-ppt-skills | 포함된 템플릿과 폰트, 빌드한 덱 | 작업 디렉터리의 덱과 QA 이미지, 홈의 폰트 | `node`, `soffice`, `pdftoppm`. `svg_to_png.py`는 Playwright, cairosvg, `rsvg-convert`, `convert` 순으로 시도 |
+| aws-ppt-skills | 포함된 템플릿과 폰트, 빌드한 덱 | 작업 디렉터리의 덱, HTML 덱, QA 이미지, 홈의 폰트 | `node`, `soffice`, `pdftoppm`. `svg_to_png.py`는 Playwright, cairosvg, `rsvg-convert`, `convert` 순으로 시도. `deck_to_html.py`는 `soffice`(임시 폴더의 전용 LibreOffice 프로필)와 `pdftoppm`을 실행하고, `preview_html_deck.py`는 Playwright Chromium으로 페이지를 엽니다. HTML 덱은 네트워크에서 아무것도 불러오지 않고, 슬라이드와 노트의 글자를 이스케이프하며, `http`, `https`, `mailto` 링크만 남깁니다. 발표자 노트는 `--no-notes`를 주지 않으면 읽을 수 있는 글자로 들어갑니다 |
 | consulting-ppt-white-ppt | 로고 이미지, 빌드한 덱 | 작업 디렉터리의 덱. `fix_pptx.py`가 제자리에서 고침 | `node`, `soffice`, `pdftoppm` |
 | pptx-template-fill | 사용자의 템플릿 | 작업 디렉터리의 채운 덱 | `qa_check.py --render`가 `soffice`와 `pdftotext` 실행 |
 | aws-reports | 사용자의 데이터, 메모, 초안. 자기 `scripts/`, `references/`, `assets/examples/` | 작업 폴더(`report/`, `charts/`, `report/out/`). skill 폴더에는 쓰지 않음(차트 스크립트는 `python -B`) | `node report.mjs`(전역 npm 폴더의 docx, marked를 import), 글꼴 부분집합용 `uv run` fontTools, 미리보기용 Playwright Chromium |
@@ -188,7 +188,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 | Noto Sans CJK KR(OTF 3개) | `github.com/notofonts/noto-cjk` 원본 파일 | HTTPS만 |
 | LibreOffice(패키지가 없는 dnf) | `download.documentfoundation.org/libreoffice/stable/` RPM 묶음 | 같은 서버의 `.sha256`으로 `sha256sum -c`. 불일치하면 중단 |
 | Playwright와 Chromium | `uv run --with`(버전 고정)로 PyPI에서, 그다음 `playwright install chromium` | Playwright 자체 내려받기 |
-| pptxgenjs, python-pptx, lxml, Pillow, cairosvg | npm 레지스트리(`npm install -g`), PyPI(`pip install --user`) | 레지스트리 기본값 |
+| pptxgenjs, python-pptx, lxml, Pillow, cairosvg, fonttools | npm 레지스트리(`npm install -g`), PyPI(`pip install --user`) | 레지스트리 기본값 |
 | docx, marked, docx-preview, jszip(aws-reports) | npm 레지스트리(`npm install -g`, `REPORT_NPM`의 고정 버전) | 레지스트리 기본값 |
 | NanumSquareOTF(aws-reports) | npm 레지스트리 `@kfonts/nanum-square-otf@0.2.0`을 `npm pack`으로. `src/*.otf`만 복사 | npm이 레지스트리의 sha512 integrity로 tarball을 확인 |
 | 시스템 패키지 | 설정된 dnf, apt, Homebrew 저장소 | 패키지 관리자 서명 |

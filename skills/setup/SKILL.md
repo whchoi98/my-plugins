@@ -1,6 +1,6 @@
 ---
 name: setup
-description: "my-plugins의 skill들이 쓰는 외부 프로그램과 폰트를 점검하고 설치한다. 대상은 다이어그램 PNG 렌더(uv, Playwright Chromium과 시스템 라이브러리, Amazon Ember, Noto Sans CJK KR)와 덱 생성·렌더 QA(pptxgenjs, python-pptx, lxml, Pillow, cairosvg, LibreOffice soffice, Poppler pdftoppm/pdftotext, rsvg-convert, NanumSquareOTF, D2Coding), 보고서 Word·HTML 빌드(docx, marked, docx-preview, jszip, NanumSquareOTF Regular)다. \"my-plugins 설치 점검\", \"의존성 설치\", \"setup\", \"렌더링이 안 돼\", \"soffice 없음\", \"playwright 실행 안 됨\", \"폰트가 깨져\" 같은 요청이나, aws-blog-skills, aws-diagram-design, aws-ppt-skills, consulting-ppt-white-ppt, pptx-template-fill, aws-reports가 도구나 폰트가 없다고 할 때 사용한다."
+description: "my-plugins의 skill들이 쓰는 외부 프로그램과 폰트를 점검하고 설치한다. 대상은 다이어그램 PNG 렌더(uv, Playwright Chromium과 시스템 라이브러리, Amazon Ember, Noto Sans CJK KR)와 덱 생성·렌더 QA(pptxgenjs, python-pptx, lxml, Pillow, cairosvg, fonttools, LibreOffice soffice, Poppler pdftoppm/pdftotext, rsvg-convert, NanumSquareOTF, D2Coding), 보고서 Word·HTML 빌드(docx, marked, docx-preview, jszip, NanumSquareOTF Regular)다. \"my-plugins 설치 점검\", \"의존성 설치\", \"setup\", \"렌더링이 안 돼\", \"soffice 없음\", \"playwright 실행 안 됨\", \"폰트가 깨져\" 같은 요청이나, aws-blog-skills, aws-diagram-design, aws-ppt-skills, consulting-ppt-white-ppt, pptx-template-fill, aws-reports가 도구나 폰트가 없다고 할 때 사용한다."
 ---
 
 # my-plugins setup
@@ -33,7 +33,7 @@ sudo 없이 되는 것만 설치한다. 사용자가 설치를 요청했으면 �
 | pptxgenjs | `npm install -g` |
 | docx, marked, docx-preview, jszip (aws-reports) | `npm install -g`, 버전 고정(docx 9.15.1, marked 18.1.1, docx-preview 0.4.1, jszip 3.10.1) |
 | NanumSquareOTF Regular·Bold (aws-reports 본문, aws-infographic 글자 폭 측정) | npm `@kfonts/nanum-square-otf` 0.2.0(OFL-1.1)을 `npm pack`으로 받아 `~/.local/share/fonts/nanumsquare-otf`로 |
-| python-pptx, lxml, Pillow, cairosvg | `pip install --user` |
+| python-pptx, lxml, Pillow, cairosvg, fonttools | `pip install --user` |
 | LibreOffice | dnf 저장소에 없을 때(Amazon Linux 2023) 공식 RPM 묶음을 sha256 확인 후 `~/.local/opt/libreoffice`에 풀고 `~/.local/bin/soffice`로 연결 |
 
 ## 3. 시스템 패키지 (sudo)

@@ -32,7 +32,7 @@ need, including the cases that broke on Amazon Linux 2023.
 | `/my-plugins:aws-diagram-design` | aws-diagrams 1.0.0 | AWS-branded structure diagrams: flowchart, sequence, timeline, ER, charts and more |
 | `/my-plugins:export-diagram`, `/my-plugins:import-drawio`, `/my-plugins:import-mermaid` | aws-diagrams 1.0.0 | Export an aws-diagram-design HTML file to SVG/PNG; redraw draw.io or Mermaid sources |
 | `/my-plugins:kor-deslop` | kor-writing 1.0.0 | Removes AI tells from Korean text in one pass (81 patterns), content unchanged |
-| `/my-plugins:aws-ppt-skills` | aws-deck 1.0.0 | AWS Korea 2026 black or white template decks with pptxgenjs and Korean speaker notes |
+| `/my-plugins:aws-ppt-skills` | aws-deck 1.0.0 | AWS Korea 2026 black or white template decks with pptxgenjs and Korean speaker notes, as PowerPoint, as one HTML file presented in a browser (presenter view with the notes), or both; the skill asks which |
 | `/my-plugins:consulting-ppt-white-ppt` | aws-deck 1.0.0 | Dense consulting-report decks with a customer brand accent |
 | `/my-plugins:pptx-template-fill` | aws-deck 1.0.0 | Fills an existing .pptx template in place, keeping its layout |
 | `/my-plugins:aws-reports` | aws-reports 1.0.0 | Customer reports as MS Word + standalone HTML from one Markdown draft: benchmarks, and PoC results with success criteria, verdicts and next steps |
@@ -51,7 +51,7 @@ need, including the cases that broke on Amazon Linux 2023.
   searched `/root` for synced plugins and sorted cache versions as strings.
 - **One installer for dependencies**: `/my-plugins:setup` covers what each plugin left to the user: Playwright
   Chromium and its system libraries, Noto Sans CJK KR, Amazon Ember, NanumSquareOTF and D2Coding (the deck
-  fonts were installed only when a deck build ran), pptxgenjs, python-pptx, lxml, Pillow, cairosvg, Poppler,
+  fonts were installed only when a deck build ran), pptxgenjs, python-pptx, lxml, Pillow, cairosvg, fonttools, Poppler,
   rsvg-convert and LibreOffice. LibreOffice is not in the Amazon Linux 2023 repositories, so `setup` unpacks the
   official RPM bundle into `~/.local/opt/libreoffice` after a SHA-256 check.
 - **pptxgenjs is found**: deck build steps set `NODE_PATH="$(npm root -g)"` before `node`, because a global
@@ -139,6 +139,7 @@ Then ask in plain Korean, or call a skill directly:
 이 구성을 AWS 아키텍처 다이어그램으로 그려줘
 이 글 AI 티 빼줘
 화이트 테마로 50명 미만 기술 세미나 덱 만들어줘
+이 발표 자료를 PPT와 브라우저에서 발표하는 HTML 둘 다로 만들어줘
 이 CSV로 Graviton vs Intel 벤치마크 보고서 Word랑 HTML로 만들어줘
 PoC 결과를 성공 기준별 판정으로 정리해서 보고서로 만들어줘
 이 조사 내용을 한영 전환되는 HTML 보고서로 만들어줘
@@ -165,7 +166,7 @@ skills/
 ├── aws-diagram/         # AWS architecture diagrams, icon finder and embedder
 ├── aws-diagram-design/  # structure diagrams; assets/ holds AWS icons and Amazon Ember fonts
 ├── kor-deslop/          # Korean AI-tell removal, references/patterns.md
-├── aws-ppt-skills/      # AWS template decks, bundled templates and fonts
+├── aws-ppt-skills/      # AWS template decks, bundled templates and fonts, HTML deck converter
 ├── consulting-ppt-white-ppt/  # consulting-report decks
 ├── pptx-template-fill/  # fill an existing template
 ├── aws-reports/         # benchmark and PoC reports: Word + HTML engine, references, examples
@@ -223,7 +224,7 @@ HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고�
 | `/my-plugins:aws-diagram-design` | aws-diagrams 1.0.0 | 흐름도, 시퀀스, 타임라인, ER, 차트 등 AWS 브랜드 스킨의 구조 다이어그램 |
 | `/my-plugins:export-diagram`, `/my-plugins:import-drawio`, `/my-plugins:import-mermaid` | aws-diagrams 1.0.0 | aws-diagram-design HTML을 SVG/PNG로 내보내기, draw.io와 Mermaid 다시 그리기 |
 | `/my-plugins:kor-deslop` | kor-writing 1.0.0 | 한국어 글의 AI 티를 한 번에 제거(패턴 81개). 내용은 그대로 둡니다 |
-| `/my-plugins:aws-ppt-skills` | aws-deck 1.0.0 | 2026 AWS Korea 블랙·화이트 템플릿 덱(pptxgenjs, 한국어 발표 대본) |
+| `/my-plugins:aws-ppt-skills` | aws-deck 1.0.0 | 2026 AWS Korea 블랙·화이트 템플릿 덱(pptxgenjs, 한국어 발표 대본). PowerPoint, 브라우저에서 발표하는 HTML 한 파일(노트가 나오는 발표자 보기 포함), 또는 둘 다로 만들며 어느 것을 만들지 skill이 물어봄 |
 | `/my-plugins:consulting-ppt-white-ppt` | aws-deck 1.0.0 | 고객 브랜드 색을 쓰는 고밀도 컨설팅 리포트 덱 |
 | `/my-plugins:pptx-template-fill` | aws-deck 1.0.0 | 기존 .pptx 템플릿의 레이아웃을 유지하며 내용 채우기 |
 | `/my-plugins:aws-reports` | aws-reports 1.0.0 | Markdown 원고 하나로 만드는 고객 공유용 Word + 단일 HTML 보고서: 벤치마크, 성공 기준별 판정과 다음 단계를 담은 PoC 결과 |
@@ -242,7 +243,7 @@ HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고�
   캐시 버전을 문자열로 정렬했습니다.
 - **의존 프로그램 설치를 한곳에서**: `/my-plugins:setup`이 각 플러그인이 사용자에게 맡겼던 것을 처리합니다.
   Playwright Chromium과 시스템 라이브러리, Noto Sans CJK KR, Amazon Ember, NanumSquareOTF와 D2Coding(덱 폰트는
-  덱을 빌드할 때만 설치되었습니다), pptxgenjs, python-pptx, lxml, Pillow, cairosvg, Poppler, rsvg-convert,
+  덱을 빌드할 때만 설치되었습니다), pptxgenjs, python-pptx, lxml, Pillow, cairosvg, fonttools, Poppler, rsvg-convert,
   LibreOffice입니다. Amazon Linux 2023 저장소에는 LibreOffice가 없으므로 공식 RPM 묶음을 SHA-256으로 확인한 뒤
   `~/.local/opt/libreoffice`에 풉니다.
 - **pptxgenjs를 찾음**: 전역 npm 모듈은 `require()`가 찾지 않으므로 덱 빌드 단계에서 `node` 전에
@@ -329,6 +330,7 @@ aws-ppt-skills의 덱 도구(pptxgenjs, python-pptx, LibreOffice)를 씁니다. 
 이 구성을 AWS 아키텍처 다이어그램으로 그려줘
 이 글 AI 티 빼줘
 화이트 테마로 50명 미만 기술 세미나 덱 만들어줘
+이 발표 자료를 PPT와 브라우저에서 발표하는 HTML 둘 다로 만들어줘
 이 CSV로 Graviton vs Intel 벤치마크 보고서 Word랑 HTML로 만들어줘
 PoC 결과를 성공 기준별 판정으로 정리해서 보고서로 만들어줘
 이 조사 내용을 한영 전환되는 HTML 보고서로 만들어줘
@@ -355,7 +357,7 @@ skills/
 ├── aws-diagram/         # AWS 아키텍처 구성도, 아이콘 검색과 내장
 ├── aws-diagram-design/  # 구조 다이어그램. assets/에 AWS 아이콘과 Amazon Ember 폰트
 ├── kor-deslop/          # 한국어 AI 티 제거, references/patterns.md
-├── aws-ppt-skills/      # AWS 템플릿 덱, 템플릿과 폰트 포함
+├── aws-ppt-skills/      # AWS 템플릿 덱, 템플릿과 폰트 포함, HTML 덱 변환기
 ├── consulting-ppt-white-ppt/  # 컨설팅 리포트 덱
 ├── pptx-template-fill/  # 기존 템플릿 채우기
 ├── aws-reports/         # 벤치마크·PoC 보고서: Word + HTML 변환기, references, 예제

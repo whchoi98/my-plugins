@@ -99,6 +99,22 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   `ppt-deck.md`, built, templated, passed through `check_deck.py` (0 errors, 0 warnings) and `check_editable.py`; the
   same deck with a timeline (`addLanes()`) and a table without a header row (`addGrid(s, null, rows)`); and the same
   deck with one pasted picture refused. Skipped parts say why. `buildkit.py build` (Playwright) is not run.
+- `structure/test-aws-ppt-skills.sh` — aws-ppt-skills: the output format asked first in the Workflow (five items, the
+  three answers, the question, the aws-infographic default), the HTML Deck section (commands, never edited by hand,
+  `--no-notes`), the bundled-assets rows, `references/html-deck.md` (every key of the page's own help listed, tools,
+  limits, presenter guide), and the runtime files (`deck.css`, `deck.js`: one stage size, nothing from the network,
+  `.pic` without a background shorthand). With python-pptx and lxml: the helpers of `deck_to_html.py` that need no
+  deck (number formats, tick scale, preset shapes, color and font-name checks, the external-file pattern), `--help`,
+  a missing file and a file that is not a deck. With node, pptxgenjs, Pillow, `soffice` and `pdftoppm`: the fixture
+  deck (`fixtures/aws-ppt-skills/html-deck.js` behind the SKILL.md helper block) built, templated and converted, and
+  the page read back (one section and one notes block per slide, one chrome picture per layout plus page-number
+  patches, `deck.css` and `deck.js` in the page unchanged, no network load, embedded fonts, charts as SVG, the table,
+  pictures, escaped slide and note text, a `javascript:` link dropped, number formats in data labels); the page
+  without fontTools (shadowed module: whole fonts, PNG diagram), `--no-notes`, `--lang`, `--title`; a raw deck, a
+  `PATH` without `soffice` and a bad `--chrome-width` refused without writing a page. With uv and a cached
+  Playwright 1.64.1 (offline): `preview_html_deck.py` on the page (a picture per slide, the list, the presenter view
+  following the audience window) and on a copy whose `go()` does nothing (exit 1 with WARN lines, no traceback).
+  Skipped parts say why.
 - `structure/test-integration.sh` — behavior of the merge fixes, each run with `HOME` on a scratch folder:
   `diagram_lib.py` asset lookup order (sibling skill, `AWS_DIAGRAM_ASSETS`, `.aws-diagram-assets`, plugin
   caches in numeric version order), `skills/setup/scripts/setup.sh` check mode and usage exit codes, sudo
@@ -109,6 +125,8 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   rows, regex definitions and `lint_prose.py` are left out; the templates are not read).
 - `fixtures/secret-samples.txt` — TAB-separated `name / prefix / body`; joined at runtime so no full
   token is stored. `fixtures/false-positives.txt` — one non-secret per line.
+- `fixtures/aws-ppt-skills/` — `html-deck.js` (deck content with one slide per kind of element the HTML deck carries;
+  the test puts the SKILL.md helper block in front of it) and `arch.svg` (a three-box diagram). Invented text only.
 - `fixtures/techblogs/` — `work/` (a made-up two-section post: `meta.json`, `ko.body.html`, `en.body.html`, one 8x8 PNG)
   and `aws-post.html` (a made-up saved AWS blog page without images). Invented text only: no real customer, account
   or internal data.
@@ -118,7 +136,7 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   non-zero (`|| true`, or capture `$?`). Run `cd` only in a subshell.
 - Sourcing shares the runner's scope. Never assign `TOTAL`, `PASSED`, `FAILED`, `SKIPPED`, `FAILURES`,
   `FILTER`, `TEST_TMP`, `PROJECT_ROOT` or `SCRIPT_DIR`; a structure test rejects it. Prefix test-local
-  names per file (`PS_`, `AB_`, `SCR_`, `KD_`, `IT_`, `HK_`, `SP_`, `AR_`, `HR_`, `TB_`, `IG_`). Never export or assign `HOME`; pass it
+  names per file (`PS_`, `AB_`, `SCR_`, `KD_`, `IT_`, `HK_`, `SP_`, `AR_`, `HR_`, `TB_`, `IG_`, `PP_`). Never export or assign `HOME`; pass it
   per command (`env HOME="$TEST_TMP/..." ...`).
 - Never write a complete secret literal anywhere; split it into prefix and body.
 - Use `$TEST_TMP` for scratch files and repos; it is removed on exit. Never write into `skills/`

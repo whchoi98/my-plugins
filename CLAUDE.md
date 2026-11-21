@@ -17,7 +17,7 @@ Public repo `github.com/whchoi98/my-plugins`, MIT (bundled third-party files kee
 ## Tech Stack
 - **Content** — Markdown skills (`skills/<name>/SKILL.md`) with on-demand references, templates and assets
 - **Shipped scripts** — Python 3 (blog lint, structure, URL, diagram generation; icon lookup and embedding;
-  diagram self-checks; python-pptx template tools; HTML report checks and image embedding; personal blog post import,
+  diagram self-checks; python-pptx template tools and the deck-to-HTML converter; HTML report checks and image embedding; personal blog post import,
   build, check and placement; infographic SVG builder, render QA and the editable-deck check), Playwright for Python (`uv run --no-project --with playwright`),
   Node.js + pptxgenjs v4 (deck builds), Node.js + docx 9 + marked 18 (report builds, `report.mjs`),
   Bash (`package_blog.sh`, `install_fonts.sh`, `setup.sh`)
@@ -73,7 +73,10 @@ a plugin component there. Everything under `.claude/` is only active when this r
     `references/structure.md` and `assets/templates/blog-template.md`; keep the description trigger phrases.
   - kor-deslop: the pattern count (81) comes from `references/patterns.md` and is the same in `skills/CLAUDE.md`, this file
     and the README in both languages.
-  - aws-ppt-skills: slides keep the template's background, logo, footer and page numbers; no `·` or `—`.
+  - aws-ppt-skills: slides keep the template's background, logo, footer and page numbers; no `·` or `—`. The HTML
+    deck is only ever converted from the finished `.pptx` (`scripts/deck_to_html.py`); a key or a control of the page
+    goes into `assets/html/deck.js`, the key table of `references/html-deck.md` and `scripts/preview_html_deck.py`
+    together, and the output format (PPT, HTML or both) stays the first question of the Workflow.
   - aws-reports: a wording correction goes into `references/style-rules.md` and `scripts/style_terms.json`
     together (`"profiles": ["poc"]` for PoC-only terms); a layout rule goes into `report.mjs` `tableLayout()`
     and `check_report.py` together; example numbers come from each example's `make_charts.py`. `report.mjs`
@@ -134,6 +137,7 @@ After exiting Plan mode (`/plan`), before starting implementation:
 - New skill under `skills/` -> Update `skills/CLAUDE.md`, README skill table (both languages), `docs/reference/agent-llm.md`
 - New external tool or font -> Update `skills/setup/scripts/setup.sh`, `skills/setup/SKILL.md`, README (both languages)
 - New or changed aws-blog-skills script -> Update its SKILL.md and `tests/structure/test-aws-blog-skills-scripts.sh`
+- Changed `skills/aws-ppt-skills/scripts/deck_to_html.py`, `preview_html_deck.py` or `assets/html/` -> Run `bash tests/run-all.sh aws-ppt-skills` with the deck tools and a cached Playwright (the fixture deck is converted and opened in a browser there)
 - Changed deck helper in `skills/aws-infographic/references/ppt-deck.md` or `addIcon()` -> Run `bash tests/run-all.sh aws-infographic` with the deck tools installed (the example deck is built there)
 - Anything under `skills/` or `commands/` changed -> Version bump + CHANGELOG `[Unreleased]` (both languages)
 - Harness changed (`.claude/`, `tests/`, `scripts/`) -> Update `tests/CLAUDE.md` and `docs/reference/security.md`

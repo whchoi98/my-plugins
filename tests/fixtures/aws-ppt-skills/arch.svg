@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 880 320" width="880" height="320" font-family="'NanumSquareOTF Bold', sans-serif">
+  <rect x="20" y="110" width="220" height="100" rx="12" fill="#161D26" stroke="#FF9900" stroke-width="3"/>
+  <text x="130" y="168" font-size="26" fill="#FFFFFF" text-anchor="middle">요청</text>
+  <rect x="330" y="110" width="220" height="100" rx="12" fill="#161D26" stroke="#A6ABBE" stroke-width="3"/>
+  <text x="440" y="168" font-size="26" fill="#FFFFFF" text-anchor="middle">Runtime</text>
+  <rect x="640" y="110" width="220" height="100" rx="12" fill="#161D26" stroke="#A6ABBE" stroke-width="3"/>
+  <text x="750" y="168" font-size="26" fill="#FFFFFF" text-anchor="middle">모델</text>
+  <path d="M240 160 H322 M550 160 H632" stroke="#FF9900" stroke-width="4" fill="none"/>
+</svg>

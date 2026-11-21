@@ -99,7 +99,7 @@ check_deck() {
     ok pptxgenjs "$(npm ls -g pptxgenjs 2>/dev/null | grep -o 'pptxgenjs@[0-9.]*' | head -1)"
   else miss pptxgenjs "덱 생성(npm -g)"; fi
   local mod
-  for mod in pptx:python-pptx lxml:lxml PIL:Pillow cairosvg:cairosvg; do
+  for mod in pptx:python-pptx lxml:lxml PIL:Pillow cairosvg:cairosvg fontTools:fonttools; do
     if python3 -c "import ${mod%%:*}" >/dev/null 2>&1; then ok "${mod#*:}"; else miss "${mod#*:}" "pip --user"; fi
   done
   if have soffice; then ok soffice "$(soffice --version 2>/dev/null | head -1 | awk '{print $1, $2}')"; else miss soffice "LibreOffice, 렌더 QA"; fi
@@ -177,7 +177,7 @@ install_deck_user() {
     npm install -g pptxgenjs >/dev/null 2>&1 || echo "   실패: npm 전역 폴더에 쓸 수 없으면 nvm 등 사용자 Node를 쓰세요"
   fi
   local need=() mod
-  for mod in pptx:python-pptx lxml:lxml PIL:Pillow cairosvg:cairosvg; do
+  for mod in pptx:python-pptx lxml:lxml PIL:Pillow cairosvg:cairosvg fontTools:fonttools; do
     python3 -c "import ${mod%%:*}" >/dev/null 2>&1 || need+=("${mod#*:}")
   done
   if [ ${#need[@]} -gt 0 ]; then

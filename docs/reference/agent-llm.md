@@ -20,7 +20,7 @@ one fires, and reference files only when a step asks for them. Skills chain thro
 | aws-diagram | `skills/aws-diagram/SKILL.md` | Map the system to AWS services, look up exact icons with `find_icon.py`, compose SVG, inline icons with `embed.py` | `references/diagram_guide.md` (read in full) |
 | aws-diagram-design | `skills/aws-diagram-design/SKILL.md` | Pick a semantic pattern and one of 27 visual types, draw HTML/SVG on the 4px grid, pass the taste gate, export | `references/type-*.md` for the chosen type, `style-guide.md`, `semantic-patterns.md`, `animation.md`, export and import references |
 | kor-deslop | `skills/kor-deslop/SKILL.md` | One pass: rule priority, meaning preservation, severity-based fixes, six self-checks, three output modes | `references/patterns.md` (80 patterns and principles, read once per run) |
-| aws-ppt-skills | `skills/aws-ppt-skills/SKILL.md` | Confirm theme, audience, presenter and content; paste the pptxgenjs helpers; build, apply template, lint, render, inspect | `references/diagrams.md` |
+| aws-ppt-skills | `skills/aws-ppt-skills/SKILL.md` | Confirm the output format (PPT, HTML or both), theme, audience, presenter and content; paste the pptxgenjs helpers; build, apply template, lint, render, inspect; for an HTML deck convert the checked `.pptx` and check the page in a browser | `references/diagrams.md`, `references/html-deck.md` |
 | consulting-ppt-white-ppt | `skills/consulting-ppt-white-ppt/SKILL.md` | Confirm client, logo and chapters; derive the accent; compose with `consult_helpers.js`; fix and render | `examples/build_sample.js` |
 | pptx-template-fill | `skills/pptx-template-fill/SKILL.md` | Inventory shapes, write a mapping table, fill runs, cells and chart caches in place, unify fonts, QA | `references/recipes.md` |
 | aws-reports | `skills/aws-reports/SKILL.md` | Pick the report type (benchmark or PoC), gather data and the PoC success criteria, compute numbers and verdicts in Python, write one Markdown draft, build Word + HTML with `report.mjs`, run `check_report.py --profile`, look at the previews | `references/` per type: `benchmark-structure.md`, or `poc-structure.md` + `poc-verdict-rules.md`; always `markdown-spec.md`, `style-rules.md`; `assets/examples/<type>/` |
@@ -47,7 +47,7 @@ one fires, and reference files only when a step asks for them. Skills chain thro
 Charts and comparison figures specific to the blog are drawn by aws-blog-skills itself with `diagram_lib.py`,
 which reads icons and fonts from `../aws-diagram-design/assets` (see [architecture.md](../architecture.md)).
 
-**Token cost** (`claude --plugin-dir . plugin details my-plugins`, 2026-11-18; estimates):
+**Token cost** (`claude --plugin-dir . plugin details my-plugins`, 2026-11-21; estimates):
 
 | Component | Always-on | On invoke |
 |---|---|---|
@@ -55,7 +55,7 @@ which reads icons and fonts from `../aws-diagram-design/assets` (see [architectu
 | aws-diagram | ~660 | ~4k |
 | aws-diagram-design | ~610 | ~23.1k |
 | kor-deslop | ~160 | ~1.5k |
-| aws-ppt-skills | ~290 | ~34.3k |
+| aws-ppt-skills | ~410 | ~36.9k |
 | consulting-ppt-white-ppt | ~560 | ~8.1k |
 | pptx-template-fill | ~550 | ~4k |
 | aws-reports | ~520 | ~4.2k |
@@ -109,6 +109,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 - `skills/kor-deslop/references/patterns.md`
 - `skills/aws-ppt-skills/SKILL.md`
 - `skills/aws-ppt-skills/references/diagrams.md`
+- `skills/aws-ppt-skills/references/html-deck.md`
 - `skills/consulting-ppt-white-ppt/SKILL.md`
 - `skills/pptx-template-fill/SKILL.md`
 - `skills/aws-reports/SKILL.md`
@@ -147,7 +148,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 | aws-diagram | `skills/aws-diagram/SKILL.md` | 시스템을 AWS 서비스로 대응시키고, `find_icon.py`로 정확한 아이콘을 찾아 SVG를 짜고, `embed.py`로 아이콘을 내장 | `references/diagram_guide.md`(전체를 읽음) |
 | aws-diagram-design | `skills/aws-diagram-design/SKILL.md` | 의미 패턴과 시각 유형 27가지 중 하나를 골라 4px 그리드로 HTML/SVG를 그리고, taste gate를 통과시킨 뒤 내보내기 | 고른 유형의 `references/type-*.md`, `style-guide.md`, `semantic-patterns.md`, `animation.md`, 내보내기와 가져오기 참조 |
 | kor-deslop | `skills/kor-deslop/SKILL.md` | 한 번에 처리: 규칙 우선순위, 의미 보존, 심각도별 수정, 자체 점검 6항목, 결과 전달 방식 3가지 | `references/patterns.md`(패턴과 원칙 80개, 실행마다 한 번) |
-| aws-ppt-skills | `skills/aws-ppt-skills/SKILL.md` | 테마, 청중, 발표자, 내용을 확인하고 pptxgenjs 헬퍼를 붙여 빌드, 템플릿 적용, lint, 렌더, 눈으로 확인 | `references/diagrams.md` |
+| aws-ppt-skills | `skills/aws-ppt-skills/SKILL.md` | 출력 형식(PPT, HTML, 둘 다), 테마, 청중, 발표자, 내용을 확인하고 pptxgenjs 헬퍼를 붙여 빌드, 템플릿 적용, lint, 렌더, 눈으로 확인. HTML 덱은 확인을 마친 `.pptx`를 변환한 뒤 브라우저에서 확인 | `references/diagrams.md`, `references/html-deck.md` |
 | consulting-ppt-white-ppt | `skills/consulting-ppt-white-ppt/SKILL.md` | 고객 이름, 로고, 챕터를 확인하고 강조색을 뽑은 뒤 `consult_helpers.js`로 짜고, 고치고 렌더 | `examples/build_sample.js` |
 | pptx-template-fill | `skills/pptx-template-fill/SKILL.md` | 도형 인벤토리, 매핑 표 작성, run, 표 셀, 차트 캐시를 제자리에서 채우고 폰트 통일, QA | `references/recipes.md` |
 | aws-reports | `skills/aws-reports/SKILL.md` | 보고서 유형(벤치마크, PoC)을 고르고 데이터와 PoC 성공 기준을 모아 숫자와 판정을 Python으로 계산한 뒤, Markdown 원고 하나를 써서 `report.mjs`로 Word + HTML을 빌드하고 `check_report.py --profile`로 검사하고 미리보기를 확인 | 유형별 `references/`: `benchmark-structure.md` 또는 `poc-structure.md` + `poc-verdict-rules.md`, 항상 `markdown-spec.md`, `style-rules.md`, `assets/examples/<유형>/` |
@@ -173,7 +174,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 
 블로그 고유의 차트와 비교 그림은 aws-blog-skills가 `diagram_lib.py`로 직접 그리며, 아이콘과 폰트는 `../aws-diagram-design/assets`에서 읽습니다([architecture.md](../architecture.md) 참고).
 
-**토큰 비용**(`claude --plugin-dir . plugin details my-plugins`, 2026-11-18, 추정치):
+**토큰 비용**(`claude --plugin-dir . plugin details my-plugins`, 2026-11-21, 추정치):
 
 | 구성 요소 | 항상 로드 | 호출할 때 |
 |---|---|---|
@@ -181,7 +182,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 | aws-diagram | ~660 | ~4k |
 | aws-diagram-design | ~610 | ~23.1k |
 | kor-deslop | ~160 | ~1.5k |
-| aws-ppt-skills | ~290 | ~34.3k |
+| aws-ppt-skills | ~410 | ~36.9k |
 | consulting-ppt-white-ppt | ~560 | ~8.1k |
 | pptx-template-fill | ~550 | ~4k |
 | aws-reports | ~520 | ~4.2k |
@@ -218,6 +219,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 - `skills/kor-deslop/references/patterns.md`
 - `skills/aws-ppt-skills/SKILL.md`
 - `skills/aws-ppt-skills/references/diagrams.md`
+- `skills/aws-ppt-skills/references/html-deck.md`
 - `skills/consulting-ppt-white-ppt/SKILL.md`
 - `skills/pptx-template-fill/SKILL.md`
 - `skills/aws-reports/SKILL.md`

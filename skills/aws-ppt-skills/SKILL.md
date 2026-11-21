@@ -1,16 +1,18 @@
 ---
 name: "aws-ppt-skills"
-description: "AWS Korea V-team standard presentation design system. Builds 16:9 PowerPoint decks with pptxgenjs helpers on the bundled 2026 AWS black or white template, which supplies backgrounds, AWS logo, copyright footer and page numbers. Includes theme palettes, Korean speaker scripts, native editable charts with embedded Excel data, and AWS architecture and structure diagrams via /my-plugins:aws-diagram and /my-plugins:aws-diagram-design."
+description: "AWS Korea V-team standard presentation design system. Builds 16:9 PowerPoint decks with pptxgenjs helpers on the bundled 2026 AWS black or white template, which supplies backgrounds, AWS logo, copyright footer and page numbers, and on request the same deck as one self-contained HTML file presented in a browser (presenter view with speaker notes, slide list, laser pointer). Asks which output the user wants: PPT, HTML or both. Includes theme palettes, Korean speaker scripts, native editable charts with embedded Excel data, and AWS architecture and structure diagrams via /my-plugins:aws-diagram and /my-plugins:aws-diagram-design."
 ---
 
 # AWS Korea V-team Standard Presentation Design System
 
-You are generating PowerPoint slides (.pptx) that conform to AWS Korea V-team's standard templates (black or white). Output must be production-grade, AWS-branded, and Korean-ready with detailed Korean speaker scripts in slide notes.
+You are generating presentation decks that conform to AWS Korea V-team's standard templates (black or white). A deck is built as PowerPoint (.pptx) and delivered as that file, as an HTML deck converted from it, or as both. The user chooses, and the Workflow below asks. Output must be production-grade, AWS-branded, and Korean-ready with detailed Korean speaker scripts in slide notes.
 
 Every deck is produced in two stages:
 
 1. **Build** with pptxgenjs and the helper functions below. Slides are created with `newSlide(type)` on empty `AWS_<TYPE>` slide masters (13.333 x 7.5 in).
 2. **Apply the template** with `scripts/apply_template.py`. It opens the chosen template, removes its sample slides and moves every slide onto the matching template layout. Backgrounds, AWS logo, copyright footer, slide-number fields and embedded fonts come from the template, never from code.
+
+When the user chose HTML, a third stage follows: `scripts/deck_to_html.py` converts the finished `.pptx` into one `.html` file that is presented in a browser (see "HTML Deck"). The page is never written by hand.
 
 `SKILL_DIR` below means the base directory of this skill (shown when the skill loads).
 
@@ -18,21 +20,28 @@ Every deck is produced in two stages:
 
 ## Workflow (mandatory first step)
 
-When invoked, always confirm four things BEFORE generating (skip any the user already gave):
+When invoked, always confirm five things BEFORE generating (skip any the user already gave):
 
-1. **Template theme** (drives the template and the palette):
+1. **Output format** (what the user receives). Ask it as one question: `PPT와 HTML 두 가지를 모두 만들까요, 한 가지만 만들까요? (PPT만 / HTML만 / PPT와 HTML 둘 다)`
+   - `PPT만` - the `.pptx` deck
+   - `HTML만` - one `.html` file presented in a browser (presenter view with the notes, slide list, laser pointer)
+   - `PPT와 HTML 둘 다` - both files, with the same slides and the same notes
+
+   Never pick a format for the user: a request for "발표 자료", "덱" or "슬라이드" that names no format gets the question. A request that names the format ("PPT로", "pptx", "HTML 발표 자료", "브라우저에서 발표") is already the answer. When `/my-plugins:aws-infographic` calls this skill for its editable deck, the format is `PPT만` unless the user asked for an HTML deck.
+2. **Template theme** (drives the template and the palette):
    - `블랙 테마` - `2026_aws_powerpoint_template_whchoi_black.pptx` → `THEME = "black"`
    - `화이트 테마` - `2026_aws_powerpoint_template_whchoi_white.pptx` → `THEME = "white"`
-2. **Audience size** (drives font size and color policy):
+3. **Audience size** (drives font size and color policy):
    - `100명 이상 세미나` → `AUDIENCE = "large"` - larger body fonts, multi-color accents allowed
    - `50명 미만 기술 세미나` → `AUDIENCE = "small"` - smaller fonts for density, single accent color
-3. **Presenter info** (default: `Choi, WooHyung / Prin. Solutions Architect / AWS Korea / whchoi@amazon.com / linkedin.com/in/woohyungchoi`)
-4. **Content context** - if source material is provided (GitHub repo, doc, etc.), read it thoroughly; if ambiguous, ask for clarification
+4. **Presenter info** (default: `Choi, WooHyung / Prin. Solutions Architect / AWS Korea / whchoi@amazon.com / linkedin.com/in/woohyungchoi`)
+5. **Content context** - if source material is provided (GitHub repo, doc, etc.), read it thoroughly; if ambiguous, ask for clarification
 
 After generation:
 - Install fonts (once per session) → build → apply template → lint → PDF → JPG per slide → visually inspect
 - Fix any text overflow, line wrapping, box intrusion or lint error in one cycle by shortening copy or adjusting regions
-- Save the final .pptx in the current working directory (or the path the user named) and report the path. On claude.ai, copy it to `/mnt/user-data/outputs/` and share it via `present_files` (Cowork: `SendUserFile`)
+- `HTML만` or `PPT와 HTML 둘 다`: convert the checked `.pptx` and check the page (see "HTML Deck")
+- Save the final file(s) the user chose (`.pptx`, `.html` or both) in the current working directory (or the path the user named) and report the path(s). On claude.ai, copy them to `/mnt/user-data/outputs/` and share them via `present_files` (Cowork: `SendUserFile`)
 
 ---
 
@@ -52,6 +61,10 @@ Source material the user supplies or that you fetch (GitHub repos, documents, PD
 | `scripts/apply_template.py` | Stage 2: re-homes built slides onto the template layouts |
 | `scripts/check_deck.py` | Rule lint: template applied, no drawn footer, punctuation, noun phrases, fonts, chart workbooks, notes, pictures (vector SVG, or an `icon:` picture of icon size) |
 | `scripts/svg_to_png.py` | PNG preview for SVG diagrams (the SVG itself is embedded by `apply_template.py`) |
+| `scripts/deck_to_html.py` | HTML deck: converts the finished `.pptx` into one self-contained `.html` (slide content as HTML and SVG, template chrome as pictures, subset fonts, notes for the presenter view) |
+| `scripts/preview_html_deck.py` | HTML deck QA: screenshots every slide, the slide list and the presenter view, and tries the keys (Playwright) |
+| `assets/html/deck.css`, `assets/html/deck.js` | The page's stage, controls and presenter view. `deck_to_html.py` puts both into every page unchanged |
+| `references/html-deck.md` | HTML deck: what the page carries, options, warnings, limits, and the presenter guide (`발표자 안내`) handed over with the file |
 | `references/diagrams.md` | Chart and diagram routing, `/my-plugins:aws-diagram` and `/my-plugins:aws-diagram-design` settings, theme skin tokens |
 
 The templates are read-only sources of truth: never edit them and never ship them as the deliverable.
@@ -862,11 +875,37 @@ soffice --headless --convert-to pdf <DeckName>.pptx
 rm -f qa-*.jpg && pdftoppm -jpeg -r 100 <DeckName>.pdf qa
 
 # 6. Inspect each slide; fix overflow/wrap/intrusion; rebuild from step 2 until clean
-# 7. Deliver: keep <DeckName>.pptx in the working directory
-#    (claude.ai only: cp <DeckName>.pptx /mnt/user-data/outputs/)
+# 7. Output format "HTML만" or "PPT와 HTML 둘 다": convert the checked deck, then check the page (see "HTML Deck")
+python3 "$SKILL_DIR/scripts/deck_to_html.py" <DeckName>.pptx      # → <DeckName>.html
+# 8. Deliver: keep the chosen file(s) in the working directory: <DeckName>.pptx, <DeckName>.html or both
+#    (claude.ai only: cp them to /mnt/user-data/outputs/)
 ```
 
 Keep diagram SVG/PNG files next to the build script (or pass `--assets-dir`) so `apply_template.py` can embed the SVGs. The theme comes from the build (`pres.subject`); a conflicting `--theme` is refused.
+
+---
+
+## HTML Deck
+
+For `HTML만` and `PPT와 HTML 둘 다`. The page is converted from the finished `.pptx`, so the deck is always built, templated, linted and inspected first (steps 0-6 above); `HTML만` only changes what is delivered. Options, warnings and limits: `references/html-deck.md`.
+
+```bash
+# Convert the checked deck into one self-contained file (fonts, pictures, styles and script inside)
+python3 "$SKILL_DIR/scripts/deck_to_html.py" <DeckName>.pptx            # → <DeckName>.html
+#   --no-notes            leave the speaker notes out (a page the user will publish or send outside)
+#   --chrome-width 2560   sharper template background for a 4K room (default 1920)
+
+# Open it in a browser: every slide, the slide list, the presenter view and the keys
+uv run --no-project --with playwright==1.64.1 python "$SKILL_DIR/scripts/preview_html_deck.py" <DeckName>.html --out-dir qa-html
+#   missing tools (LibreOffice, Poppler, Pillow, fontTools, Playwright Chromium): run the my-plugins:setup skill
+```
+
+- **What the page holds**: every slide as real HTML at the deck's coordinates (text, shapes, tables), charts drawn as SVG from the chart data, diagrams as their vector SVG, the template's background, logo, copyright and page numbers as pictures rendered from the template, and the notes for the presenter view (key N). It is one self-contained file: it opens from a disk, a mail attachment or a static host with no other file and no network.
+- **Never write or edit the HTML by hand.** A change goes into `build_<deck>.js`; then build, apply the template, lint and convert again, so the page and the deck cannot differ.
+- **Check**: `deck_to_html.py` exits 0 and every `WARN` line is resolved or reported to the user; `preview_html_deck.py` exits 0; compare `qa-html/<DeckName>-NN.png` with the deck's `qa-NN.jpg` slide by slide (same text, same positions, same chart values) and look at `<DeckName>-presenter.png` (current slide, next slide, notes).
+- **Notes are readable by anyone who has the file.** Before delivering a page that will be published or sent outside the team, ask whether the notes may go with it, and convert with `--no-notes` when they should stay private.
+- **Not in the page**: animations, a light and dark switch, chart data editing. `references/html-deck.md` lists the limits; tell the user when the request needs one of them.
+- **`HTML만`**: deliver `<DeckName>.html` only. The `.pptx` stays in the working directory as the page's source; say so in one line.
 
 ---
 
@@ -918,6 +957,8 @@ Run `check_deck.py` (0 errors, warnings resolved), then visually inspect every s
 - ❌ Card body that wraps to a 4th line without resizing region
 - ❌ NDA notice on cover; page number on cover
 - ❌ Skipping speaker scripts
+- ❌ Writing or editing the HTML deck by hand, or converting a deck that has `check_deck.py` errors
+- ❌ Choosing the output format (PPT, HTML or both) without asking, when the request did not name it
 - ❌ Time budgets or durations on the Agenda or in speaker notes (`10분`, `30분 동안`)
 
 ---
@@ -940,7 +981,8 @@ Always confirm with the user before generating unless they say "use defaults" or
 
 ## Final Delivery
 
-1. Run `check_deck.py` and the QA checklist (22 items above).
-2. Keep the final `.pptx` in the working directory (or the path the user named) and give its path.
-3. On claude.ai only: copy it to `/mnt/user-data/outputs/` and call `present_files` (Cowork: `SendUserFile`).
-4. In response, briefly summarize: slide count, theme, audience size, key sections covered. Do NOT explain every design decision - the user reviews the deck visually.
+1. Run `check_deck.py` and the QA checklist (22 items above). For an HTML deck, also the checks in "HTML Deck".
+2. Keep the final file(s) in the working directory (or the path the user named) and give the path(s): `<DeckName>.pptx`, `<DeckName>.html` or both, as the user chose.
+3. With an HTML deck, add the short guide from `references/html-deck.md` (`발표자 안내`: how to open the file, N for the presenter view, F, G, P and ?) and say whether the notes are in the page.
+4. On claude.ai only: copy the file(s) to `/mnt/user-data/outputs/` and call `present_files` (Cowork: `SendUserFile`).
+5. In response, briefly summarize: slide count, theme, audience size, output format, key sections covered. Do NOT explain every design decision - the user reviews the deck visually.

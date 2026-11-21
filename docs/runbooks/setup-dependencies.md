@@ -39,7 +39,7 @@ Any other first argument prints the usage and exits 2. Otherwise the script exit
 bash skills/setup/scripts/setup.sh
 ```
 The groups are base tools, diagram render (uv, Playwright Chromium headless launch), fonts (Amazon Ember, Noto
-Sans CJK KR, NanumSquareOTF Bold, D2Coding) and decks (pptxgenjs, python-pptx, lxml, Pillow, cairosvg,
+Sans CJK KR, NanumSquareOTF Bold, D2Coding) and decks (pptxgenjs, python-pptx, lxml, Pillow, cairosvg, fonttools,
 `soffice`, `pdftoppm`, `pdftotext`, `rsvg-convert`) and reports (NanumSquareOTF Regular, docx, marked, docx-preview,
 jszip). When Chromium does not launch, the check lists the shared
 libraries `ldd` cannot find.
@@ -58,7 +58,7 @@ bash skills/setup/scripts/setup.sh install
 | pptxgenjs | `npm install -g` |
 | docx, marked, docx-preview, jszip (aws-reports) | `npm install -g` at fixed versions (`REPORT_NPM` in `setup.sh`) |
 | NanumSquareOTF Regular and Bold (aws-reports) | npm `@kfonts/nanum-square-otf` 0.2.0 (OFL-1.1) through `npm pack`, `src/*.otf` copied to `~/.local/share/fonts/nanumsquare-otf` |
-| python-pptx, lxml, Pillow, cairosvg | `pip install --user` |
+| python-pptx, lxml, Pillow, cairosvg, fonttools | `pip install --user` |
 | LibreOffice (dnf without a package) | official RPM bundle, SHA-256 checked, unpacked to `~/.local/opt/libreoffice`, linked as `~/.local/bin/soffice` |
 
 On macOS with Homebrew, Poppler, librsvg and the LibreOffice cask are installed in this step (no sudo).
@@ -108,7 +108,7 @@ rm -rf ~/.local/share/fonts/nanumsquare-otf
 rm -f ~/.local/bin/soffice ~/.config/fontconfig/conf.d/60-aws-ppt-fonts.conf
 rm -f ~/.fonts/NanumSquareOTF_acB.otf ~/.fonts/D2Coding-*.ttf && fc-cache -f
 npm uninstall -g pptxgenjs docx marked docx-preview jszip
-python3 -m pip uninstall python-pptx lxml Pillow cairosvg
+python3 -m pip uninstall python-pptx lxml Pillow cairosvg fonttools
 ```
 `install_fonts.sh` also writes `~/.config/fontconfig/fonts.conf` when it did not exist and the `conf.d` alias was
 not read; remove it only if it holds nothing but these aliases. System packages are removed with the package
@@ -151,7 +151,7 @@ manager (`sudo dnf remove ...`, `sudo apt-get remove ...`).
 ```bash
 bash skills/setup/scripts/setup.sh
 ```
-항목은 기본 도구, 다이어그램 렌더(uv, Playwright Chromium headless 실행), 폰트(Amazon Ember, Noto Sans CJK KR, NanumSquareOTF Bold, D2Coding), 덱(pptxgenjs, python-pptx, lxml, Pillow, cairosvg, `soffice`, `pdftoppm`, `pdftotext`, `rsvg-convert`), 보고서(NanumSquareOTF Regular, docx, marked, docx-preview, jszip)로 나뉩니다. Chromium이 실행되지 않으면 `ldd`가 찾지 못한 공유 라이브러리를 함께 보여 줍니다.
+항목은 기본 도구, 다이어그램 렌더(uv, Playwright Chromium headless 실행), 폰트(Amazon Ember, Noto Sans CJK KR, NanumSquareOTF Bold, D2Coding), 덱(pptxgenjs, python-pptx, lxml, Pillow, cairosvg, fonttools, `soffice`, `pdftoppm`, `pdftotext`, `rsvg-convert`), 보고서(NanumSquareOTF Regular, docx, marked, docx-preview, jszip)로 나뉩니다. Chromium이 실행되지 않으면 `ldd`가 찾지 못한 공유 라이브러리를 함께 보여 줍니다.
 
 ### 2. 사용자 영역 설치
 ```bash
@@ -167,7 +167,7 @@ bash skills/setup/scripts/setup.sh install
 | pptxgenjs | `npm install -g` |
 | docx, marked, docx-preview, jszip(aws-reports) | `npm install -g`, 버전 고정(`setup.sh`의 `REPORT_NPM`) |
 | NanumSquareOTF Regular·Bold(aws-reports) | npm `@kfonts/nanum-square-otf` 0.2.0(OFL-1.1)을 `npm pack`으로 받아 `src/*.otf`를 `~/.local/share/fonts/nanumsquare-otf`로 복사 |
-| python-pptx, lxml, Pillow, cairosvg | `pip install --user` |
+| python-pptx, lxml, Pillow, cairosvg, fonttools | `pip install --user` |
 | LibreOffice(패키지가 없는 dnf) | 공식 RPM 묶음을 SHA-256으로 확인한 뒤 `~/.local/opt/libreoffice`에 풀고 `~/.local/bin/soffice`로 연결 |
 
 Homebrew가 있는 macOS에서는 Poppler, librsvg, LibreOffice cask를 이 단계에서 설치합니다(sudo 불필요).
@@ -208,7 +208,7 @@ rm -rf ~/.local/share/fonts/nanumsquare-otf
 rm -f ~/.local/bin/soffice ~/.config/fontconfig/conf.d/60-aws-ppt-fonts.conf
 rm -f ~/.fonts/NanumSquareOTF_acB.otf ~/.fonts/D2Coding-*.ttf && fc-cache -f
 npm uninstall -g pptxgenjs docx marked docx-preview jszip
-python3 -m pip uninstall python-pptx lxml Pillow cairosvg
+python3 -m pip uninstall python-pptx lxml Pillow cairosvg fonttools
 ```
 `install_fonts.sh`는 `conf.d` 별칭이 읽히지 않을 때 없던 `~/.config/fontconfig/fonts.conf`도 만듭니다. 이 별칭만 들어 있을 때만 지웁니다. 시스템 패키지는 패키지 관리자로 제거합니다(`sudo dnf remove ...`, `sudo apt-get remove ...`).
 

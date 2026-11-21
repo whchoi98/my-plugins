@@ -1,0 +1,116 @@
+/* aws-ppt-skills HTML deck. A slide is a 1280 x 720 px stage (13.333 x 7.5 in at 96 dpi) scaled to the window.
+   deck_to_html.py puts this file into every deck unchanged; per-deck rules live in the other <style> blocks. */
+:root {
+  --scale: 1;
+  --ui-font: system-ui, -apple-system, "Segoe UI", "Apple SD Gothic Neo", "Malgun Gothic", "Noto Sans KR", sans-serif;
+}
+*, *::before, *::after { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; overflow: hidden; background: #000; }
+body { font-family: var(--ui-font); color: #e8eaf0; -webkit-font-smoothing: antialiased; }
+
+/* ---- slide stage ---- */
+#deck { position: fixed; inset: 0; }
+.slide {
+  position: absolute; left: 50%; top: 50%; width: 1280px; height: 720px; margin: -360px 0 0 -640px;
+  transform: scale(var(--scale)); overflow: hidden; display: none; background: #000; text-align: left;
+}
+.slide.active { display: block; }
+.slide > * { position: absolute; }
+.slide .chrome { inset: 0; background-size: 100% 100%; }
+.slide .patch { background-size: 100% 100%; }
+.slide .notes { display: none; }
+.slide .tx { display: flex; flex-direction: column; justify-content: center; }
+.slide .tx.at { justify-content: flex-start; }
+.slide .tx.ab { justify-content: flex-end; }
+.slide p { margin: 0; white-space: pre-wrap; overflow-wrap: break-word; }
+.slide .bu { display: inline-block; text-indent: 0; }
+.slide a { color: inherit; }
+/* longhands only: the picture itself comes from a per-deck .imN rule, which a shorthand here would reset */
+.slide .pic { background-position: center; background-size: 100% 100%; background-repeat: no-repeat; }
+.slide svg.ln, .slide svg.geo { overflow: visible; }
+.slide table { border-collapse: collapse; table-layout: fixed; }
+.slide td { overflow: hidden; }
+
+/* ---- controls of the audience window ---- */
+#bar {
+  position: fixed; left: 50%; bottom: 14px; transform: translateX(-50%); z-index: 20;
+  display: flex; align-items: center; gap: 2px; padding: 4px 6px; border-radius: 999px;
+  background: rgba(22, 29, 38, .9); border: 1px solid rgba(255, 255, 255, .16); font-size: 13px;
+  transition: opacity .25s;
+}
+#bar button { all: unset; cursor: pointer; padding: 6px 11px; border-radius: 999px; color: #e8eaf0; white-space: nowrap; }
+#bar button:hover, #bar button:focus-visible { background: rgba(255, 255, 255, .16); }
+#bar .count { padding: 0 8px; color: #a6abbe; font-variant-numeric: tabular-nums; white-space: nowrap; }
+#progress { position: fixed; left: 0; bottom: 0; z-index: 19; height: 3px; width: 0; background: #ff9900; transition: width .2s, opacity .25s; }
+body.idle #bar, body.idle #progress { opacity: 0; pointer-events: none; }
+body.idle #deck { cursor: none; }
+
+#laser {
+  position: fixed; z-index: 25; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%;
+  background: radial-gradient(circle, #fff 0 18%, #ff3b30 26% 55%, rgba(255, 59, 48, 0) 72%);
+  box-shadow: 0 0 14px 4px rgba(255, 59, 48, .55); pointer-events: none; display: none;
+}
+body.laser #deck, body.laser #pv .cur .stage { cursor: none; }
+body.blank #deck { visibility: hidden; }
+#toast {
+  position: fixed; left: 50%; top: 18px; transform: translateX(-50%); z-index: 50; display: none;
+  padding: 8px 14px; border-radius: 8px; background: #161d26; border: 1px solid #2a3140; font-size: 13px;
+}
+
+/* ---- slide list (G) ---- */
+#grid { position: fixed; inset: 0; z-index: 30; display: none; overflow: auto; padding: 28px; background: #080a0e; }
+body.grid #grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 18px; align-content: start; }
+.thumb { position: relative; aspect-ratio: 16 / 9; overflow: hidden; border-radius: 6px; cursor: pointer; background: #000; outline: 1px solid rgba(255, 255, 255, .18); }
+.thumb:hover, .thumb:focus-visible { outline: 2px solid #fff; }
+.thumb.current { outline: 3px solid #ff9900; }
+.thumb .slide { display: block; left: 0; top: 0; margin: 0; transform-origin: 0 0; transform: scale(var(--ts, .2)); pointer-events: none; }
+.thumb .no { position: absolute; right: 6px; bottom: 5px; z-index: 2; padding: 1px 7px; border-radius: 999px; background: rgba(0, 0, 0, .72); color: #fff; font-size: 12px; }
+
+/* ---- key help (?) ---- */
+#help { position: fixed; inset: 0; z-index: 40; display: none; align-items: center; justify-content: center; background: rgba(8, 10, 14, .84); }
+body.help #help { display: flex; }
+#help .panel { width: calc(100% - 32px); max-width: 540px; max-height: calc(100% - 32px); overflow: auto; padding: 22px 26px; border-radius: 12px; background: #161d26; border: 1px solid #2a3140; }
+#help h2 { margin: 0 0 14px; font-size: 17px; font-weight: 600; color: #fff; }
+#help dl { display: grid; grid-template-columns: max-content 1fr; gap: 8px 18px; margin: 0; font-size: 14px; }
+#help dt { color: #ff9900; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+#help dd { margin: 0; color: #e2e4ec; }
+
+/* ---- presenter view (N opens it in a second window) ---- */
+#pv { display: none; }
+body.presenter { background: #0b0e13; }
+body.presenter #deck, body.presenter #bar, body.presenter #progress { display: none; }
+body.presenter #pv {
+  position: fixed; inset: 0; display: grid; gap: 12px; padding: 12px;
+  grid-template-columns: minmax(0, 1.55fr) minmax(0, 1fr); grid-template-rows: auto minmax(0, 1fr) minmax(0, 1.3fr);
+}
+#pv .top { grid-column: 1 / -1; display: flex; align-items: center; flex-wrap: wrap; gap: 8px 14px; font-size: 14px; }
+#pv .timer { font-size: 26px; color: #fff; font-variant-numeric: tabular-nums; }
+#pv .clock, #pv .count { color: #a6abbe; font-variant-numeric: tabular-nums; }
+#pv .spacer { flex: 1; }
+#pv button { all: unset; cursor: pointer; padding: 6px 12px; border-radius: 6px; border: 1px solid #2a3140; color: #e8eaf0; font-size: 13px; white-space: nowrap; }
+#pv button:hover, #pv button:focus-visible { background: rgba(255, 255, 255, .12); }
+#pv button[aria-pressed="true"] { border-color: #ff9900; color: #ff9900; }
+#pv .pane { display: flex; flex-direction: column; min-height: 0; min-width: 0; }
+#pv .cur { grid-row: 2 / 4; }
+#pv .label { margin-bottom: 6px; font-size: 12px; letter-spacing: .06em; color: #7b8198; }
+#pv .stage { position: relative; flex: 1; min-height: 0; overflow: hidden; }
+#pv .stage .slide { display: block; left: 0; top: 0; margin: 0; transform-origin: 0 0; transform: translate(var(--tx, 0px), 0) scale(var(--ts, .5)); pointer-events: none; outline: 2px solid #2a3140; }
+#pv .stage .end { padding: 18px 2px; color: #7b8198; font-size: 15px; }
+#pv .text { flex: 1; min-height: 0; overflow: auto; padding: 14px 18px; border-radius: 6px; outline: 1px solid #2a3140; background: #11161f; font-size: var(--notes-size, 20px); line-height: 1.6; }
+#pv .text p { margin: 0 0 .55em; }
+#pv .text .none { color: #7b8198; }
+@media (max-width: 760px) {
+  body.presenter { overflow: auto; }
+  body.presenter #pv { position: static; display: flex; flex-direction: column; min-height: 100%; }
+  #pv .stage { flex: none; aspect-ratio: 16 / 9; }
+  #pv .text { flex: none; min-height: 200px; }
+}
+
+/* ---- printing: one slide per page, also the way to a PDF backup ---- */
+@page { size: 13.333in 7.5in; margin: 0; }
+@media print {
+  html, body { height: auto; overflow: visible; background: none; }
+  #deck { position: static; }
+  .slide { display: block !important; position: relative; left: 0; top: 0; margin: 0; transform: none; break-after: page; page-break-after: always; print-color-adjust: exact; -webkit-print-color-adjust: exact; }
+  #bar, #progress, #grid, #help, #laser, #toast, #pv { display: none !important; }
+}
