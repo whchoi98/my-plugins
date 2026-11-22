@@ -15,6 +15,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `ui-deslop`: new skill that removes AI slop from UI, vendored from [heydamir/unslop](https://github.com/heydamir/unslop) (CC BY 4.0, by Damir Sokolovsky) at `620163e`. It lists the tells of an AI-made screen, sets a direction from the product and fixes spacing, color, icons, copy, type, layout, details, visuals and motion. Only the frontmatter `name` and description are ours, and the source's `agents/` folder is left out
+- `eng-deslop`: new skill that removes AI slop from English text, vendored from [blader/humanizer](https://github.com/blader/humanizer) (MIT, Copyright (c) 2025 Siqi Chen) at `a32f244` (Humanizer 4.0.0, 26 patterns). Only the frontmatter `name` and description are ours
+- `scripts/sync_upstream_skills.py` and `scripts/upstream-skills.json`: the vendored skills are pinned to a commit with a hash of every file. `check` compares them with their sources, `update` copies a changed source in and writes the frontmatter, the license copy, the manifest and the `[Unreleased]` line, `render` writes a changed description, `verify` fails on a hand edit. `update` refuses a changed license, a symbolic link, a hidden file, a file type outside `allow_ext`, an unusual file name and a file over 2 MB
+- `.github/workflows/sync-upstream-skills.yml`: every Monday the workflow runs `update`. When a source changed it pushes the branch `sync/upstream-skills` and opens a pull request, or an issue when Actions may not open one. It merges and releases nothing. Decision in ADR-008, steps in `docs/runbooks/sync-upstream-skills.md`. 230 tests added
+- `setup`: reports ffmpeg, which `ui-deslop` uses for its optional story video, without counting it as missing
+
+### Changed
+- `kor-deslop`: the description sends English text to `eng-deslop` and a screen to `ui-deslop`
+
 ## [1.7.0] - 2026-11-21
 
 ### Added
@@ -178,6 +188,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+- `ui-deslop`: UI의 AI 슬롭을 제거하는 skill 추가. [heydamir/unslop](https://github.com/heydamir/unslop)(CC BY 4.0, Damir Sokolovsky)을 `620163e`에서 가져옴. AI가 만든 화면의 흔적을 찾아 보여 주고, 제품에서 방향을 정한 뒤 간격, 색, 아이콘, 문구, 글꼴, 레이아웃, 세부, 그림, 모션을 수정. frontmatter의 `name`과 description만 이 플러그인의 것이며 원본의 `agents/` 폴더는 제외
+- `eng-deslop`: 영어 글의 AI 슬롭을 제거하는 skill 추가. [blader/humanizer](https://github.com/blader/humanizer)(MIT, Copyright (c) 2025 Siqi Chen)를 `a32f244`(Humanizer 4.0.0, 패턴 26개)에서 가져옴. frontmatter의 `name`과 description만 이 플러그인의 것
+- `scripts/sync_upstream_skills.py`와 `scripts/upstream-skills.json` 추가. 가져온 skill을 커밋과 파일별 해시로 고정. `check`는 원본과 비교, `update`는 바뀐 원본을 복사하고 frontmatter, 라이선스 사본, 매니페스트, `[Unreleased]` 줄을 작성, `render`는 바꾼 description을 반영, `verify`는 손으로 수정한 파일이 있으면 실패. `update`는 바뀐 라이선스, 심볼릭 링크, 숨김 파일, `allow_ext`에 없는 파일 형식, 특이한 파일 이름, 2 MB를 넘는 파일을 거부
+- `.github/workflows/sync-upstream-skills.yml` 추가. 매주 월요일 `update`를 실행하고, 원본이 바뀌었으면 `sync/upstream-skills` 브랜치를 push한 뒤 pull request를 엶(Actions가 열 수 없으면 issue). 병합과 릴리스는 하지 않음. 결정은 ADR-008, 절차는 `docs/runbooks/sync-upstream-skills.md`. 테스트 230개 추가
+- `setup`: `ui-deslop`의 선택 기능인 스토리 영상에 쓰는 ffmpeg가 있는지 알림. 빠진 항목으로 세지 않음
+
+### Changed
+- `kor-deslop`: description이 영어 글은 `eng-deslop`으로, 화면은 `ui-deslop`으로 안내
 
 ## [1.7.0] - 2026-11-21
 

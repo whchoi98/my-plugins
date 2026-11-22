@@ -57,6 +57,7 @@ bash "${CLAUDE_SKILL_DIR}/scripts/setup.sh" install --sudo
 
 ## 알려진 동작
 
+- ui-deslop의 라이브 페이지 저장과 스토리 영상은 선택 기능이다. 작업하는 프로젝트의 Node Playwright(`npm install -D playwright`, `npx playwright install chromium`)와 ffmpeg를 쓴다. 점검은 ffmpeg가 있는지만 `[ok]`나 `[info]`로 알리고 `missing:`에 세지 않으며, 둘 다 설치하지 않는다. 필요할 때 사용자가 설치한다.
 - Amazon Linux 2023처럼 Playwright가 공식 지원하지 않는 OS에서는 Ubuntu용 Chromium 빌드가 쓰이고, 렌더할 때마다 `BEWARE: your OS is not officially supported` 경고가 나온다. 결과에는 영향이 없다.
 - LibreOffice를 홈에 풀었을 때 KDE, Qt, GTK, GStreamer 라이브러리가 없다고 나오는 것은 GUI 플러그인용이다. skill이 쓰는 `soffice --headless` 변환에는 필요 없다.
 - 전역 npm 모듈은 `require()`가 기본으로 찾지 않는다. 덱을 만드는 node 명령 앞에는 `export NODE_PATH="$(npm root -g)"`를 둔다. aws-reports의 `report.mjs`는 ESM이라 `NODE_PATH`를 읽지 않으므로 `npm root -g`를 직접 찾아본다.

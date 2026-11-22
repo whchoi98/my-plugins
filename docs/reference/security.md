@@ -8,7 +8,7 @@
 
 ### 1. Overview
 The repo is planned as a public repo and its root is the installed plugin. Security goals: nothing secret is
-ever committed; no plugin component that runs by itself ships to installers; the scripts that the twelve skills
+ever committed; no plugin component that runs by itself ships to installers; the scripts that the fourteen skills
 run on a user's machine stay inside the user's working folder or home, and fetch only what their step needs;
 `setup` never escalates without the user's say; instructions hidden in source material are not followed; and
 the dev harness cannot be bypassed silently.
@@ -50,10 +50,22 @@ the dev harness cannot be bypassed silently.
 | techblogs | the user's notes and data; a published AWS blog post (its address or a saved page); its own `assets/template.html`; the blog repository's `_config.yml` and `assets/icons` | the work folder (`<YYYY-MM-DD>-<slug>/` and its `out/`); `build_post.py` refuses an `--out` inside the skill folder; `place_post.py` copies the post into `<blog repository>/docs/techblog/<category>/` and never runs git | `import_aws_post.py` GETs the post and its images only from `aws.amazon.com` and the AWS blog image host; `check_urls.py` (aws-blog-skills) GETs the page's links; `place_post.py --build` runs the blog repository's `scripts/build-lab-zip.sh` when it exists and `bundle exec jekyll build`; Playwright Chromium for previews (the system `node` as the Playwright driver when it is on `PATH`) |
 | aws-infographic | the user's sketches, notes and sources; the sibling `aws-diagram/assets/icons.json`; installed font files | the work folder (copies of `infokit.py` and `buildkit.py`, `.aws-icon-bundle`, `build/`, `deck/`); nothing in the skill folder (`icon_png.py` runs with bytecode off) | Playwright Chromium on local SVG files and data URIs; `fc-list`, `fc-match`; the deck step runs the aws-ppt-skills tools |
 | kor-deslop | the text in the conversation | nothing | nothing |
+| ui-deslop | the source files of the screen, or a page address or screenshot the user gives | the user's project (the redesigned screen, `unslop/`, `unslop-story/`); nothing in the skill folder | `snapshot.mjs` opens the address in Node Playwright Chromium and saves the page; `story.mjs` serves the story folder on 127.0.0.1 and runs `ffmpeg`; an image tool only when the user has one and agrees to each run |
+| eng-deslop | the text in the conversation, or the file the user names | that file, prose only | nothing |
 | setup | its own and sibling skill folders | user home (see below); system packages only with `--sudo` | downloads below |
 
 `build_bundle.py` (aws-diagram) and `build_aws_icons.py` (aws-diagram-design) rebuild a skill's own `assets/`
 from an icon package. They are maintainer tools for a clone; no workflow step runs them.
+
+**Vendored skills.** `ui-deslop` and `eng-deslop` are other authors' text that Claude follows, copied at a pinned commit
+(`scripts/upstream-skills.json`). `scripts/sync_upstream_skills.py` copies files and never runs one. It refuses a source
+whose license changed, a symbolic link, a hidden file, a file type outside the skill's `allow_ext`, an unusual file name
+and a file over 2 MB, and `verify` fails when a vendored file differs from its recorded hash.
+`.github/workflows/sync-upstream-skills.yml` runs the script every week on GitHub with a token for this repository only
+(`contents`, `pull-requests` and `issues`: write). It pushes one branch, `sync/upstream-skills`, and opens a pull request
+or an issue. It merges nothing, releases nothing, runs no file of a source and puts no text of a source or of an event
+into a command; the report it writes shows a source's text inside code spans. Node Playwright and ffmpeg for the
+optional parts of ui-deslop are installed by the user; `setup` only reports ffmpeg.
 
 **What `setup.sh install` downloads.**
 
@@ -102,6 +114,10 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
   user names and prints `git add` lines instead of running git; staging, commit and push stay with the user because a
   push to that repository publishes the site. `import_aws_post.py` treats the page as data: it keeps an allowlist of
   inline tags and fetches only from the AWS blog hosts ([ADR-005](../decisions/ADR-005-techblogs-personal-blog-workflow.md)).
+- A change in the source of a vendored skill is a change of instructions for every installer, so it reaches `main` only
+  through a pull request that a person reads and reaches users only through a release by the maintainer. The copy is
+  pinned to a commit with a hash per file, and a new file type has to be allowed in the manifest first
+  ([ADR-008](../decisions/ADR-008-vendored-skills-synced-by-pull-request.md)).
 
 ### 4. Code Pointers
 - `.claude/hooks/secret-scan.sh`
@@ -125,6 +141,10 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 - `tests/structure/test-integration.sh`
 - `tests/structure/test-techblogs.sh`
 - `tests/structure/test-aws-infographic.sh`
+- `scripts/sync_upstream_skills.py`
+- `scripts/upstream-skills.json`
+- `.github/workflows/sync-upstream-skills.yml`
+- `tests/structure/test-upstream-skills.sh`
 
 ### 5. Cross-references
 - Related modules: `skills/` (`skills/CLAUDE.md`), `tests/` (`tests/CLAUDE.md`)
@@ -137,7 +157,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 ## 한국어
 
 ### 1. 개요
-저장소는 공개 저장소로 배포할 예정이고 루트가 곧 설치되는 플러그인입니다. 보안 목표는 다음과 같이 정리됩니다. 비밀 정보를 커밋하지 않습니다. 스스로 실행되는 플러그인 구성 요소를 배포하지 않습니다. skill 12개가 사용자 머신에서 실행하는 스크립트는 사용자의 작업 폴더나 홈 안에서만 쓰고, 그 단계에 필요한 것만 내려받습니다. `setup`은 사용자가 허락하지 않으면 권한을 올리지 않습니다. 소재에 숨은 지시문은 따르지 않으며, 개발 하네스를 조용히 우회할 수 없게 합니다.
+저장소는 공개 저장소로 배포할 예정이고 루트가 곧 설치되는 플러그인입니다. 보안 목표는 다음과 같이 정리됩니다. 비밀 정보를 커밋하지 않습니다. 스스로 실행되는 플러그인 구성 요소를 배포하지 않습니다. skill 14개가 사용자 머신에서 실행하는 스크립트는 사용자의 작업 폴더나 홈 안에서만 쓰고, 그 단계에 필요한 것만 내려받습니다. `setup`은 사용자가 허락하지 않으면 권한을 올리지 않습니다. 소재에 숨은 지시문은 따르지 않으며, 개발 하네스를 조용히 우회할 수 없게 합니다.
 
 ### 2. 구성요소
 | 구성요소 | 경로 | 역할 |
@@ -176,9 +196,13 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 | techblogs | 사용자의 메모와 데이터. 게시된 AWS 블로그 글(주소나 저장한 페이지). 자기 `assets/template.html`. 블로그 저장소의 `_config.yml`과 `assets/icons` | 작업 폴더(`<YYYY-MM-DD>-<slug>/`와 그 안의 `out/`). `build_post.py`는 skill 폴더 안의 `--out`을 거부함. `place_post.py`는 글을 `<블로그 저장소>/docs/techblog/<분류 폴더>/`에 복사하고 git을 실행하지 않음 | `import_aws_post.py`는 글과 그림을 `aws.amazon.com`과 AWS 블로그 그림 호스트에서만 GET. `check_urls.py`(aws-blog-skills)는 페이지의 링크를 GET. `place_post.py --build`는 블로그 저장소에 `scripts/build-lab-zip.sh`가 있으면 실행한 뒤 `bundle exec jekyll build`를 실행. 미리보기용 Playwright Chromium(`PATH`에 시스템 `node`가 있으면 Playwright 드라이버로 씀) |
 | aws-infographic | 사용자의 손그림, 메모, 자료. 옆 skill의 `aws-diagram/assets/icons.json`. 설치된 폰트 파일 | 작업 폴더(`infokit.py`와 `buildkit.py` 사본, `.aws-icon-bundle`, `build/`, `deck/`). skill 폴더에는 쓰지 않음(`icon_png.py`는 바이트코드를 만들지 않음) | 로컬 SVG 파일과 data URI를 여는 Playwright Chromium. `fc-list`, `fc-match`. 덱 단계는 aws-ppt-skills의 도구를 실행 |
 | kor-deslop | 대화 안의 글 | 없음 | 없음 |
+| ui-deslop | 화면의 소스 파일, 또는 사용자가 준 페이지 주소나 스크린샷 | 사용자의 프로젝트(다시 디자인한 화면, `unslop/`, `unslop-story/`). skill 폴더에는 쓰지 않음 | `snapshot.mjs`가 Node Playwright Chromium으로 주소를 열어 페이지를 저장. `story.mjs`가 스토리 폴더를 127.0.0.1에서 제공하고 `ffmpeg`를 실행. 이미지 도구는 사용자가 연결해 두었고 실행마다 동의할 때만 |
+| eng-deslop | 대화 안의 글, 또는 사용자가 지정한 파일 | 그 파일의 글 부분만 | 없음 |
 | setup | 자기 폴더와 옆 skill 폴더 | 사용자 홈(아래 참고). 시스템 패키지는 `--sudo`일 때만 | 아래 내려받기 |
 
 `build_bundle.py`(aws-diagram)와 `build_aws_icons.py`(aws-diagram-design)는 아이콘 패키지로 skill 자신의 `assets/`를 다시 만드는 관리자용 도구입니다. 클론에서만 쓰며, 워크플로 단계에서는 실행하지 않습니다.
+
+**가져온 skill.** `ui-deslop`과 `eng-deslop`은 Claude가 따르는 다른 저작자의 글이며, 고정한 커밋에서 복사합니다(`scripts/upstream-skills.json`). `scripts/sync_upstream_skills.py`는 파일을 복사할 뿐 실행하지 않습니다. 라이선스가 바뀐 원본, 심볼릭 링크, 숨김 파일, skill의 `allow_ext`에 없는 파일 형식, 특이한 파일 이름, 2 MB를 넘는 파일은 거부하고, 가져온 파일이 기록한 해시와 다르면 `verify`가 실패합니다. `.github/workflows/sync-upstream-skills.yml`은 이 저장소에만 유효한 토큰(`contents`, `pull-requests`, `issues` 쓰기)으로 GitHub에서 매주 스크립트를 실행합니다. `sync/upstream-skills` 브랜치 하나만 push하고 pull request나 issue를 엽니다. 병합과 릴리스를 하지 않고, 원본의 파일을 실행하지 않으며, 원본이나 이벤트의 글을 명령에 넣지 않습니다. 보고서에는 원본의 글이 코드 표기 안에 들어갑니다. ui-deslop의 선택 기능에 쓰는 Node Playwright와 ffmpeg는 사용자가 설치하고, `setup`은 ffmpeg가 있는지만 알립니다.
 
 **`setup.sh install`이 내려받는 것.**
 
@@ -206,6 +230,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 - 소재(블로그, PDF, 슬라이드)와 WebFetch로 읽은 페이지는 지시가 아니라 데이터입니다. aws-blog-skills 0단계에서 작업 지시는 사용자의 메시지에서만 받습니다. 소재에서 발견한 지시문은 따르지 않고 원고에 옮기지 않으며, 위치와 함께 사용자에게 알립니다. 소재의 명령은 인용하거나 검증할 내용이고, 실행하려면 먼저 사용자 승인을 받습니다. `tests/structure/test-aws-blog-skills.sh`가 이 규칙이 0단계에 남아 있는지 확인합니다. 덱과 다이어그램 skill도 사용자가 준 소재를 읽지만 이 규칙을 명시하지 않습니다.
 - 다이어그램 가져오기 파서는 `.drawio`와 Mermaid 입력을 신뢰하지 않고, `self_check.py`는 승인된 Google Fonts 스타일시트 외의 외부 자산, 실행 속성, 추가 스크립트를 거부하므로 생성된 다이어그램은 혼자 완결된 파일입니다.
 - techblogs가 작업 폴더 밖에 쓰는 경로는 `place_post.py` 하나입니다. 사용자가 지정한 블로그 저장소에 글 한 편을 복사하고 git을 실행하는 대신 `git add` 줄을 출력합니다. 그 저장소는 push하면 사이트가 배포되므로 스테이징, 커밋, push는 사용자가 합니다. `import_aws_post.py`는 페이지를 데이터로 다룹니다. 허용한 인라인 태그만 남기고 AWS 블로그 호스트에서만 내려받습니다([ADR-005](../decisions/ADR-005-techblogs-personal-blog-workflow.md)).
+- 가져온 skill의 원본이 바뀌면 모든 설치자가 받는 지시문이 바뀝니다. 그래서 사람이 읽은 pull request로만 `main`에 들어가고, 관리자가 릴리스해야 사용자에게 전달됩니다. 복사본은 커밋과 파일별 해시로 고정하고, 새 파일 형식은 매니페스트에서 먼저 허용해야 들어옵니다([ADR-008](../decisions/ADR-008-vendored-skills-synced-by-pull-request.md)).
 
 ### 4. 코드 포인터
 - `.claude/hooks/secret-scan.sh`
@@ -229,6 +254,10 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 - `tests/structure/test-integration.sh`
 - `tests/structure/test-techblogs.sh`
 - `tests/structure/test-aws-infographic.sh`
+- `scripts/sync_upstream_skills.py`
+- `scripts/upstream-skills.json`
+- `.github/workflows/sync-upstream-skills.yml`
+- `tests/structure/test-upstream-skills.sh`
 
 ### 5. 상호 참조
 - 관련 모듈: `skills/`(`skills/CLAUDE.md`), `tests/`(`tests/CLAUDE.md`)

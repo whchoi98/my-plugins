@@ -121,12 +121,20 @@ check_reports() {
   done
 }
 
+check_ui() {
+  # ui-deslop의 선택 기능에만 쓰이므로 없어도 [miss]로 세지 않는다. 설치는 사용자에게 맡긴다
+  if have ffmpeg; then ok ffmpeg "$(ffmpeg -version 2>/dev/null | head -1 | awk '{print $3}')"
+  else info "ffmpeg 없음: ui-deslop의 스토리 영상을 만들 때만 필요합니다(선택). macOS는 brew install ffmpeg, Linux는 배포판 패키지나 정적 빌드를 직접 설치하세요"; fi
+  info "ui-deslop의 라이브 페이지 저장과 스토리 영상은 작업하는 프로젝트의 Node Playwright를 사용합니다(npm install -D playwright, npx playwright install chromium)"
+}
+
 run_checks() {
   echo "== 기본 도구"; check_base
   echo "== 다이어그램 렌더 (aws-blog-skills, aws-diagram-design export, aws-infographic)"; check_render
   echo "== 폰트"; check_fonts
   echo "== 덱 (aws-ppt-skills, consulting-ppt-white-ppt, pptx-template-fill)"; check_deck
   echo "== 보고서 (aws-reports)"; check_reports
+  echo "== 화면 (ui-deslop, 선택 항목)"; check_ui
 }
 
 # --------------------------------------------------------------------------- 설치

@@ -21,7 +21,9 @@ on the author's personal tech blog, and fact-checked technical infographics that
 deck. The skills call each other inside
 the same plugin, so a blog post can draw its diagrams and run the 윤문 check without a second plugin, and a
 deck can embed the same diagrams. A `setup` skill checks and installs every external tool and font the skills
-need, including the cases that broke on Amazon Linux 2023.
+need, including the cases that broke on Amazon Linux 2023. Two more skills are copies of other authors' work, kept in
+step with their repositories: `ui-deslop` (heydamir/unslop) removes AI slop from a screen and `eng-deslop`
+(blader/humanizer) removes it from English text.
 
 ## Included Skills and Commands
 
@@ -39,7 +41,14 @@ need, including the cases that broke on Amazon Linux 2023.
 | `/my-plugins:html-report` | new | One shareable HTML page in a common report design: Korean and English in one file, light and dark, a 1440px column, and a source table and method for research reports |
 | `/my-plugins:techblogs` | new | Posts for the author's personal tech blog (whchoi98.github.io, Jekyll): fact check, Korean and English text, a bilingual report page built from a fixed template, checks, placing into the blog repository and the Jekyll build |
 | `/my-plugins:aws-infographic` | new (replaces the claude.ai-synced aws-infographic skill) | Fact-checked technical infographics in the AWS palette: 16:9 dark and light SVG and PNG (4:5 on request), and the same content as an editable PowerPoint deck made of text boxes, shapes, tables, charts and icon pictures |
+| `/my-plugins:ui-deslop` | [heydamir/unslop](https://github.com/heydamir/unslop) (CC BY 4.0), vendored | Removes AI slop from UI: lists the tells of an AI-made screen (purple gradients, glows, emoji labels, uneven spacing), sets a direction from the product and fixes spacing, color, icons, copy, type, layout, details, visuals and motion |
+| `/my-plugins:eng-deslop` | [blader/humanizer](https://github.com/blader/humanizer) (MIT), vendored | Removes AI slop from English text by the source's numbered patterns (not-X-but-Y, one-line closers, forced triads, dashes, inflated claims, stock AI words), content unchanged |
 | `/my-plugins:setup` | new | Checks and installs the external tools and fonts above |
+
+`ui-deslop` and `eng-deslop` are copied from the repositories above at a pinned commit; only the name and the
+description are ours. A GitHub Actions workflow compares them with their sources every week and opens a pull request
+when a source changed ([runbook](docs/runbooks/sync-upstream-skills.md)). If you also install the sources as plugins
+(`unslop@heydamir`, `humanizer@humanizer`), two skills answer the same request; keep one.
 
 ## What Changed from the Four Plugins
 
@@ -63,6 +72,9 @@ need, including the cases that broke on Amazon Linux 2023.
 - [Claude Code](https://code.claude.com) with plugin support
 - Python 3, Node.js and npm, `zip`, `curl`
 - Everything else is installed by `/my-plugins:setup` (see [Usage](#usage))
+- Optional, for `ui-deslop` only: Node Playwright in the project you work on (`npm install -D playwright`, then
+  `npx playwright install chromium`) to save a live page, and ffmpeg for the story video. `setup` reports ffmpeg
+  and installs neither
 
 ## Installation
 
@@ -138,6 +150,8 @@ Then ask in plain Korean, or call a skill directly:
 이 PDF를 AWS 블로그 스타일로 블로그 초안 작성해줘
 이 구성을 AWS 아키텍처 다이어그램으로 그려줘
 이 글 AI 티 빼줘
+이 영문 README에서 AI 슬롭 제거해줘
+이 대시보드 화면의 UI 슬롭 제거해줘
 화이트 테마로 50명 미만 기술 세미나 덱 만들어줘
 이 발표 자료를 PPT와 브라우저에서 발표하는 HTML 둘 다로 만들어줘
 이 CSV로 Graviton vs Intel 벤치마크 보고서 Word랑 HTML로 만들어줘
@@ -173,10 +187,13 @@ skills/
 ├── html-report/         # common-design HTML reports: template, design spec, checker
 ├── techblogs/           # personal tech blog posts: storylines, template, design spec, new post, import, build, check, place
 ├── aws-infographic/     # fact-checked infographics: SVG builder, build and QA, page template, editable deck rules and checks
+├── ui-deslop/           # AI-slop removal for UI, vendored from heydamir/unslop (CC BY 4.0)
+├── eng-deslop/          # AI-slop removal for English text, vendored from blader/humanizer (MIT)
 └── setup/               # dependency check and install (scripts/setup.sh)
 commands/                # export-diagram, import-drawio, import-mermaid
 third_party/             # upstream licenses and notices
-scripts/                 # dev setup, git hooks; scripts/diagrams/ holds the diagram repo gates
+scripts/                 # dev setup, git hooks, sync_upstream_skills.py for the vendored skills; scripts/diagrams/ holds the diagram repo gates
+.github/workflows/       # weekly check of the vendored skills against their sources
 docs/                    # architecture, onboarding, ADRs, runbooks; docs/diagrams/ holds diagram guides and samples
 tests/                   # run-all.sh, hooks/, structure/, fixtures/
 ```
@@ -194,6 +211,9 @@ MIT ([LICENSE](LICENSE)) for the plugin's own work: aws-blog-skills, kor-deslop,
 Details per part are in [NOTICE.md](NOTICE.md). aws-diagram-design is MIT from its upstream
 ([third_party/LICENSE-aws-diagram-design](third_party/LICENSE-aws-diagram-design)); AWS icons, Amazon Ember and
 the AWS PowerPoint templates and deck fonts follow their own terms and are not covered by the MIT license.
+`ui-deslop` is CC BY 4.0 by Damir Sokolovsky ([third_party/LICENSE-ui-deslop](third_party/LICENSE-ui-deslop)) and
+`eng-deslop` is MIT by Siqi Chen ([third_party/LICENSE-eng-deslop](third_party/LICENSE-eng-deslop)); both are copies of
+their repositories, not the plugin's own work.
 
 ## Contact
 
@@ -213,7 +233,8 @@ HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고�
 기술 인포그래픽을 편집 가능한 PowerPoint 덱과 함께 만드는 skill을 더했습니다. skill끼리 같은
 플러그인 안에서 서로를 부르므로 블로그 원고가 다른 플러그인 없이 다이어그램을 그리고 윤문 점검을 하며, 덱도 같은
 다이어그램을 넣습니다. `setup` skill은 skill들이 쓰는 외부 프로그램과 폰트를 점검하고 설치하며, Amazon Linux
-2023에서 막혔던 경우도 처리합니다.
+2023에서 막혔던 경우도 처리합니다. 다른 저작자의 저장소에서 가져와 원본과 맞춰 두는 skill도 두 개 있습니다.
+`ui-deslop`(heydamir/unslop)은 화면의 AI 슬롭을, `eng-deslop`(blader/humanizer)은 영어 글의 AI 슬롭을 제거합니다.
 
 ## 포함된 skill과 command
 
@@ -231,7 +252,13 @@ HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고�
 | `/my-plugins:html-report` | 신규 | 공통 디자인의 공유용 단일 HTML 보고서: 한국어와 영어를 한 파일에, 라이트와 다크, 1440px 한 컬럼, 조사 보고서의 출처 표와 조사 방법 |
 | `/my-plugins:techblogs` | 신규 | 글쓴이 개인 기술 블로그(whchoi98.github.io, Jekyll)에 올릴 글: 사실 검증, 한국어와 영어 본문, 고정 템플릿으로 빌드하는 한영 리포트 페이지, 규격 검사, 블로그 저장소 배치와 Jekyll 빌드 |
 | `/my-plugins:aws-infographic` | 신규 (claude.ai 동기화 skill aws-infographic을 대체) | 사실 검증한 AWS 팔레트 기술 인포그래픽: 16:9 다크와 라이트 SVG, PNG(요청하면 4:5 세로), 같은 내용을 텍스트 상자, 도형, 표, 차트, 아이콘 그림으로 만든 편집 가능한 PowerPoint 덱 |
+| `/my-plugins:ui-deslop` | [heydamir/unslop](https://github.com/heydamir/unslop)(CC BY 4.0)에서 가져옴 | UI의 AI 슬롭 제거: AI가 만든 화면의 흔적(보라색 그라데이션, 글로우, 이모지 레이블, 고르지 않은 간격)을 찾아 보여 주고, 제품에서 방향을 정한 뒤 간격, 색, 아이콘, 문구, 글꼴, 레이아웃, 세부, 그림, 모션을 수정합니다 |
+| `/my-plugins:eng-deslop` | [blader/humanizer](https://github.com/blader/humanizer)(MIT)에서 가져옴 | 영어 글의 AI 슬롭 제거: 원본의 패턴 목록(not-X-but-Y, 한 줄 맺음 문장, 셋으로 맞춘 나열, 대시, 부풀린 표현, AI 상투어)에 따라 수정합니다. 내용은 그대로 둡니다 |
 | `/my-plugins:setup` | 신규 | 위 skill들의 외부 프로그램과 폰트 점검·설치 |
+
+`ui-deslop`과 `eng-deslop`은 위 저장소를 고정한 커밋에서 복사한 것이고, 이름과 description만 이 플러그인의 것입니다.
+GitHub Actions 워크플로가 매주 원본과 비교해 원본이 바뀌었으면 pull request를 엽니다([런북](docs/runbooks/sync-upstream-skills.md)).
+원본 플러그인(`unslop@heydamir`, `humanizer@humanizer`)을 함께 설치하면 같은 요청에 skill 두 개가 반응하므로 하나만 둡니다.
 
 ## 네 플러그인에서 달라진 점
 
@@ -255,6 +282,9 @@ HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고�
 - 플러그인을 지원하는 [Claude Code](https://code.claude.com)
 - Python 3, Node.js와 npm, `zip`, `curl`
 - 나머지는 `/my-plugins:setup`이 설치합니다([사용법](#사용법) 참고)
+- 선택 사항(`ui-deslop`만 해당): 라이브 페이지를 저장하려면 작업하는 프로젝트에 Node Playwright(`npm install -D playwright`,
+  `npx playwright install chromium`)가, 스토리 영상을 만들려면 ffmpeg가 필요합니다. `setup`은 ffmpeg가 있는지만 알리고
+  둘 다 설치하지 않습니다
 
 ## 설치 방법
 
@@ -329,6 +359,8 @@ aws-ppt-skills의 덱 도구(pptxgenjs, python-pptx, LibreOffice)를 씁니다. 
 이 PDF를 AWS 블로그 스타일로 블로그 초안 작성해줘
 이 구성을 AWS 아키텍처 다이어그램으로 그려줘
 이 글 AI 티 빼줘
+이 영문 README에서 AI 슬롭 제거해줘
+이 대시보드 화면의 UI 슬롭 제거해줘
 화이트 테마로 50명 미만 기술 세미나 덱 만들어줘
 이 발표 자료를 PPT와 브라우저에서 발표하는 HTML 둘 다로 만들어줘
 이 CSV로 Graviton vs Intel 벤치마크 보고서 Word랑 HTML로 만들어줘
@@ -364,10 +396,13 @@ skills/
 ├── html-report/         # 공통 디자인 HTML 보고서: 템플릿, 디자인 규격, 검사기
 ├── techblogs/           # 개인 기술 블로그 글: 스토리라인, 템플릿, 디자인 규격, 새 글 시작, 가져오기, 빌드, 검사, 배치
 ├── aws-infographic/     # 사실 검증 인포그래픽: SVG 빌더, 빌드와 QA, 장 템플릿, 편집 가능한 덱 규칙과 검사
+├── ui-deslop/           # UI의 AI 슬롭 제거, heydamir/unslop(CC BY 4.0)에서 가져옴
+├── eng-deslop/          # 영어 글의 AI 슬롭 제거, blader/humanizer(MIT)에서 가져옴
 └── setup/               # 의존 프로그램 점검과 설치(scripts/setup.sh)
 commands/                # export-diagram, import-drawio, import-mermaid
 third_party/             # 원 저작물의 라이선스와 고지
-scripts/                 # 개발 설정, git hooks. scripts/diagrams/에 다이어그램 저장소 검사 스크립트
+scripts/                 # 개발 설정, git hooks, 가져온 skill을 맞추는 sync_upstream_skills.py. scripts/diagrams/에 다이어그램 저장소 검사 스크립트
+.github/workflows/       # 가져온 skill을 원본과 매주 비교하는 워크플로
 docs/                    # 아키텍처, 온보딩, ADR, 런북. docs/diagrams/에 다이어그램 가이드와 샘플
 tests/                   # run-all.sh, hooks/, structure/, fixtures/
 ```
@@ -385,6 +420,9 @@ claude plugin validate .          # Claude Code manifest와 skill 검증(ICON_MI
 부분별 내용은 [NOTICE.md](NOTICE.md)에 있습니다. aws-diagram-design은 원 저작물의 MIT
 ([third_party/LICENSE-aws-diagram-design](third_party/LICENSE-aws-diagram-design))이고, AWS 아이콘, Amazon Ember,
 AWS PowerPoint 템플릿, 덱 폰트는 MIT 대상이 아니며 각자의 이용 조건을 따릅니다.
+`ui-deslop`은 Damir Sokolovsky의 CC BY 4.0 저작물([third_party/LICENSE-ui-deslop](third_party/LICENSE-ui-deslop))이고
+`eng-deslop`은 Siqi Chen의 MIT 저작물([third_party/LICENSE-eng-deslop](third_party/LICENSE-eng-deslop))입니다. 둘 다 원본
+저장소를 복사한 것이며 이 플러그인의 저작물이 아닙니다.
 
 ## 연락처
 

@@ -1,6 +1,7 @@
 # NOTICE
 
 my-plugins bundles five plugins by WooHyung Choi. Each part keeps the license of the plugin it came from.
+Two skills, `ui-deslop` and `eng-deslop`, are copies of other authors' repositories and keep those authors' licenses.
 
 | Part | Source | License |
 |---|---|---|
@@ -12,6 +13,8 @@ my-plugins bundles five plugins by WooHyung Choi. Each part keeps the license of
 | `skills/html-report/` | this repository | MIT, [LICENSE](LICENSE). No fonts or images are bundled; pages name NanumSquareOTF_ac and D2Coding (OFL-1.1) in the font stack and use the reader's installed copies |
 | `skills/techblogs/` | this repository (new; replaces the user-level techblogs skill) | MIT, [LICENSE](LICENSE). No fonts or images are bundled; pages name NanumSquareOTF_ac and D2Coding (OFL-1.1) in the font stack and use the reader's installed copies or the font files the blog serves |
 | `skills/aws-infographic/` | this repository (new; replaces the author's claude.ai-synced aws-infographic skill) | MIT, [LICENSE](LICENSE). No fonts or icons are bundled: the infographics name NanumSquareOTF and D2Coding (OFL-1.1) in the font stack and embed AWS Architecture Icons from `skills/aws-diagram/assets/icons.json`, which keep the terms in [third_party/THIRD_PARTY_LICENSES-aws-diagrams.md](third_party/THIRD_PARTY_LICENSES-aws-diagrams.md) |
+| `skills/ui-deslop/` | github.com/heydamir/unslop (`skills/unslop/`), "unslop" by Damir Sokolovsky | CC BY 4.0: [third_party/LICENSE-ui-deslop](third_party/LICENSE-ui-deslop). Not covered by the MIT license of this repository. Copied at the commit recorded in `scripts/upstream-skills.json` and in the `metadata` of its SKILL.md. Changes: the frontmatter name and description are replaced by my-plugins and the `agents/` folder is left out; every other byte is the source's, and the author's credit in SKILL.md and the reference files is kept |
+| `skills/eng-deslop/` | github.com/blader/humanizer (`SKILL.md`), "Humanizer", Copyright (c) 2025 Siqi Chen | MIT: [third_party/LICENSE-eng-deslop](third_party/LICENSE-eng-deslop). Copied at the commit recorded in `scripts/upstream-skills.json` and in the `metadata` of its SKILL.md. Changes: the frontmatter name and description are replaced by my-plugins; the body is the source's |
 | `skills/setup/`, repository harness | this repository | MIT, [LICENSE](LICENSE) |
 
 Paths in the third-party files refer to the source repositories; in this repository the aws-diagrams

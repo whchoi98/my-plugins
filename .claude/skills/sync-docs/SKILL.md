@@ -1,6 +1,6 @@
 ---
 name: sync-docs
-description: Synchronize my-plugins documentation (root and module CLAUDE.md, docs/architecture.md, docs/reference/, ADRs, runbooks, docs/diagrams/, README, CHANGELOG) with the current twelve skills, three commands, scripts, setup.sh and manifests, and score CLAUDE.md quality. Use after changing skills/, commands/ or the harness, or when asked to update or audit docs.
+description: Synchronize my-plugins documentation (root and module CLAUDE.md, docs/architecture.md, docs/reference/, ADRs, runbooks, docs/diagrams/, README, CHANGELOG) with the current fourteen skills, three commands, scripts, setup.sh and manifests, and score CLAUDE.md quality. Use after changing skills/, commands/ or the harness, or when asked to update or audit docs.
 ---
 
 # Sync Docs Skill

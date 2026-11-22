@@ -115,6 +115,20 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   Playwright 1.64.1 (offline): `preview_html_deck.py` on the page (a picture per slide, the list, the presenter view
   following the audience window) and on a copy whose `go()` does nothing (exit 1 with WARN lines, no traceback).
   Skipped parts say why.
+- `structure/test-upstream-skills.sh` — the vendored skills (ui-deslop from heydamir/unslop, eng-deslop from
+  blader/humanizer): `sync_upstream_skills.py verify` on the repository, the manifest's sources, licenses and pinned
+  commits, the frontmatter of each copy (our name and description, the source's license field, the three metadata
+  lines), the description routing between the three deslop skills, the NOTICE.md rows, the license copies and the kept
+  credit. On a scratch copy: a vendored file edited, added or removed by hand, a changed license copy and a description
+  changed in the manifest only are found, and `render` writes the description without touching the body. With a source
+  folder passed by `--source` (no network): first import, a changed source (added, changed and removed files, the
+  CHANGELOG line replaced under `### Changed` of `[Unreleased]` in both languages, the report with the source's text in
+  code spans), an update with nothing new, and thirteen sources that are refused without writing anything (changed
+  license, symbolic link, linked folder, file type outside `allow_ext`, no extension, over 2 MB, unusual name, hidden
+  file, no frontmatter, no SKILL.md, no license file, metadata that has our keys, no skill folder). Manifest and
+  argument errors, the helpers of the script, and the workflow: schedule, permissions, actions pinned to a commit id,
+  one push to `sync/upstream-skills`, no merge or release, no file of a source run, every command block valid bash.
+  Needs python3 and git only, because the workflow runs this file on a GitHub runner.
 - `structure/test-integration.sh` — behavior of the merge fixes, each run with `HOME` on a scratch folder:
   `diagram_lib.py` asset lookup order (sibling skill, `AWS_DIAGRAM_ASSETS`, `.aws-diagram-assets`, plugin
   caches in numeric version order), `skills/setup/scripts/setup.sh` check mode and usage exit codes, sudo
@@ -136,7 +150,7 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   non-zero (`|| true`, or capture `$?`). Run `cd` only in a subshell.
 - Sourcing shares the runner's scope. Never assign `TOTAL`, `PASSED`, `FAILED`, `SKIPPED`, `FAILURES`,
   `FILTER`, `TEST_TMP`, `PROJECT_ROOT` or `SCRIPT_DIR`; a structure test rejects it. Prefix test-local
-  names per file (`PS_`, `AB_`, `SCR_`, `KD_`, `IT_`, `HK_`, `SP_`, `AR_`, `HR_`, `TB_`, `IG_`, `PP_`). Never export or assign `HOME`; pass it
+  names per file (`PS_`, `AB_`, `SCR_`, `KD_`, `IT_`, `HK_`, `SP_`, `AR_`, `HR_`, `TB_`, `IG_`, `PP_`, `US_`). Never export or assign `HOME`; pass it
   per command (`env HOME="$TEST_TMP/..." ...`).
 - Never write a complete secret literal anywhere; split it into prefix and body.
 - Use `$TEST_TMP` for scratch files and repos; it is removed on exit. Never write into `skills/`

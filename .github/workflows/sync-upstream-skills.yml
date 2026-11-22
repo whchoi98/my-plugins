@@ -1,0 +1,77 @@
+# Weekly check of the skills that come from other repositories (scripts/upstream-skills.json).
+# When a source changed, the updated copy goes to the branch sync/upstream-skills and a pull request
+# asks for a review (an issue with the link when Actions may not open pull requests).
+# Nothing is merged or released here, and no file of a source is ever run.
+name: Sync upstream skills
+
+on:
+  schedule:
+    - cron: "23 21 * * 0" # Monday 06:23 in Seoul
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+
+concurrency:
+  group: sync-upstream-skills
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Update the vendored skills
+        run: python3 scripts/sync_upstream_skills.py update --report "$RUNNER_TEMP/sync-report.md"
+
+      - name: See whether anything changed
+        id: diff
+        run: |
+          if [ -n "$(git status --porcelain)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Check the copy
+        if: steps.diff.outputs.changed == 'true'
+        run: |
+          python3 scripts/sync_upstream_skills.py verify
+          bash tests/run-all.sh upstream-skills
+
+      - name: Push the branch and ask for a review
+        if: steps.diff.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPORT: ${{ runner.temp }}/sync-report.md
+        run: |
+          set -euo pipefail
+          branch=sync/upstream-skills
+          title="Sync vendored skills with their sources"
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git switch -C "$branch"
+          git add -A
+          git commit -q -m "feat: sync vendored skills with their sources"
+          git push --force origin "$branch"
+          number=$(gh pr list --head "$branch" --state open --json number --jq '.[0].number // empty')
+          if [ -n "$number" ]; then
+            gh pr edit "$number" --body-file "$REPORT"
+          elif ! gh pr create --base "$GITHUB_REF_NAME" --head "$branch" --title "$title" --body-file "$REPORT"; then
+            # The repository does not let Actions open pull requests: leave an issue with the link
+            {
+              cat "$REPORT"
+              printf '\nOpen the pull request: %s/%s/compare/%s...%s?expand=1\n' \
+                "$GITHUB_SERVER_URL" "$GITHUB_REPOSITORY" "$GITHUB_REF_NAME" "$branch"
+            } > "$RUNNER_TEMP/issue.md"
+            issue=$(gh issue list --state open --search "\"$title\" in:title" --json number --jq '.[0].number // empty')
+            if [ -n "$issue" ]; then
+              gh issue comment "$issue" --body-file "$RUNNER_TEMP/issue.md"
+            else
+              gh issue create --title "$title" --body-file "$RUNNER_TEMP/issue.md"
+            fi
+          fi

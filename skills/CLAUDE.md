@@ -16,6 +16,8 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 | `html-report/` | new | SKILL.md, `references/design-spec.md` (tokens, page order, language pairs, components), `assets/template.html`, `scripts/` (check_html, embed_images, preview) |
 | `techblogs/` | new (replaces the user-level techblogs skill) | SKILL.md, `references/design-spec.md` (meta.json keys, fragment markup, text rules), `references/publish.md` (placing, build, viewing, git rules), `assets/template.html`, `scripts/` (import_aws_post, build_post, check_post, place_post, preview) |
 | `aws-infographic/` | new (replaces the claude.ai-synced aws-infographic skill) | SKILL.md, `scripts/` (infokit: SVG builder; buildkit: render, layout QA, text lint; icon_png: icons for a deck; check_editable: deck made of editable objects only), `assets/page_template.py`, `references/ppt-deck.md` (content mapping, deck helpers, example) |
+| `ui-deslop/` | heydamir/unslop (CC BY 4.0), vendored | SKILL.md (audit, direction, ordered passes on an existing screen), `references/` (signs, tokens, visuals, effects, rtl, refs and `refs/*.webp`), `scripts/` (snapshot.mjs, story.mjs, story-path.mjs: Node Playwright and ffmpeg, both optional). Never edited by hand |
+| `eng-deslop/` | blader/humanizer (MIT), vendored | SKILL.md only (numbered patterns for English text). Never edited by hand |
 | `setup/` | new | SKILL.md, `scripts/setup.sh` (check, install, install --sudo) |
 
 ## Cross-skill links
@@ -37,6 +39,7 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 - aws-ppt-skills → `../aws-infographic/scripts/icon_png.py`, `check_editable.py` and `references/ppt-deck.md`
   (editable decks, `addIcon()`)
 - setup → `../aws-diagram-design/assets/fonts/ttf` (Amazon Ember), `../aws-ppt-skills/scripts/install_fonts.sh`
+- ui-deslop, eng-deslop → no other skill and no file outside their folders; the three deslop descriptions name each other (`my-plugins:kor-deslop` for Korean text, `my-plugins:eng-deslop` for English text, `my-plugins:ui-deslop` for a screen)
 
 ## Rules
 - Do not add `CLAUDE.md` or dev-only files inside `skills/<name>/`; everything there ships.
@@ -45,3 +48,10 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 - Trigger phrases of aws-blog-skills overlap with the claude.ai-synced `anthropic-skills:aws-blog-skills` and
   `blog-writing`, and those of aws-infographic with `anthropic-skills:aws-infographic`; README explains how to turn
   the synced copies off.
+- `ui-deslop/` and `eng-deslop/` are copies of other repositories. `scripts/upstream-skills.json` holds the source, the
+  pinned commit, a hash of every file and the name and description my-plugins gives the skill.
+  `scripts/sync_upstream_skills.py update` is the only thing that writes those folders (`render` after a description
+  change in the manifest); `verify` and `tests/structure/test-upstream-skills.sh` fail on a hand edit. A rule that should
+  change goes to the source's repository, not into the copy.
+- A user who also installs the sources (`unslop@heydamir`, `humanizer@humanizer`) or another humanizer skill gets two
+  skills for the same request; the README says so.

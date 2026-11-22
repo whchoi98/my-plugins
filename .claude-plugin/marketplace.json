@@ -9,7 +9,7 @@
     {
       "name": "my-plugins",
       "source": "./",
-      "description": "AWS 블로그 원고, AWS 다이어그램, 한국어 윤문, AWS PowerPoint 덱, 벤치마크·PoC 보고서, 공통 디자인 HTML 보고서, 개인 기술 블로그 글, 기술 인포그래픽을 하나로 묶은 플러그인(skill 12개, command 3개)",
+      "description": "AWS 블로그 원고, AWS 다이어그램, 한국어 윤문, AWS PowerPoint 덱, 벤치마크·PoC 보고서, 공통 디자인 HTML 보고서, 개인 기술 블로그 글, 기술 인포그래픽, UI와 영어 글의 AI 슬롭 제거를 하나로 묶은 플러그인(skill 14개, command 3개)",
       "category": "productivity"
     }
   ]

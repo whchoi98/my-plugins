@@ -11,7 +11,7 @@
 
 ## System Overview
 `my-plugins` is one Claude Code plugin that bundles five earlier plugins by WooHyung Choi: aws-blog-skills
-1.2.2, aws-diagrams 1.0.0, kor-writing 1.0.0, aws-deck 1.0.0 and aws-reports 1.0.0. It ships twelve skills and three slash
+1.2.2, aws-diagrams 1.0.0, kor-writing 1.0.0, aws-deck 1.0.0 and aws-reports 1.0.0. It ships fourteen skills and three slash
 commands. Each skill is Markdown instructions plus bundled Python, Bash or Node.js scripts that Claude runs on
 the user's machine when the workflow calls for them. Skills call each other inside the plugin with the Skill
 tool as `my-plugins:<skill>`, and reach each other's files only by paths relative to their own folder.
@@ -40,6 +40,8 @@ Output goes to the user's current directory, never into the plugin cache.
 | `html-report` | new | One shareable HTML page in the common report design (bilingual, light and dark), filled from a fixed template and checked |
 | `techblogs` | new | Posts for the author's personal tech blog: a bilingual report page and a front matter file built from work-folder fragments and a fixed template, checked, then placed into the blog repository |
 | `aws-infographic` | new | Fact-checked technical infographics (16:9 dark and light SVG and PNG, 4:5 on request) and the same content as an editable PowerPoint deck built through aws-ppt-skills |
+| `ui-deslop` | heydamir/unslop (CC BY 4.0), vendored | AI-slop removal for UI: audit, a direction taken from the product, ordered passes on an existing screen |
+| `eng-deslop` | blader/humanizer (MIT), vendored | AI-slop removal for English text by the source's numbered patterns, content unchanged |
 | `setup` | new | Checks and installs the external tools and fonts the other skills need |
 | `commands/export-diagram.md`, `import-drawio.md`, `import-mermaid.md` | aws-diagrams 1.0.0 | Thin prompts that follow `skills/aws-diagram-design/references/` |
 
@@ -91,6 +93,8 @@ flowchart LR
     DIAG["aws-diagram"]
     DD["aws-diagram-design"]
     DESLOP["kor-deslop"]
+    UIDESLOP["ui-deslop"]
+    ENGDESLOP["eng-deslop"]
     SETUP["setup"]
     REPORTS["aws-reports"]
     HTML["html-report"]
@@ -135,7 +139,7 @@ flowchart LR
     SETUP -->|runs| DFONTS
 ```
 
-`kor-deslop` and `pptx-template-fill` call no other skill. `setup` reaches the two sibling folders through
+`kor-deslop`, `ui-deslop`, `eng-deslop` and `pptx-template-fill` call no other skill. `setup` reaches the two sibling folders through
 `$SKILLS/aws-diagram-design/assets/fonts/ttf` and `$SKILLS/aws-ppt-skills/scripts/install_fonts.sh`, where
 `$SKILLS` is two levels above its own script. Renaming or moving a skill breaks these links
 (`skills/CLAUDE.md`).
@@ -174,12 +178,13 @@ flowchart LR
 | Path | Ships to installers | Loaded as plugin component | Notes |
 |---|---|---|---|
 | `.claude-plugin/` | yes | yes | Manifests |
-| `skills/<name>/` (12 skills) | yes | yes | Description always, body and references on invoke |
+| `skills/<name>/` (14 skills) | yes | yes | Description always, body and references on invoke |
 | `commands/` | yes | yes | Three Markdown prompts; the only root component directory |
 | `.mcp.json` | yes | yes | Must stay `{"mcpServers": {}}` |
 | `skills/CLAUDE.md` | yes | no | Module doc, outside any skill folder |
 | `third_party/`, `LICENSE`, `NOTICE.md`, `README.md`, `CHANGELOG.md` | yes | no | Licenses and docs |
 | `.claude/` | yes | no | Dev harness, active only when this repo is the working directory |
+| `.github/workflows/` | yes | no | Weekly check of the vendored skills; it runs on GitHub, never on an installer's machine |
 | `docs/`, `docs/diagrams/`, `scripts/`, `tests/`, `CLAUDE.md` | yes | no | Inert for installers |
 
 The installed copy is about 26 MB, mostly the aws-ppt-skills templates and fonts (about 15 MB) and the
@@ -209,6 +214,11 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
   both). The HTML deck is never authored: `deck_to_html.py` reads the final `.pptx` and writes one self-contained
   page with the slide content as HTML and SVG, the template chrome as pictures rendered by LibreOffice, subset
   fonts and the notes for a presenter view ([ADR-007](decisions/ADR-007-html-deck-converted-from-pptx.md)).
+- **Vendored skills synced by pull request** — `ui-deslop` and `eng-deslop` are copies of heydamir/unslop and
+  blader/humanizer at a pinned commit. `scripts/upstream-skills.json` records the source, the commit and a hash of
+  every file; `sync_upstream_skills.py` writes the folders and replaces only the `name` and `description`. A weekly
+  workflow opens a pull request when a source changed and never merges or releases
+  ([ADR-008](decisions/ADR-008-vendored-skills-synced-by-pull-request.md)).
 - **aws-blog-skills targets Claude Code** — `${CLAUDE_SKILL_DIR}` paths, a work folder, checks on the assembled
   bundle ([ADR-001](decisions/ADR-001-claude-code-skill-conventions.md)).
 - **Scripts for mechanical rules** — banned words, structure, URLs, diagram geometry and deck lint are scripts
@@ -217,6 +227,7 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 ## Operations
 - Release: [docs/runbooks/release-plugin.md](runbooks/release-plugin.md)
 - User dependencies: [docs/runbooks/setup-dependencies.md](runbooks/setup-dependencies.md)
+- Vendored skills: [docs/runbooks/sync-upstream-skills.md](runbooks/sync-upstream-skills.md)
 - Onboarding: [docs/onboarding.md](onboarding.md)
 
 ---
@@ -226,7 +237,7 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 # 한국어
 
 ## 시스템 개요
-`my-plugins`는 WooHyung Choi의 플러그인 다섯 개(aws-blog-skills 1.2.2, aws-diagrams 1.0.0, kor-writing 1.0.0, aws-deck 1.0.0, aws-reports 1.0.0)를 묶은 Claude Code 플러그인 하나입니다. skill 12개와 슬래시 command 3개를 배포합니다. 각 skill은 Markdown 지침과 함께 배포되는 Python, Bash, Node.js 스크립트로 이루어지며, 워크플로가 필요로 할 때 Claude가 사용자 머신에서 스크립트를 실행합니다. skill끼리는 플러그인 안에서 Skill 도구로 `my-plugins:<skill>`을 부르고, 다른 skill의 파일은 자기 폴더 기준 상대 경로로만 찾습니다. 결과물은 사용자의 현재 디렉터리에 만들며 플러그인 캐시에는 쓰지 않습니다.
+`my-plugins`는 WooHyung Choi의 플러그인 다섯 개(aws-blog-skills 1.2.2, aws-diagrams 1.0.0, kor-writing 1.0.0, aws-deck 1.0.0, aws-reports 1.0.0)를 묶은 Claude Code 플러그인 하나입니다. skill 14개와 슬래시 command 3개를 배포합니다. 각 skill은 Markdown 지침과 함께 배포되는 Python, Bash, Node.js 스크립트로 이루어지며, 워크플로가 필요로 할 때 Claude가 사용자 머신에서 스크립트를 실행합니다. skill끼리는 플러그인 안에서 Skill 도구로 `my-plugins:<skill>`을 부르고, 다른 skill의 파일은 자기 폴더 기준 상대 경로로만 찾습니다. 결과물은 사용자의 현재 디렉터리에 만들며 플러그인 캐시에는 쓰지 않습니다.
 
 ## 구성 요소
 
@@ -249,6 +260,8 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 | `html-report` | 신규 | 고정 템플릿을 채우고 검사하는 공통 디자인의 공유용 단일 HTML 보고서(한영 전환, 라이트와 다크) |
 | `techblogs` | 신규 | 글쓴이 개인 기술 블로그에 올릴 글. 작업 폴더의 조각 파일과 고정 템플릿으로 한영 리포트 페이지와 front matter 파일을 빌드하고 검사한 뒤 블로그 저장소에 배치 |
 | `aws-infographic` | 신규 | 사실 검증한 기술 인포그래픽(16:9 다크와 라이트 SVG, PNG, 요청하면 4:5)과 같은 내용을 aws-ppt-skills로 만든 편집 가능한 PowerPoint 덱 |
+| `ui-deslop` | heydamir/unslop(CC BY 4.0)에서 가져옴 | 화면의 AI 슬롭 제거: 점검, 제품에서 정한 방향, 기존 화면에 정해진 순서로 수정 |
+| `eng-deslop` | blader/humanizer(MIT)에서 가져옴 | 원본의 패턴 목록으로 영어 글의 AI 슬롭 제거. 내용은 그대로 |
 | `setup` | 신규 | 다른 skill이 쓰는 외부 프로그램과 폰트 점검·설치 |
 | `commands/export-diagram.md`, `import-drawio.md`, `import-mermaid.md` | aws-diagrams 1.0.0 | `skills/aws-diagram-design/references/`를 따르는 짧은 프롬프트 |
 
@@ -289,6 +302,8 @@ flowchart LR
     DIAG["aws-diagram"]
     DD["aws-diagram-design"]
     DESLOP["kor-deslop"]
+    UIDESLOP["ui-deslop"]
+    ENGDESLOP["eng-deslop"]
     SETUP["setup"]
     REPORTS["aws-reports"]
     HTML["html-report"]
@@ -333,7 +348,7 @@ flowchart LR
     SETUP -->|runs| DFONTS
 ```
 
-`kor-deslop`과 `pptx-template-fill`은 다른 skill을 부르지 않습니다. `setup`은 자기 스크립트에서 두 단계 위인 `$SKILLS`를 기준으로 `$SKILLS/aws-diagram-design/assets/fonts/ttf`와 `$SKILLS/aws-ppt-skills/scripts/install_fonts.sh`를 찾습니다. skill 이름을 바꾸거나 옮기면 이 연결이 끊어집니다(`skills/CLAUDE.md`).
+`kor-deslop`, `ui-deslop`, `eng-deslop`, `pptx-template-fill`은 다른 skill을 부르지 않습니다. `setup`은 자기 스크립트에서 두 단계 위인 `$SKILLS`를 기준으로 `$SKILLS/aws-diagram-design/assets/fonts/ttf`와 `$SKILLS/aws-ppt-skills/scripts/install_fonts.sh`를 찾습니다. skill 이름을 바꾸거나 옮기면 이 연결이 끊어집니다(`skills/CLAUDE.md`).
 
 ## 다이어그램 assets 탐색 순서
 `skills/aws-blog-skills/scripts/diagram_lib.py`의 `find_assets()`는 `aws-icons/`가 들어 있는 첫 후보를 돌려줍니다.
@@ -364,12 +379,13 @@ flowchart LR
 | 경로 | 설치자에게 배포 | 플러그인 구성 요소로 로드 | 비고 |
 |---|---|---|---|
 | `.claude-plugin/` | 예 | 예 | 매니페스트 |
-| `skills/<name>/`(skill 12개) | 예 | 예 | description은 항상, 본문과 참조 파일은 호출할 때 |
+| `skills/<name>/`(skill 14개) | 예 | 예 | description은 항상, 본문과 참조 파일은 호출할 때 |
 | `commands/` | 예 | 예 | Markdown 프롬프트 3개. 루트의 유일한 구성 요소 폴더 |
 | `.mcp.json` | 예 | 예 | `{"mcpServers": {}}` 유지 |
 | `skills/CLAUDE.md` | 예 | 아니요 | 모듈 문서, skill 폴더 밖 |
 | `third_party/`, `LICENSE`, `NOTICE.md`, `README.md`, `CHANGELOG.md` | 예 | 아니요 | 라이선스와 문서 |
 | `.claude/` | 예 | 아니요 | 개발 하네스, 이 저장소가 작업 디렉터리일 때만 동작 |
+| `.github/workflows/` | 예 | 아니요 | 가져온 skill의 주간 점검. GitHub에서만 실행되고 설치자의 머신에서는 실행되지 않음 |
 | `docs/`, `docs/diagrams/`, `scripts/`, `tests/`, `CLAUDE.md` | 예 | 아니요 | 설치자에게는 동작하지 않음 |
 
 설치본은 약 26 MB입니다. 대부분 aws-ppt-skills의 템플릿과 폰트(약 15 MB), aws-diagram-design과 aws-diagram의 아이콘과 폰트(약 9 MB)입니다.
@@ -381,6 +397,7 @@ flowchart LR
 - **조각 파일로 빌드하는 블로그 글** — techblogs는 `meta.json`과 언어별 본문 조각을 쓰고 `build_post.py`가 skill의 템플릿에 채웁니다. 이 템플릿은 블로그의 report 레이아웃이 의존하는 이름을 유지해야 하므로 html-report와 공유하지 않습니다([ADR-005](decisions/ADR-005-techblogs-personal-blog-workflow.md)).
 - **인포그래픽 내용을 편집 가능한 덱으로 다시 만들기** — aws-infographic은 내용을 aws-ppt-skills에 넘겨 섹션마다 텍스트 상자, 도형, 표, 차트, 아이콘 PNG로 다시 만듭니다. 인포그래픽 그림은 슬라이드에 넣지 않고, 그림이 들어간 덱은 `check_editable.py`가 거부합니다([ADR-006](decisions/ADR-006-infographic-editable-deck.md)).
 - **완성한 덱을 변환해 만드는 HTML 덱** — aws-ppt-skills는 출력 형식(PPT, HTML, 둘 다)을 먼저 묻습니다. HTML 덱은 따로 작성하지 않습니다. `deck_to_html.py`가 최종 `.pptx`를 읽어 한 파일짜리 페이지를 만듭니다. 슬라이드 내용은 HTML과 SVG로, 템플릿의 배경과 로고는 LibreOffice가 그린 그림으로 들어가고, 글꼴은 쓰인 글자만 포함하며, 노트는 발표자 보기에 나옵니다([ADR-007](decisions/ADR-007-html-deck-converted-from-pptx.md)).
+- **가져온 skill은 pull request로 동기화** — `ui-deslop`과 `eng-deslop`은 heydamir/unslop과 blader/humanizer를 고정한 커밋에서 복사한 것입니다. `scripts/upstream-skills.json`이 원본, 커밋, 파일별 해시를 기록하고, `sync_upstream_skills.py`가 폴더를 쓰면서 `name`과 `description`만 바꿉니다. 주간 워크플로는 원본이 바뀌면 pull request를 열 뿐 병합하거나 릴리스하지 않습니다([ADR-008](decisions/ADR-008-vendored-skills-synced-by-pull-request.md)).
 - **옆 skill 기준 상대 경로** — 다른 skill의 파일은 `../<skill>/...`로 찾고, 플러그인 캐시 glob은 대비책으로만 씁니다([ADR-002](decisions/ADR-002-merge-four-plugins-into-one.md)).
 - **의존 프로그램은 `setup`으로** — 스크립트 하나가 모든 외부 프로그램과 폰트를 점검하고 설치하며, sudo는 요청할 때만 씁니다([런북](runbooks/setup-dependencies.md)).
 - **aws-blog-skills는 Claude Code 대상** — `${CLAUDE_SKILL_DIR}` 경로, 작업 폴더, 조립한 번들 검사([ADR-001](decisions/ADR-001-claude-code-skill-conventions.md)).
@@ -389,4 +406,5 @@ flowchart LR
 ## 운영
 - 릴리스: [docs/runbooks/release-plugin.md](runbooks/release-plugin.md)
 - 사용자 의존 프로그램: [docs/runbooks/setup-dependencies.md](runbooks/setup-dependencies.md)
+- 가져온 skill 동기화: [docs/runbooks/sync-upstream-skills.md](runbooks/sync-upstream-skills.md)
 - 온보딩: [docs/onboarding.md](onboarding.md)

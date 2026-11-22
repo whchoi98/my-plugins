@@ -6,7 +6,8 @@ aws-blog-skills (AWS Korea Tech Blog drafts), aws-diagrams (AWS architecture and
 kor-writing (Korean AI-tell removal), aws-deck (AWS PowerPoint decks) and aws-reports (benchmark and PoC
 reports as MS Word + HTML), plus the new html-report skill (common-design bilingual HTML reports), the new
 techblogs skill (posts for the author's personal tech blog) and the new aws-infographic skill (fact-checked
-infographics and an editable deck of the same content). It ships twelve
+infographics and an editable deck of the same content), and two skills vendored from other authors' repositories:
+ui-deslop (heydamir/unslop, AI slop in UI) and eng-deslop (blader/humanizer, AI slop in English text). It ships fourteen
 skills, three slash commands, and Python, Bash and Node.js scripts that Claude runs on the user's machine. The `setup`
 skill checks and installs the external tools and fonts the other skills need.
 
@@ -20,10 +21,12 @@ Public repo `github.com/whchoi98/my-plugins`, MIT (bundled third-party files kee
   diagram self-checks; python-pptx template tools and the deck-to-HTML converter; HTML report checks and image embedding; personal blog post import,
   build, check and placement; infographic SVG builder, render QA and the editable-deck check), Playwright for Python (`uv run --no-project --with playwright`),
   Node.js + pptxgenjs v4 (deck builds), Node.js + docx 9 + marked 18 (report builds, `report.mjs`),
-  Bash (`package_blog.sh`, `install_fonts.sh`, `setup.sh`)
+  Bash (`package_blog.sh`, `install_fonts.sh`, `setup.sh`), the ES modules of ui-deslop (Node Playwright and ffmpeg,
+  both optional and left to the user)
 - **Render QA tools** — LibreOffice `soffice`, Poppler `pdftoppm`/`pdftotext`, `rsvg-convert` or cairosvg
 - **Packaging** — Claude Code plugin manifests (`.claude-plugin/plugin.json`, `marketplace.json`), JSON
-- **Harness** — Bash 5 hooks and tests, `jq` 1.7, Python 3
+- **Harness** — Bash 5 hooks and tests, `jq` 1.7, Python 3; `scripts/sync_upstream_skills.py` and a GitHub Actions
+  workflow keep the vendored skills in step with their sources
 - **Tooling** — Claude Code CLI (`claude plugin validate|details|marketplace|update`), git, GitHub
 
 ## Project Structure
@@ -32,14 +35,16 @@ Public repo `github.com/whchoi98/my-plugins`, MIT (bundled third-party files kee
 skills/           - Shipped skills; module doc skills/CLAUDE.md                        [ships, loaded]
   aws-blog-skills/  aws-diagram/  aws-diagram-design/  kor-deslop/
   aws-ppt-skills/  consulting-ppt-white-ppt/  pptx-template-fill/  aws-reports/  html-report/  techblogs/
-  aws-infographic/  setup/
+  aws-infographic/  ui-deslop/  eng-deslop/  setup/
 commands/         - export-diagram, import-drawio, import-mermaid (aws-diagram-design)  [ships, loaded]
 third_party/      - upstream licenses and notices                                        [ships, inert]
+.github/          - workflows/sync-upstream-skills.yml: weekly check of the vendored skills [ships, inert]
 LICENSE, NOTICE.md, README.md, CHANGELOG.md                                              [ships, inert]
 .mcp.json         - Must stay empty: it is also the plugin's MCP config                  [ships, loaded]
 .claude/          - Dev harness: settings, hooks, project skills, commands, agents       [ships, inert]
 docs/             - architecture, onboarding, ADRs, runbooks, reference/; docs/diagrams/ [ships, inert]
-scripts/          - setup.sh, install-hooks.sh; scripts/diagrams/ (diagram repo gates, fixtures)
+scripts/          - setup.sh, install-hooks.sh, sync_upstream_skills.py + upstream-skills.json (vendored skills);
+                    scripts/diagrams/ (diagram repo gates, fixtures)
 tests/            - run-all.sh, hooks/, structure/, fixtures/; module doc tests/CLAUDE.md
 ```
 "Ships" means it is copied into every installer's plugin cache. "Loaded" means Claude Code reads it as
@@ -92,6 +97,11 @@ a plugin component there. Everything under `.claude/` is only active when this r
     of an infographic holds text boxes, shapes, tables, charts and `icon:` PNG pictures only, so a rule about it
     goes into `references/ppt-deck.md`, `scripts/check_editable.py` and the aws-ppt-skills `addIcon()` and
     `check_deck.py` together (one `ICON_MAX_IN`).
+  - ui-deslop, eng-deslop: vendored from heydamir/unslop (CC BY 4.0) and blader/humanizer (MIT) and never edited by
+    hand. `scripts/upstream-skills.json` holds the source, the pinned commit, a hash of every file and the `name` and
+    `description` my-plugins gives the skill; `scripts/sync_upstream_skills.py update` writes the folders, `render`
+    writes a description changed in the manifest, `verify` checks the copy. A file type that is new in a source goes
+    into `allow_ext` only after the file was read, and a sync reaches `main` through a reviewed pull request.
 - **Module docs**: never put `CLAUDE.md` inside `skills/<name>/`; that directory ships as the skill.
 - **Docs**: user-facing docs are bilingual (English first, `<a id="english">` / `<a id="korean">`),
   Korean sections in 합니다체, skill text in 한다체, no emojis, Mermaid for diagrams.
@@ -102,6 +112,7 @@ a plugin component there. Everything under `.claude/` is only active when this r
 ```bash
 bash scripts/setup.sh                     # dev: check tools, chmod hooks and scripts, install git hooks
 bash skills/setup/scripts/setup.sh        # user deps: check; add "install" or "install --sudo"
+python3 scripts/sync_upstream_skills.py check   # vendored skills against their sources (exit 10: update); update, render, verify
 bash tests/run-all.sh                     # all harness tests
 bash tests/run-all.sh structure           # structure and shipped-script tests
 claude plugin validate .                  # manifest + skill validation (ICON_MISSING warning is expected)
@@ -139,6 +150,8 @@ After exiting Plan mode (`/plan`), before starting implementation:
 - New or changed aws-blog-skills script -> Update its SKILL.md and `tests/structure/test-aws-blog-skills-scripts.sh`
 - Changed `skills/aws-ppt-skills/scripts/deck_to_html.py`, `preview_html_deck.py` or `assets/html/` -> Run `bash tests/run-all.sh aws-ppt-skills` with the deck tools and a cached Playwright (the fixture deck is converted and opened in a browser there)
 - Changed deck helper in `skills/aws-infographic/references/ppt-deck.md` or `addIcon()` -> Run `bash tests/run-all.sh aws-infographic` with the deck tools installed (the example deck is built there)
+- Vendored skill (`skills/ui-deslop`, `skills/eng-deslop`) -> Change it only with `scripts/sync_upstream_skills.py` (`update`, or `render` for the description), read the source's diff first, run `bash tests/run-all.sh upstream-skills` (`docs/runbooks/sync-upstream-skills.md`)
+- New vendored skill -> Manifest entry, NOTICE.md row, the lists of a new skill above, and the expected names in `tests/structure/test-upstream-skills.sh`
 - Anything under `skills/` or `commands/` changed -> Version bump + CHANGELOG `[Unreleased]` (both languages)
 - Harness changed (`.claude/`, `tests/`, `scripts/`) -> Update `tests/CLAUDE.md` and `docs/reference/security.md`
 

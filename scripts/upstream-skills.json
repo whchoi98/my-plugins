@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "skills": [
+    {
+      "name": "ui-deslop",
+      "repo": "heydamir/unslop",
+      "ref": "HEAD",
+      "path": "skills/unslop",
+      "exclude": [
+        "agents/*"
+      ],
+      "allow_ext": [
+        ".md",
+        ".mjs",
+        ".webp"
+      ],
+      "license": "CC-BY-4.0",
+      "license_file": "LICENSE",
+      "changes": "frontmatter name and description replaced by my-plugins, agents folder left out",
+      "description": "UI의 AI 슬롭을 제거한다. AI가 만든 티가 나는 화면을 제품에 맞게 디자인된 화면으로 수정한다. 보라색 그라데이션, 글로우, 그라데이션 글자, 이모지 레이블, \"New\" 배지, 광택 블롭, 자간을 벌린 대문자 레이블, 깜박이는 요소, 고르지 않은 간격 같은 흔적을 먼저 찾아 보여 주고, 방향을 정한 뒤 간격, 색, 아이콘, 문구, 글꼴, 레이아웃, 세부, 그림, 모션 순서로 수정한다. React, Tailwind, HTML, CSS로 만든 대시보드, 앱 화면, 랜딩 페이지가 대상이다. \"UI 슬롭 제거\", \"UI AI 티 제거\", \"AI가 만든 것 같은 화면 수정\", \"이 대시보드 다듬어줘\", \"unslop this dashboard\", \"unslop\", \"deslop this UI\", \"vibecoded UI 정리\" 요청에 사용한다. 화면을 수정할 때 그 안의 문구도 함께 수정한다. 디자인은 두고 글만 다듬는 요청과 문서, 블로그 같은 글은 대상이 아니다. 한국어 글은 my-plugins:kor-deslop을, 영어 글은 my-plugins:eng-deslop을 쓴다. 새 화면을 처음부터 디자인하는 요청과 다이어그램도 대상이 아니다. 원본은 heydamir/unslop(CC BY 4.0)이다.",
+      "commit": "620163eedb3529d9cd23a3994ed8d287d06f760d",
+      "commit_date": "2026-11-15",
+      "files": {
+        "SKILL.md": "54e74d73afedb70dd556495f03a13ab7a5724b948cad20c3c7452684f3cb65e9",
+        "references/effects.md": "ded4f679e22843a8f68860e6cda0396fa8b8fa27202400e08337143b485c86a4",
+        "references/refs.md": "12a70ce17d574914ea69eb0809e5a9605de044df1b66619159c6d0b38d6b8353",
+        "references/refs/beacon-engraving.webp": "44e7680e9c944f03c8fe45df999bdf74077a106925a8189eebf89e751e306e5b",
+        "references/refs/meadow-3d.webp": "84f526b68021a06fc6d32f162406fab6cc8074da1ef76d2ae4530e1b58219b14",
+        "references/refs/story-dashboard-frames.webp": "cfbf837e40b7626d5a5789dbce54f5c197aab303aa350d13a042048310717137",
+        "references/refs/unslop-dashboard-after.webp": "48067794f86b43dab20515b3810f245d67bff05d10bfa83c0f5885bee93cea52",
+        "references/refs/unslop-hero-after.webp": "92b2d796c5b6116a2039f5ca2b0f3edf700c92b41846b11b9501a4e32f72af6e",
+        "references/rtl.md": "d33ad69324e2b7c27107185f3fc99e50ba0f7f81b7c67c4e4f53e59cd5802be4",
+        "references/signs.md": "ed051b2ed17758145ff5563a3b20fbc9203380f882130b1f25bf6c2e22b69120",
+        "references/tokens.md": "b8beace96055e8097ff5a788b874e290393de56eff946bc1c650cc445e8965c2",
+        "references/visuals.md": "7247da579d2d95ace1e051b867c757bd1e05aa02f3ab8dea0ead4cd4bf14d7d7",
+        "scripts/snapshot.mjs": "4b0c3639bd1c052fa1968c4bbe1b17acb5b108fd22ec70518628d9a4dbd5d6fa",
+        "scripts/story-path.mjs": "319600e594fca2f94cbfef8706b6f1c9f5151ad56d7a27e7f7d28f82f5756c9c",
+        "scripts/story.mjs": "349610ab1d829eb727b5033353e0ecc0e3272a50c6f1d9eea94b74dcc6daa517"
+      },
+      "skill_md_sha256": "c477313766f09f5f9badd9fd3e2c96efb8ae97b7c91e35f23492e505c7fa31f9",
+      "license_sha256": "9ba9550ad48438d0836ddab3da480b3b69ffa0aac7b7878b5a0039e7ab429411",
+      "upstream_description_sha256": "4c78f95195d2e59fe4090a76cf50c93b98929dce46805f42ce16bfba43f5625b"
+    },
+    {
+      "name": "eng-deslop",
+      "repo": "blader/humanizer",
+      "ref": "HEAD",
+      "path": ".",
+      "include": [
+        "SKILL.md"
+      ],
+      "allow_ext": [
+        ".md"
+      ],
+      "license": "MIT",
+      "license_file": "LICENSE",
+      "changes": "frontmatter name and description replaced by my-plugins",
+      "description": "영어 글의 AI 슬롭을 제거한다. AI가 쓴 티가 나는 영어 글을 내용은 그대로 두고 글쓴이의 말투로 다시 쓴다. not-X-but-Y 대비, 한 줄짜리 맺음 문장, 뜸 들이는 도입, 셋으로 맞춘 나열, 남발한 대시, 부풀린 의미 부여, 광고 문구, AI 상투어(delve, pivotal, testament), 장식용 굵은 글씨, 챗봇 말투의 잔재를 찾아 수정한다. 영어로 쓴 블로그 글, 문서, README, PR 설명, 커밋 메시지, 이메일을 다듬거나 점검할 때 쓴다. \"영어 AI 슬롭 제거\", \"영문 AI 티 제거\", \"영어 글 윤문\", \"영문 다듬어줘\", \"영문을 사람이 쓴 것처럼\", \"humanize this\", \"deslop this\", \"remove AI tells\", \"make this sound less like AI\" 요청에 사용한다. 한국어 글은 my-plugins:kor-deslop을, 화면(UI)은 my-plugins:ui-deslop을 쓴다. 맞춤법만 수정하는 요청은 대상이 아니다. 번역은 하지 않는다. 원본은 blader/humanizer(MIT)이다.",
+      "commit": "a32f24407364c74c812b43c15926d638bee1e072",
+      "commit_date": "2026-11-19",
+      "files": {
+        "SKILL.md": "3013910ef5433dab12f0d2b86d9cf9e3421a253ef986518a68ef07aa29629bdc"
+      },
+      "skill_md_sha256": "32e31f7a8ce41c37d733c6c422d2d4a3c3ce818d65a0174a0e76ad66451ee540",
+      "license_sha256": "4ac4810254ab36d45419141aeb8e69bf50652cfafe5b2dab947d06d44e5cbf96",
+      "upstream_description_sha256": "19b508ad873c9c57882cee19be165c3cb394f30fda0f69269f0e5c15956eb12e"
+    }
+  ]
+}

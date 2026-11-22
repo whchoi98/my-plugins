@@ -1,6 +1,6 @@
 ---
 name: code-reviewer
-description: Review changes to the my-plugins plugin (twelve skills, three commands, bundled scripts, setup.sh, manifests, harness) for broken invariants, contradictions, and release-hygiene gaps with confidence-based filtering. Reports only high-confidence issues (75+). Use proactively after editing skills/ or commands/, or before committing.
+description: Review changes to the my-plugins plugin (fourteen skills, three commands, bundled scripts, setup.sh, manifests, harness) for broken invariants, contradictions, and release-hygiene gaps with confidence-based filtering. Reports only high-confidence issues (75+). Use proactively after editing skills/ or commands/, or before committing.
 tools: Read, Glob, Grep, Bash(git diff:*), Bash(git log:*)
 model: sonnet
 color: green
@@ -31,6 +31,8 @@ as `my-plugins@my-plugins` and call `/my-plugins:<skill>`.
      final-URL comparison; the step 0 source-material rule is intact; the `find_assets()` order and the
      `.aws-diagram-assets` pointer step in SKILL.md stay in step.
    - kor-deslop: the pattern count (81) is the same in SKILL.md, its rulebook under `references/` and the README.
+   - ui-deslop, eng-deslop: vendored copies, never edited by hand; `python3 scripts/sync_upstream_skills.py verify` passes
+     and a description change is made in `scripts/upstream-skills.json`, then `render`.
    - html-report: a design value in `references/design-spec.md`, `assets/template.html` and `scripts/check_html.py`
      changes in all three; `embed_images.py` reads only files inside the page's folder.
    - techblogs: a design value in `references/design-spec.md`, `assets/template.html` and `scripts/check_post.py`
