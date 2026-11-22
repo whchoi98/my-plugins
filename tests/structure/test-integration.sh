@@ -234,5 +234,9 @@ assert_eq "word rule: no 절 for a part of a text in the writing skills" "" "$IT
 IT_OUT=$(printf '%s\n' "$IT_WORD_FILES" | xargs grep -nP '(?<![가-힣])견[주줍줘줬준줄줌]' 2>/dev/null \
     | grep -vE '"견주다"|^[^:]+:[0-9]+:\| 견주다 |re\.compile\(' || true)
 assert_eq "word rule: no 견주다 in the writing skills" "" "$IT_OUT"
+# Word rule of 2026-11-22: 트레이드 오프가 있다, not 대가가 있다. Left out: lines that state the rule and regex definitions
+IT_OUT=$(printf '%s\n' "$IT_WORD_FILES" | xargs grep -nP '(?<![가-힣])대가가\s?있' 2>/dev/null \
+    | grep -vE '"대가가 있다"|^[^:]+:[0-9]+:\| 대가가 있다 |re\.compile\(' || true)
+assert_eq "word rule: no 대가가 있다 in the writing skills" "" "$IT_OUT"
 [ "$(printf '%s\n' "$IT_WORD_FILES" | grep -c .)" -ge 20 ] && pass "word rule: the four skills' documents and scripts were read" \
     || fail "word rule: the four skills' documents and scripts were read" "found only $(printf '%s\n' "$IT_WORD_FILES" | grep -c .) files"

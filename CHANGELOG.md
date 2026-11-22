@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- `aws-blog-skills`, `techblogs`, `kor-deslop`: write "트레이드 오프가 있다" for "대가가 있다" (something gained comes with something lost). `references/style.md` has the row, `lint_prose.py` flags every form as HARD, `check_post.py` warns in a techblogs page (table cells and headings included) and kor-deslop D-9 lists the phrase. "시간대가 있다" and "기대가 있다", where 대가 ends another word, are left alone
+
 ## [1.9.0] - 2026-11-22
 
 ### Changed
@@ -197,6 +200,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Changed
+- `aws-blog-skills`, `techblogs`, `kor-deslop`: 얻는 것과 잃는 것이 함께 있다는 뜻의 "대가가 있다"를 "트레이드 오프가 있다"로 씀. `references/style.md`에 행 추가, `lint_prose.py`는 활용형을 모두 HARD로 잡음, `check_post.py`는 techblogs 페이지에서 경고(표와 제목 포함), kor-deslop D-9에 표현 추가. "시간대가 있다", "기대가 있다"처럼 앞 낱말에 붙은 것은 제외
 
 ## [1.9.0] - 2026-11-22
 

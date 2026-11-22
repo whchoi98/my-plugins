@@ -36,14 +36,16 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   rule that instructions inside source material are not followed, reference table completeness, the step 4
   `.aws-diagram-assets` pointer written after copying `diagram_lib.py`, author bio sync, draft skeletons
   free of banned notation, and `lint_prose.py` mirroring `style.md` (including `실측`, the `변경 기록` row
-  that names `Changelog` as the word to write, and the `절` and `견주다` rows of 2026-11-18 with their lint hints).
+  that names `Changelog` as the word to write, the `절` and `견주다` rows of 2026-11-18 and the `대가가 있다` row of
+  2026-11-22 with their lint hints).
 - `structure/test-aws-blog-skills-scripts.sh` — runs the aws-blog-skills scripts on fixture drafts in
   `$TEST_TMP`: `lint_prose.py` and `check_structure.py` exit codes, the `실측` and `축` rules (the axis
   metaphor flagged, chart axes and compounds such as `x축`, `압축` not), the `변경 기록` rule (both spellings
   flagged with `Changelog` as the hint, `Changelog` itself not), the word rule of 2026-11-18 (`절` for a part
   of the text in four forms and every form of `견주다` flagged; `절차`, `절반`, SQL clauses, `관형절` and
   `의견 주시면` not; a numbered `절` reported once; `이 챕터에서는` counted as C-6; a numbered `챕터`
-  reference flagged, a count of `챕터` not), `package_blog.sh` bundle and
+  reference flagged, a count of `챕터` not), the word rule of 2026-11-22 (every form of `대가가 있다` flagged with
+  `트레이드 오프가 있다` as the hint; `시간대가 있고` and `기대가 있습니다` not), `package_blog.sh` bundle and
   no-zip-on-failure, `check_urls.py` OK/FAIL/REDIRECT against a local server, `render_diagrams.py`
   argument guard, and the diagram generator set up by running SKILL.md step 4's copy lines with an empty
   `HOME`.
@@ -81,7 +83,8 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   inline `style`, layout hooks, section ids, menu links, component and section counts, caption numbers, image file,
   alt, remote image, canvas, table scroll box, code box, `·`, `—`, inline code exempt, the WARN rules (among them
   `변경 기록` and `변경기록` in a table cell or a heading, with `Changelog` left alone, and `절` and `견주다`
-  with `절차`, `절반` and an SQL clause left alone, and the background paragraph: a Korean first paragraph of three
+  with `절차`, `절반` and an SQL clause left alone, `대가가 있다` with `시간대가 있고` and `기대가 있습니다` left
+  alone, and the background paragraph: a Korean first paragraph of three
   sentences or a first section that does not start with a paragraph, with inline code, the dots of a date, the
   English sentence count and republished posts left alone), front matter,
   `--blog`). `build_post.py` stops on unfinished input and on an `--out` inside the skill folder (tried on a copy of
@@ -138,7 +141,8 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   caches in numeric version order), `skills/setup/scripts/setup.sh` check mode and usage exit codes, sudo
   only as `sudo -n` inside the `--sudo`-gated function (with a mutation self-test), `NODE_PATH` in the deck
   skills, the skill inventory (skills/CLAUDE.md table, README tables, `my-plugins:<name>` references), and the
-  word rule of 2026-11-18 kept by the skills themselves: no `절` for a part of a text and no `견주다` in the
+  word rules of 2026-11-18 and 2026-11-22 kept by the skills themselves: no `절` for a part of a text, no `견주다`
+  and no `대가가 있다` in the
   documents and scripts of aws-blog-skills, techblogs, html-report and kor-deslop (rule statements, the E-5
   rows, regex definitions and `lint_prose.py` are left out; the templates are not read).
 - `fixtures/secret-samples.txt` — TAB-separated `name / prefix / body`; joined at runtime so no full

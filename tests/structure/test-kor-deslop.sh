@@ -69,14 +69,15 @@ done
 KD_KEEP=$(grep -m1 -F -- '- **건드리지 않는 것**' "$KD_SKILL" || true)
 assert_contains "kor-deslop: Changelog is among the English terms left untouched" "$KD_KEEP" "Changelog"
 assert_contains "kor-deslop: says not to translate Changelog to 변경 기록" "$KD_KEEP" "변경 기록"
-# Word rule of 2026-11-18 (D-9): a part of a text is 챕터 or 장, not 절; 비교하다, not 견주다
+# Word rule of 2026-11-18 (D-9): a part of a text is 챕터 or 장, not 절; 비교하다, not 견주다.
+# Added 2026-11-22: 트레이드 오프가 있다, not 대가가 있다
 KD_D9=$(grep -m1 -E '^\| D-9 \| S1 \|' "$KD_PATTERNS" || true)
 [ -n "$KD_D9" ] && pass "patterns.md: D-9 is an S1 row" || fail "patterns.md: D-9 is an S1 row" "no '| D-9 | S1 |' row"
-for kd_w in '"절"' '"챕터"' '"장"' '"견주다"' '"비교하다"' 'WHERE 절' '관형절'; do
+for kd_w in '"절"' '"챕터"' '"장"' '"견주다"' '"비교하다"' 'WHERE 절' '관형절' '"대가가 있다"' '"트레이드 오프가 있다"'; do
     assert_contains "patterns.md D-9 names $kd_w" "$KD_D9" "$kd_w"
 done
 KD_ANCHOR=$(grep -m1 -F -- '- **내용 앵커**' "$KD_SKILL" || true)
-assert_contains "kor-deslop: the D-9 words are not content anchors" "$KD_ANCHOR" 'D-9 낱말("절", "견주다")'
+assert_contains "kor-deslop: the D-9 words are not content anchors" "$KD_ANCHOR" 'D-9 낱말("절", "견주다", "대가가 있다")'
 assert_contains "kor-deslop: points to references/patterns.md" "$KD_BODY" "references/patterns.md"
 assert_contains "kor-deslop: points to its notice under third_party/" "$KD_BODY" "$KD_NOTICE"
 

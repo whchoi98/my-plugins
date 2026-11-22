@@ -111,7 +111,10 @@ assert_eq "style.md: the 절 row says to write 챕터, 장" "1" \
     "$(printf '%s\n' "$AB_STYLE" | grep -cE '^\| 절 \([^|]*\| 챕터, 장 \|' || true)"
 assert_eq "style.md: the 견주다 row says to write 비교하다" "1" \
     "$(printf '%s\n' "$AB_STYLE" | grep -cE '^\| 견주다 [^|]*\| 비교하다 \|' || true)"
-for ab_hint in '"챕터, 장 (2026-11-18 확정)"' '"비교하다 (2026-11-18 확정)"'; do
+# Word rule of 2026-11-22: 트레이드 오프가 있다 for 대가가 있다 (something gained comes with something lost)
+assert_eq "style.md: the 대가가 있다 row says to write 트레이드 오프가 있다" "1" \
+    "$(printf '%s\n' "$AB_STYLE" | grep -cE '^\| 대가가 있다 [^|]*\| 트레이드 오프가 있다 \|' || true)"
+for ab_hint in '"챕터, 장 (2026-11-18 확정)"' '"비교하다 (2026-11-18 확정)"' '"트레이드 오프가 있다 (2026-11-22 확정)"'; do
     grep -qF -- "$ab_hint" "$SKILL_DIR/scripts/lint_prose.py" && pass "lint_prose.py HARD_RE has the hint $ab_hint" \
         || fail "lint_prose.py HARD_RE has the hint $ab_hint" "style.md has the row but lint_prose.py does not"
 done

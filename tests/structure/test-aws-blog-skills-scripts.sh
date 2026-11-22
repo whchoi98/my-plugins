@@ -98,6 +98,12 @@ assert_eq "lint_prose: 견주다 exits 1" "1" "$SCR_RC"
 assert_contains "lint_prose: flags every form of 견주다 and names 비교하다" "$SCR_OUT" "×5 → 비교하다 (2026-11-18 확정)"
 scr_lint_line '두 방식을 비교해 봅니다. 의견 주시면 반영하고, 의견주신 내용도 봅니다.'
 assert_contains "lint_prose: 비교하다 and 의견 주시면 are not flagged" "$SCR_OUT" "hard_findings=0"
+# Word rule of 2026-11-22. "대가가 있다" (something gained comes with something lost) is written 트레이드 오프가 있다
+scr_lint_line '이 방식에는 대가가 있습니다. 대가가 있고 대가가있는 구성입니다.'
+assert_eq "lint_prose: 대가가 있다 exits 1" "1" "$SCR_RC"
+assert_contains "lint_prose: flags every form of 대가가 있다 and names 트레이드 오프가 있다" "$SCR_OUT" "×3 → 트레이드 오프가 있다 (2026-11-22 확정)"
+scr_lint_line '이 방식에는 트레이드 오프가 있습니다. 멈춰도 되는 시간대가 있고 기대가 있습니다.'
+assert_contains "lint_prose: 트레이드 오프가 있다, 시간대가 있고 and 기대가 있습니다 are not flagged" "$SCR_OUT" "hard_findings=0"
 # The rules that named 절 follow the new word: a heading guide sentence and a numbered reference with 챕터
 scr_lint_line '이 챕터에서는 설정을 다룹니다.'
 assert_contains "lint_prose: '이 챕터에서는' counts as a heading guide sentence (C-6)" "$SCR_OUT" "[!] 이 (섹션|절|장|챕터)에서는 ×1"

@@ -223,6 +223,9 @@ assert_contains "techblogs SKILL.md step 3: 절 is written 챕터 or 장" "$TB_S
 assert_contains "techblogs SKILL.md step 3: 견주다 is written 비교하다" "$TB_STEP3" '"견주다"는 "비교하다"로'
 assert_contains "techblogs design-spec.md: the text rules name the 절 check" "$TB_SPEC_TEXT" '"절"은 "챕터"나 "장"으로 쓴다(WARN)'
 assert_contains "techblogs design-spec.md: the text rules name the 견주다 check" "$TB_SPEC_TEXT" '"견주다"는 "비교하다"로 쓴다(WARN)'
+# Word rule of 2026-11-22: 트레이드 오프가 있다 for 대가가 있다
+assert_contains "techblogs SKILL.md step 3: 대가가 있다 is written 트레이드 오프가 있다" "$TB_STEP3" '"대가가 있다"는 "트레이드 오프가 있다"로'
+assert_contains "techblogs design-spec.md: the text rules name the 대가가 있다 check" "$TB_SPEC_TEXT" '"대가가 있다"는 "트레이드 오프가 있다"로 쓴다(WARN)'
 TB_SPEC_HOOKS=$(sed -n '/^## 블로그 레이아웃과 맞물리는 부분/,/^## meta.json/p' "$TB_SPEC" 2>/dev/null)
 for tb_t in 'div.wrap.page' 'nav.top.theme-bar' 'techblogs-theme' 'techblogs-lang'; do
     assert_contains "techblogs design-spec.md: blog layout hook $tb_t" "$TB_SPEC_HOOKS" "$tb_t"
@@ -431,6 +434,11 @@ if [ "$TB_RC" -eq 0 ] && [ -f "$TB_OUT/$TB_SLUG-report.html" ]; then
         && tb_check "절차, 절반 and an SQL clause are not flagged" '결과: ERROR 0 / WARN 0' 0
     tb_case wordcmp && tb_edit "$TB_R" '<h3>단계별 시간</h3>' '<h3>단계를 견주어 본 시간</h3>' \
         && tb_check "견주다 warns and names 비교하다" "'견주다'는 비교하다로 씁니다" 0
+    # Word rule of 2026-11-22: 대가가 있다 is written 트레이드 오프가 있다; 대가 at the end of another word is left alone
+    tb_case wordtrade && tb_edit "$TB_R" '웹 문서' '대가가 있습니다' \
+        && tb_check "대가가 있다 warns and names 트레이드 오프가 있다" "'대가가 있다'는 트레이드 오프가 있다로 씁니다" 0
+    tb_case wordtradeok && tb_edit "$TB_R" '웹 문서' '시간대가 있고 기대가 있습니다' \
+        && tb_check "시간대가 있고 and 기대가 있습니다 are not flagged" '결과: ERROR 0 / WARN 0' 0
     # Background paragraph (2026-11-22): the first section opens with a paragraph of one or two sentences
     tb_case lead3 && tb_edit "$TB_R" '실행된다고 가정합니다.</p>' '실행된다고 가정합니다. 읽기 단계가 가장 깁니다.</p>' \
         && tb_check "a first paragraph of three sentences warns" 'ko 첫 챕터의 첫 문단이 3문장입니다. 배경 문단은 한두 문장으로 씁니다' 0
