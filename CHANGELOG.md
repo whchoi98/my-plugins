@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.8.0] - 2026-11-22
+
 ### Added
 - `ui-deslop`: new skill that removes AI slop from UI, vendored from [heydamir/unslop](https://github.com/heydamir/unslop) (CC BY 4.0, by Damir Sokolovsky) at `620163e`. It lists the tells of an AI-made screen, sets a direction from the product and fixes spacing, color, icons, copy, type, layout, details, visuals and motion. Only the frontmatter `name` and description are ours, and the source's `agents/` folder is left out
 - `eng-deslop`: new skill that removes AI slop from English text, vendored from [blader/humanizer](https://github.com/blader/humanizer) (MIT, Copyright (c) 2025 Siqi Chen) at `a32f244` (Humanizer 4.0.0, 26 patterns). Only the frontmatter `name` and description are ours
@@ -162,7 +164,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/whchoi98/my-plugins/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/whchoi98/my-plugins/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/whchoi98/my-plugins/compare/v1.5.2...v1.6.0
 [1.5.2]: https://github.com/whchoi98/my-plugins/compare/v1.5.1...v1.5.2
@@ -188,6 +191,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.8.0] - 2026-11-22
 
 ### Added
 - `ui-deslop`: UI의 AI 슬롭을 제거하는 skill 추가. [heydamir/unslop](https://github.com/heydamir/unslop)(CC BY 4.0, Damir Sokolovsky)을 `620163e`에서 가져옴. AI가 만든 화면의 흔적을 찾아 보여 주고, 제품에서 방향을 정한 뒤 간격, 색, 아이콘, 문구, 글꼴, 레이아웃, 세부, 그림, 모션을 수정. frontmatter의 `name`과 description만 이 플러그인의 것이며 원본의 `agents/` 폴더는 제외
@@ -336,7 +341,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.7.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.8.0...HEAD
+[1.8.0]: https://github.com/whchoi98/my-plugins/compare/v1.7.0...v1.8.0
 [1.7.0]: https://github.com/whchoi98/my-plugins/compare/v1.6.0...v1.7.0
 [1.6.0]: https://github.com/whchoi98/my-plugins/compare/v1.5.2...v1.6.0
 [1.5.2]: https://github.com/whchoi98/my-plugins/compare/v1.5.1...v1.5.2
