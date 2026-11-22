@@ -138,6 +138,22 @@ assert_contains "techblogs SKILL.md: polishing keeps the background paragraph" "
     "배경 문단도 도입부 상투구로 보고 지우지 않는다"
 assert_contains "techblogs SKILL.md: a post from before the rule gets no background paragraph unless asked" "$TB_SKILL" \
     "사용자가 요청하지 않았으면 배경 문단을 넣지 않고 마지막 응답에 알린다"
+# Reading time (2026-11-22): a new post stays within 15 minutes, a longer one is cut or split into a series
+assert_contains "techblogs SKILL.md: writing within 15 minutes has its own part of step 2" "$TB_SKILL" '### 읽는 시간 15분 이하로 쓰기'
+assert_contains "techblogs SKILL.md: a post is easy to understand and to read" "$TB_SKILL" \
+    '글은 주제를 처음 보는 독자가 이해하기 쉽고 읽기 편해야 한다. 새로 쓰는 글 하나의 읽는 시간은 15분을 넘기지 않는다.'
+assert_contains "techblogs SKILL.md: the length is settled with the scope" "$TB_SKILL" \
+    '| 분량 | 새 글은 읽는 시간 15분 이하. 소재가 그보다 많으면 이 단계에서 연재(시리즈)로 나누고'
+assert_contains "techblogs SKILL.md: how the reading time is counted" "$TB_SKILL" \
+    '한국어 본문의 글자 수(공백과 코드 상자 제외)를 700으로 나눈 값이다. 15분은 약 10,500자다.'
+assert_contains "techblogs SKILL.md: the minutes are not set by hand" "$TB_SKILL" '`meta.json`의 `minutes`에 값을 직접 적어 맞추지 않는다.'
+assert_contains "techblogs SKILL.md: overlap is cut first" "$TB_SKILL" '넘으면 먼저 겹치는 내용을 줄인다.'
+assert_contains "techblogs SKILL.md: a post that is still too long becomes a series, each part within 15 minutes" "$TB_SKILL" \
+    '줄여도 넘으면 연재로 나눈다. 편마다 15분 이하로 쓰고, 한 편만 읽어도 이해되도록 편마다 요약 문단과 배경 문단을 둔다.'
+assert_contains "techblogs SKILL.md: a new post does not keep the reading-time warning" "$TB_SKILL" \
+    '읽는 시간이 15분을 넘는다는 `WARN`은 새 글에서 남기지 않는다.'
+assert_contains "techblogs SKILL.md: a post from before the rule is not cut or split unless asked" "$TB_SKILL" \
+    '**읽는 시간 규칙 전에 올린 글**: 다시 빌드하면 `check_post.py`가 15분을 넘는다는 `WARN`을 낼 수 있다. 사용자가 요청하지 않았으면 줄이거나 나누지 않고'
 assert_contains "techblogs SKILL.md: the section order follows the chosen storyline" "$TB_SKILL" \
     "챕터의 순서는 0단계에서 고른 스토리라인을 따른다"
 assert_contains "techblogs SKILL.md: the first section does not repeat the conclusion list" "$TB_SKILL" \
@@ -313,6 +329,12 @@ assert_contains "techblogs design-spec.md: the first section of a new post opens
     "$(cat "$TB_SPEC" 2>/dev/null)" '새 글의 첫 챕터는 `div.prose`의 첫 요소가 배경 문단이다'
 assert_contains "techblogs design-spec.md: the checker warns about the background paragraph" "$(cat "$TB_SPEC" 2>/dev/null)" \
     '새 글의 첫 챕터가 문단(`<p>`)으로 시작하지 않거나 한국어 첫 문단이 세 문장 이상이면 WARN이다(배경 문단)'
+assert_contains "techblogs storylines.md: one post stays within 15 minutes, more material becomes a series" "$TB_STORYDOC" \
+    '- 글 하나의 읽는 시간은 15분을 넘기지 않는다. 소재가 그보다 많으면 연재로 나누고 편마다 스토리라인을 따로 고른다'
+assert_contains "techblogs design-spec.md: the checker warns about a reading time over 15 minutes" "$(cat "$TB_SPEC" 2>/dev/null)" \
+    '- 새 글의 읽는 시간이 15분을 넘으면 WARN이다. 한국어 본문의 글자 수(공백과 코드 상자 제외)를 700으로 나눈 값으로'
+assert_contains "techblogs design-spec.md: minutes in meta.json is not used to fit the limit" "$(cat "$TB_SPEC" 2>/dev/null)" \
+    '새 글은 15분 이하여야 하며 값을 직접 적어 맞추지 않는다'
 
 # --- build_post.py: the fixture builds; the result passes check_post.py and lint_prose.py ---
 tb_work work
@@ -533,6 +555,84 @@ tb_edit "$TB_WK/out/$TB_SLUG-report.html" '실행된다고 가정합니다.</p>'
 TB_MSG=$("${TB_PY[@]}" "$TB_CHECK" "$TB_WK/out/$TB_SLUG-report.html" 2>&1); TB_RC=$?
 assert_not_contains "check_post: a republished post is not checked for the background paragraph" "$TB_MSG" "첫 챕터"
 assert_contains "check_post: a republished post with a long first paragraph has no ERROR and no WARN" "$TB_MSG" "결과: ERROR 0 / WARN 0"
+
+# --- Reading time: a new post stays within 15 minutes; build_post.py and check_post.py count the same characters ---
+# tb_fill_ko TOTAL [pre]: add filler to ko.body.html of TB_WK. Without "pre" the Korean body ends up with TOTAL
+# characters outside code boxes (no whitespace, no tags); with "pre" TOTAL characters go into its code box
+tb_fill_ko() {
+    local msg
+    msg=$("${TB_PY[@]}" - "$TB_WK/ko.body.html" "$@" 2>&1 <<'PY'
+import pathlib, re, sys
+path, total = sys.argv[1], int(sys.argv[2])
+p = pathlib.Path(path)
+s = p.read_text(encoding="utf-8")
+count = lambda t: len(re.sub(r"\s+", "", re.sub(r"<[^>]+>", "", re.sub(r"<pre>.*?</pre>", "", t, flags=re.S))))
+if sys.argv[3:] == ["pre"]:
+    s, n = re.subn(r"(<pre><code>)", lambda m: m.group(1) + "가" * total, s, count=1)
+else:
+    need = total - count(s)
+    if need <= 0:
+        sys.exit("the fixture is already longer than %d" % total)
+    s, n = re.subn(r'(id="ko-s2".*?</p>)', lambda m: m.group(1) + "\n<p>" + "가" * need + "</p>", s, count=1, flags=re.S)
+    if count(s) != total:
+        sys.exit("filler did not reach %d: %d" % (total, count(s)))
+if n != 1:
+    sys.exit("place for the filler not found")
+p.write_text(s, encoding="utf-8")
+PY
+    ) && return 0
+    fail "techblogs reading-time fixture" "$msg"
+    return 1
+}
+# 15.4 minutes rounds to 15 and passes; 15.6 minutes rounds to 16 and warns
+tb_work min15
+if tb_fill_ko 10780 && "${TB_PY[@]}" "$TB_BUILD" "$TB_WK" >/dev/null 2>&1; then
+    assert_contains "build_post: 10,780 characters of Korean body read in 15 minutes" "$(cat "$TB_WK/out/$TB_SLUG.md" 2>/dev/null)" "minutes: 15"
+    TB_MSG=$("${TB_PY[@]}" "$TB_CHECK" "$TB_WK/out/$TB_SLUG-report.html" 2>&1)
+    assert_not_contains "check_post: a 15-minute post has no reading-time warning" "$TB_MSG" "읽는 시간이"
+    assert_contains "check_post: a 15-minute post has no ERROR and no WARN" "$TB_MSG" "결과: ERROR 0 / WARN 0"
+else
+    fail "build_post: a 15-minute post builds" "tb_fill_ko or build_post.py failed"
+fi
+tb_work min16
+if tb_fill_ko 10920 && "${TB_PY[@]}" "$TB_BUILD" "$TB_WK" >/dev/null 2>&1; then
+    assert_contains "build_post: 10,920 characters of Korean body read in 16 minutes" "$(cat "$TB_WK/out/$TB_SLUG.md" 2>/dev/null)" "minutes: 16"
+    TB_MSG=$("${TB_PY[@]}" "$TB_CHECK" "$TB_WK/out/$TB_SLUG-report.html" 2>&1); TB_RC=$?
+    assert_contains "check_post: a 16-minute post warns with the minutes build_post.py shows and says to cut or split" "$TB_MSG" \
+        "읽는 시간이 16분입니다. 새 글은 15분을 넘기지 않습니다. 겹치는 내용을 줄이거나 연재(1부, 2부)로 나눕니다. 이전에 올린 글은 사용자가 요청할 때 고칩니다."
+    assert_contains "check_post: the reading-time finding is a WARN, not an ERROR" "$TB_MSG" "결과: ERROR 0 / WARN 1"
+    assert_eq "check_post: the reading-time warning leaves the exit code 0" "0" "$TB_RC"
+else
+    fail "build_post: a 16-minute post builds" "tb_fill_ko or build_post.py failed"
+fi
+# minutes written by hand in meta.json changes what the page shows, not what the checker counts
+tb_work minhand
+tb_meta '.minutes = 9'
+if tb_fill_ko 10920 && "${TB_PY[@]}" "$TB_BUILD" "$TB_WK" >/dev/null 2>&1; then
+    assert_contains "build_post: minutes in meta.json is shown as written" "$(cat "$TB_WK/out/$TB_SLUG.md" 2>/dev/null)" "minutes: 9"
+    assert_contains "check_post: minutes written by hand does not hide a long post" \
+        "$("${TB_PY[@]}" "$TB_CHECK" "$TB_WK/out/$TB_SLUG-report.html" 2>&1)" "읽는 시간이 16분입니다."
+else
+    fail "build_post: a post with minutes in meta.json builds" "tb_fill_ko or build_post.py failed"
+fi
+# text inside a code box is not counted
+tb_work mincode
+if tb_fill_ko 12000 pre && "${TB_PY[@]}" "$TB_BUILD" "$TB_WK" >/dev/null 2>&1; then
+    assert_contains "build_post: characters inside a code box do not add reading time" "$(cat "$TB_WK/out/$TB_SLUG.md" 2>/dev/null)" "minutes: 3"
+    assert_not_contains "check_post: characters inside a code box do not add reading time" \
+        "$("${TB_PY[@]}" "$TB_CHECK" "$TB_WK/out/$TB_SLUG-report.html" 2>&1)" "읽는 시간이"
+else
+    fail "build_post: a post with a long code box builds" "tb_fill_ko or build_post.py failed"
+fi
+# a republished post keeps the length of the original
+tb_work minorigin
+tb_meta '.origin = {name: {ko: "예시 블로그", en: "Example blog"}, url: "https://example.com/blog/original-post/", date: "2026-01-10"}'
+if tb_fill_ko 10920 && "${TB_PY[@]}" "$TB_BUILD" "$TB_WK" >/dev/null 2>&1; then
+    assert_not_contains "check_post: a republished post is not checked for the reading time" \
+        "$("${TB_PY[@]}" "$TB_CHECK" "$TB_WK/out/$TB_SLUG-report.html" 2>&1)" "읽는 시간이"
+else
+    fail "build_post: a long republished post builds" "tb_fill_ko or build_post.py failed"
+fi
 tb_work alt
 TB_MSG=$("${TB_PY[@]}" "$TB_BUILD" "$TB_WK" --out "$TB_W/alt-out" 2>&1); TB_RC=$?
 assert_eq "build_post: --out DIR builds (exit 0)" "0" "$TB_RC"
@@ -688,6 +788,8 @@ for tb_k in qa troubleshoot measure compare build anatomy change retro; do
         || fail "new_post $tb_k: the background guide is the line of this storyline in storylines.md" "guide: ${tb_bg:-none}"
     assert_contains "new_post $tb_k: the output says the first section opens with the background paragraph" "$TB_NP" \
         "첫 챕터는 배경 문단(주제의 배경이나 필요, 한두 문장)으로 시작합니다: $tb_bg"
+    assert_contains "new_post $tb_k: the output states the reading-time limit" "$TB_NP" \
+        "읽는 시간은 15분 이하로 씁니다(한국어 본문 약 10,500자, 코드 상자 제외). 넘으면 줄이거나 연재로 나눕니다."
 done
 assert_eq "new_post: the troubleshoot template has the six steps of storylines.md" "6" \
     "$(grep -c 'id="ko-s' "$TB_W/np-troubleshoot/ko.body.html" 2>/dev/null)"

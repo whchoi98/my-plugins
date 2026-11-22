@@ -161,6 +161,7 @@ def main():
     for n, step in enumerate(item["flow"], 1):
         print("  %d. %s" % (n, step))
     print("첫 챕터는 배경 문단(주제의 배경이나 필요, 한두 문장)으로 시작합니다: " + item["background"])
+    print("읽는 시간은 15분 이하로 씁니다(한국어 본문 약 10,500자, 코드 상자 제외). 넘으면 줄이거나 연재로 나눕니다.")
     print("TODO와 안내 주석을 모두 채우고 지운 뒤 build_post.py를 실행합니다. 챕터는 소재에 맞게 더하거나 뺄 수 있습니다.")
 
 

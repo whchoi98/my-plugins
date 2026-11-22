@@ -22,6 +22,8 @@ VOID = {"br", "img", "hr", "col", "input", "meta", "link", "wbr"}
 HANGUL = re.compile(r"[가-힣]")
 BANNED = {"·": "가운뎃점", "—": "엠 대시", "–": "엔 대시"}
 LEAD_MAX = 2  # 배경 문단의 문장 수 (references/storylines.md의 "배경 문단")
+READ_CHARS_PER_MIN = 700  # 읽는 시간: 한국어 본문의 글자 수를 이 값으로 나눈다 (build_post.py와 같은 값)
+MAX_MINUTES = 15  # 새 글 하나의 읽는 시간 한도 (SKILL.md의 "읽는 시간 15분 이하로 쓰기")
 # 낱말 규칙: (정규식, 메시지에 보일 낱말, 대신 쓸 말). 낱말이 None이면 찾은 글자를 그대로 보인다.
 # ../aws-blog-skills/references/style.md의 금지어 표와 같고, 정규식은 lint_prose.py의 HARD_RE와 같다.
 # lint_prose.py는 표를 읽지 않으므로 표, 캡션, 참고 자료의 종류 이름은 여기서 본다.
@@ -110,6 +112,11 @@ def topic(word):
 def sentences(text):
     """Count the sentences of a Korean paragraph: the pieces between sentence ends that hold Hangul."""
     return len([p for p in re.split(r"(?<=[.?!])\s+", squash(text)) if HANGUL.search(p)])
+
+
+def read_minutes(col):
+    """Reading time of a body column the way build_post.py computes it: characters outside code boxes, no whitespace."""
+    return max(3, round(len(re.sub(r"\s+", "", col.text(skip=("pre",)))) / READ_CHARS_PER_MIN))
 
 
 def dump_ko(root, path):
@@ -276,6 +283,10 @@ def main():
         elif lang == "ko" and sentences(first.text(skip=("pre", "code"))) > LEAD_MAX:
             W("ko 첫 챕터의 첫 문단이 %d문장입니다. 배경 문단은 한두 문장으로 씁니다. 이전에 올린 글은 사용자가 요청할 때 "
               "고칩니다: %s" % (sentences(first.text(skip=("pre", "code"))), squash(first.text())[:60]))
+    # 읽는 시간: 새 글은 15분을 넘기지 않는다. 넘으면 줄이거나 연재로 나눈다. 옮겨 싣는 글은 원문의 분량을 유지한다.
+    if not republished and read_minutes(cols["ko"]) > MAX_MINUTES:
+        W("읽는 시간이 %d분입니다. 새 글은 %d분을 넘기지 않습니다. 겹치는 내용을 줄이거나 연재(1부, 2부)로 나눕니다. "
+          "이전에 올린 글은 사용자가 요청할 때 고칩니다." % (read_minutes(cols["ko"]), MAX_MINUTES))
     imgs = {lang: [i.attrs.get("src", "") for i in col.find("img")] for lang, col in cols.items()}
     # The English side shows the same file or its English version: <name>-en.<ext> for <name>.<ext>.
     if len(imgs["ko"]) != len(imgs["en"]) or any(e not in (k, "%s-en%s" % os.path.splitext(k))

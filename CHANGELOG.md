@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- `techblogs`: a newly written post stays within a reading time of 15 minutes, so that it is easy to understand and to read. A longer post is cut first (the same number in a table and a figure, repeated sentences, settings the claim does not need) and, if it is still longer, split into a series whose parts each stay within 15 minutes. SKILL.md settles the length with the scope (step 0), has the rule in step 2 and does not keep the warning in a new post (step 5); `references/storylines.md` and `references/design-spec.md` name it. `scripts/check_post.py` warns when the Korean body reads in more than 15 minutes (characters outside code boxes divided by 700, the number `build_post.py` shows; `minutes` written by hand in meta.json does not change it; republished posts are not checked) and `scripts/new_post.py` prints the limit. A post from before the rule is cut or split only when the user asks
+
 ## [1.9.1] - 2026-11-22
 
 ### Changed
@@ -203,6 +206,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Changed
+- `techblogs`: 새로 쓰는 글은 이해하기 쉽고 읽기 편하도록 읽는 시간 15분 이하로 씀. 넘으면 먼저 겹치는 내용(표와 그림의 같은 수치, 되풀이하는 문장, 주장과 관계없는 세부 설정)을 줄이고, 그래도 넘으면 편마다 15분 이하인 연재로 나눔. SKILL.md는 0단계에서 분량을 정하고 2단계에 규칙을 두며 5단계에서 새 글에 경고를 남기지 않음. `references/storylines.md`와 `references/design-spec.md`에 같은 규칙 추가. `scripts/check_post.py`는 한국어 본문의 읽는 시간이 15분을 넘으면 경고(코드 상자를 뺀 글자 수를 700으로 나눈 값으로 `build_post.py`가 표시하는 값과 같음, meta.json에 직접 적은 `minutes`로 바뀌지 않음, 옮겨 싣는 글은 검사하지 않음). `scripts/new_post.py`는 한도를 출력. 규칙 전에 올린 글은 사용자가 요청할 때만 줄이거나 나눔
 
 ## [1.9.1] - 2026-11-22
 

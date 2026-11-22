@@ -95,6 +95,10 @@ a plugin component there. Everything under `.claude/` is only active when this r
     opens with the background paragraph (one or two sentences on the background of the topic or why it is needed):
     the rule lives in `references/storylines.md` (one `배경 문단` line per storyline, which `scripts/new_post.py`
     reads), SKILL.md step 2, `references/design-spec.md` and the WARN of `scripts/check_post.py` together.
+    A new post stays within a reading time of 15 minutes (overlap is cut first, then the post is split into a
+    series): SKILL.md steps 0, 2 and 5, `references/storylines.md`, `references/design-spec.md`, the WARN of
+    `scripts/check_post.py` and the line `scripts/new_post.py` prints change together, and `READ_CHARS_PER_MIN`
+    is the same number in `scripts/build_post.py` and `scripts/check_post.py`.
   - aws-infographic: the code lives in `scripts/` and is copied into the work folder, never pasted into SKILL.md;
     the icon bundle lookup in `infokit.py` and the `.aws-icon-bundle` step in SKILL.md change together; the deck
     of an infographic holds text boxes, shapes, tables, charts and `icon:` PNG pictures only, so a rule about it

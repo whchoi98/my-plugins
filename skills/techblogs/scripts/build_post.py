@@ -21,6 +21,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 TEMPLATE = os.path.join(HERE, "..", "assets", "template.html")
 SITE = "https://whchoi98.github.io"
+READ_CHARS_PER_MIN = 700  # reading time: characters of the Korean body per minute (check_post.py uses the same value)
 
 
 # The storylines a new post can follow (references/storylines.md); design-spec.md lists the same keys
@@ -139,7 +140,7 @@ def main():
     minutes = int(meta.get("minutes") or 0)
     if minutes <= 0:
         text = re.sub(r"<[^>]+>", "", re.sub(r"<pre>.*?</pre>", "", bodies["ko"], flags=re.S))
-        minutes = max(3, round(len(re.sub(r"\s+", "", text)) / 700))
+        minutes = max(3, round(len(re.sub(r"\s+", "", text)) / READ_CHARS_PER_MIN))
 
     meta_top = ['<span class="mono">%s</span>' % pair("게시 " + esc(meta["date"]), "Published " + esc(meta["date"])),
                 "<span>%s</span>" % esc(meta["category"]),
