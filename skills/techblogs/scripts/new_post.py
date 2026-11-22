@@ -10,7 +10,9 @@ be chosen after reading the topic and the material (references/storylines.md has
 
 The second form writes a work folder for a new post:
   meta.json       the storyline key, the slug and the date; every other field is "TODO"
-  ko.body.html    one section per step of the storyline's section flow, each with a guide comment
+  ko.body.html    one section per step of the storyline's section flow, each with a guide comment;
+                  the first section starts with the place of the background paragraph (one or two
+                  sentences on the background of the topic or why it is needed)
   en.body.html    the same sections for the English body
   images/         empty
 The section flow is read from ../references/storylines.md, so the templates and the document cannot
@@ -53,7 +55,7 @@ def split_flow(text):
 
 
 def load():
-    """Read the storylines: key, name, the material it fits, the signals, flow, opening and closing."""
+    """Read the storylines: key, name, the material it fits, the signals, flow, background, opening and closing."""
     try:
         text = open(STORYLINES_MD, encoding="utf-8").read()
     except OSError as e:
@@ -70,7 +72,8 @@ def load():
         if not m or m.group(1) not in rows:
             continue
         item = dict(rows[m.group(1)], key=m.group(1))
-        for label, field in (("챕터 흐름", "flow"), ("여는 방식", "opening"), ("닫는 방식", "closing")):
+        for label, field in (("챕터 흐름", "flow"), ("배경 문단", "background"), ("여는 방식", "opening"),
+                             ("닫는 방식", "closing")):
             lm = re.search(r"^- \*\*%s\*\*: (.+)$" % label, body, re.M)
             if not lm:
                 die("storylines.md의 %s에 '%s' 줄이 없습니다." % (item["key"], label))
@@ -82,11 +85,15 @@ def load():
     return out
 
 
-def section(lang, n, total, step, extra):
+def section(lang, n, total, step, extra, background=""):
     eyebrow = "" if n == 1 else '<p class="eyebrow">%02d</p>' % (n - 1)
     guide = "<!-- %s %d번째 챕터. %s%s -->" % (GUIDE, n, step, extra)
+    lead = ""
+    if background:
+        # The first section opens with the background paragraph; the storyline's opening comes after it.
+        lead = "<!-- %s 배경 문단. 한두 문장으로 쓴다. %s -->\n<p>TODO</p>\n" % (GUIDE, background)
     return ('<section class="sec" id="%s-s%d"><header class="sec-head">%s<h2>TODO</h2></header><div class="prose">\n'
-            "%s\n<p>TODO</p>\n</div></section>\n" % (lang, n, eyebrow, guide))
+            "%s%s\n<p>TODO</p>\n</div></section>\n" % (lang, n, eyebrow, lead, guide))
 
 
 def body(lang, item):
@@ -98,7 +105,7 @@ def body(lang, item):
             extra = " 여는 방식: " + item["opening"]
         elif n == total:
             extra = " 닫는 방식: " + item["closing"]
-        parts.append(section(lang, n, total, step, extra))
+        parts.append(section(lang, n, total, step, extra, item["background"] if n == 1 else ""))
     return "\n".join(parts)
 
 
@@ -153,6 +160,7 @@ def main():
     print("work folder: " + work)
     for n, step in enumerate(item["flow"], 1):
         print("  %d. %s" % (n, step))
+    print("첫 챕터는 배경 문단(주제의 배경이나 필요, 한두 문장)으로 시작합니다: " + item["background"])
     print("TODO와 안내 주석을 모두 채우고 지운 뒤 build_post.py를 실행합니다. 챕터는 소재에 맞게 더하거나 뺄 수 있습니다.")
 
 

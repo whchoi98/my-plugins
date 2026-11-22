@@ -73,13 +73,17 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   every path, script and skill named in SKILL.md and references, the template names the blog layout and `preview.py`
   depend on, the title fit (`fitTitle`, `h1.one`) named in both the template and design-spec.md, the `Changelog`
   rule and the word rule of 2026-11-18 in SKILL.md step 3 and in the text rules of design-spec.md, template `[[tokens]]`
-  equal to the keys `build_post.py` fills, and the meta.json example in design-spec.md.
+  equal to the keys `build_post.py` fills, the meta.json example in design-spec.md, and the background paragraph
+  rule (SKILL.md steps 0, 2 and 3, the `배경 문단` section and the line of every storyline in storylines.md before its
+  opening line, design-spec.md; `new_post.py` puts the place of the paragraph with that line first in the first section).
   The fixture `fixtures/techblogs/work/` is built in `$TEST_TMP` and passes `check_post.py` (ERROR 0, WARN 0) and
   `lint_prose.py`; then one edit of the built copy per `check_post.py` rule (`<style>`, `<script>`, leftover token, TODO,
   inline `style`, layout hooks, section ids, menu links, component and section counts, caption numbers, image file,
   alt, remote image, canvas, table scroll box, code box, `·`, `—`, inline code exempt, the WARN rules (among them
   `변경 기록` and `변경기록` in a table cell or a heading, with `Changelog` left alone, and `절` and `견주다`
-  with `절차`, `절반` and an SQL clause left alone), front matter,
+  with `절차`, `절반` and an SQL clause left alone, and the background paragraph: a Korean first paragraph of three
+  sentences or a first section that does not start with a paragraph, with inline code, the dots of a date, the
+  English sentence count and republished posts left alone), front matter,
   `--blog`). `build_post.py` stops on unfinished input and on an `--out` inside the skill folder (tried on a copy of
   the skill); `import_aws_post.py` reads the saved page `fixtures/techblogs/aws-post.html` (sections, table, code box,
   references; an image on another host is warned about, not fetched); `place_post.py` runs on a fake blog repository

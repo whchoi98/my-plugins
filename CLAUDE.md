@@ -91,7 +91,10 @@ a plugin component there. Everything under `.claude/` is only active when this r
     are element pairs (`lang="ko"`, then the same tag with `lang="en"`).
   - techblogs: a design rule goes into `references/design-spec.md`, `assets/template.html` and
     `scripts/check_post.py` together; a report keeps the template's `<style>` and `<script>`; the page body is
-    built from the fragment files in the work folder (`meta.json`, `ko.body.html`, `en.body.html`).
+    built from the fragment files in the work folder (`meta.json`, `ko.body.html`, `en.body.html`). A new post
+    opens with the background paragraph (one or two sentences on the background of the topic or why it is needed):
+    the rule lives in `references/storylines.md` (one `배경 문단` line per storyline, which `scripts/new_post.py`
+    reads), SKILL.md step 2, `references/design-spec.md` and the WARN of `scripts/check_post.py` together.
   - aws-infographic: the code lives in `scripts/` and is copied into the work folder, never pasted into SKILL.md;
     the icon bundle lookup in `infokit.py` and the `.aws-icon-bundle` step in SKILL.md change together; the deck
     of an infographic holds text boxes, shapes, tables, charts and `icon:` PNG pictures only, so a rule about it

@@ -15,6 +15,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changed
+- `techblogs`: a newly written post opens with a background paragraph. The first paragraph of the first section tells the background of the topic or why it is needed in one or two sentences, in plain words, and the storyline's opening follows it. `references/storylines.md` has the rule (place, length, what to write and what to leave out, a worked example) and one `배경 문단` line per storyline; `scripts/new_post.py` puts the place of the paragraph with that line into the first section of both bodies; `scripts/check_post.py` warns when the first section of a new post does not start with a paragraph or when its Korean first paragraph has three sentences or more (republished posts are not checked; posts from before the rule are changed only when the user asks). SKILL.md settles the background or the need with the scope (step 0), writes the paragraph in step 2 and keeps it through polishing (step 3)
+
 ## [1.8.0] - 2026-11-22
 
 ### Added
@@ -191,6 +194,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Changed
+- `techblogs`: 새로 쓰는 글이 배경 문단으로 시작. 첫 챕터의 첫 문단에 주제의 배경이나 필요를 한두 문장의 평이한 말로 쓰고 스토리라인의 여는 방식은 그 다음에 씀. `references/storylines.md`에 규칙(자리, 길이, 쓸 내용과 쓰지 않는 것, 예)과 스토리라인마다 `배경 문단` 줄을 추가. `scripts/new_post.py`가 두 본문의 첫 챕터에 그 줄과 함께 배경 문단 자리를 넣음. `scripts/check_post.py`는 새 글의 첫 챕터가 문단으로 시작하지 않거나 한국어 첫 문단이 세 문장 이상이면 경고(옮겨 싣는 글은 보지 않고, 규칙 전에 올린 글은 사용자가 요청할 때만 수정). SKILL.md는 0단계에서 배경이나 필요를 범위와 함께 정하고 2단계에서 문단을 쓰며 3단계 윤문에서 지우지 않음
 
 ## [1.8.0] - 2026-11-22
 

@@ -127,6 +127,17 @@ assert_contains "techblogs SKILL.md: an analogy does not replace the facts" "$TB
 assert_contains "techblogs SKILL.md: polishing keeps the explanatory analogy" "$TB_SKILL" \
     "2단계에서 넣은 설명용 비유는 윤문하면서 지우지 않는다"
 assert_contains "techblogs SKILL.md: new posts do not all share one skeleton" "$TB_SKILL" "새 글을 모두 같은 뼈대로 쓰지 않는다"
+# Background paragraph (2026-11-22): a new post opens with one or two sentences on the background of the topic or why it is needed
+assert_contains "techblogs SKILL.md: the first section of a new post opens with the background paragraph" "$TB_SKILL" \
+    "새로 쓰는 글의 첫 챕터는 배경 문단으로 시작한다"
+assert_contains "techblogs SKILL.md: the background paragraph is one or two sentences, before the storyline's opening" "$TB_SKILL" \
+    "첫 챕터의 첫 문단에 한 문장이나 두 문장으로 쓴다"
+assert_contains "techblogs SKILL.md: the background or the need is settled with the scope" "$TB_SKILL" \
+    "핵심 주장 하나, 이 주제의 배경이나 필요, 대상 독자, 스토리라인, 그림 목록을 한 문장씩 확정한다"
+assert_contains "techblogs SKILL.md: polishing keeps the background paragraph" "$TB_SKILL" \
+    "배경 문단도 도입부 상투구로 보고 지우지 않는다"
+assert_contains "techblogs SKILL.md: a post from before the rule gets no background paragraph unless asked" "$TB_SKILL" \
+    "사용자가 요청하지 않았으면 배경 문단을 넣지 않고 마지막 응답에 알린다"
 assert_contains "techblogs SKILL.md: the section order follows the chosen storyline" "$TB_SKILL" \
     "챕터의 순서는 0단계에서 고른 스토리라인을 따른다"
 assert_contains "techblogs SKILL.md: the first section does not repeat the conclusion list" "$TB_SKILL" \
@@ -250,7 +261,7 @@ PY
 )
 assert_eq "techblogs design-spec.md: the meta.json example parses and has the required keys" "" "$TB_EXAMPLE"
 # The storyline keys: build_post.py is the list; storylines.md has one table row and one section per key, in the
-# same order, each section with its six lines; SKILL.md and design-spec.md name every key
+# same order, each section with its seven lines; SKILL.md and design-spec.md name every key
 TB_STORY=$("${TB_PY[@]}" - "$TB_BUILD" "$TB_DIR/references/storylines.md" "$TB_SPEC" "$TB_DIR/SKILL.md" 2>&1 <<'PY' || true
 import re, sys
 build, story, spec, skill = (open(p, encoding="utf-8").read() for p in sys.argv[1:5])
@@ -272,9 +283,11 @@ for sec in re.split(r"^## ", story, flags=re.M)[1:]:
     name = sec.split("\n", 1)[0]
     if not re.match(r"[a-z]+: ", name):
         continue
-    for label in ("챕터 흐름", "여는 방식", "닫는 방식", "비유의 자리", "그림", "피할 것"):
+    for label in ("챕터 흐름", "배경 문단", "여는 방식", "닫는 방식", "비유의 자리", "그림", "피할 것"):
         if "- **%s**:" % label not in sec:
             print("storylines.md '%s': no '%s' line" % (name, label))
+    if "- **배경 문단**:" in sec and sec.index("- **배경 문단**:") > sec.index("- **여는 방식**:"):
+        print("storylines.md '%s': the background paragraph line comes after the opening line" % name)
 ex = re.search(r'"storyline": "([a-z]+)"', spec)
 if not ex or ex.group(1) not in keys:
     print("design-spec.md: the meta.json example has no known storyline")
@@ -284,6 +297,19 @@ assert_eq "techblogs: the storyline keys agree in build_post.py, storylines.md, 
     "$(printf '%s' "$TB_STORY" | tr '\n' ' ')"
 assert_contains "techblogs storylines.md: a republished post keeps the structure of the original" \
     "$(cat "$TB_DIR/references/storylines.md" 2>/dev/null)" '옮겨 싣는 글(`origin`이 있는 글)에는 적용하지 않는다'
+TB_STORYDOC=$(cat "$TB_DIR/references/storylines.md" 2>/dev/null)
+printf '%s\n' "$TB_STORYDOC" | grep -qxF '## 배경 문단' && pass "techblogs storylines.md: the background paragraph has its own section" \
+    || fail "techblogs storylines.md: the background paragraph has its own section" "no '## 배경 문단' heading"
+assert_contains "techblogs storylines.md: the background paragraph is one or two sentences" "$TB_STORYDOC" \
+    "한 문장이나 두 문장, 문단 하나다"
+assert_contains "techblogs storylines.md: the storyline's opening comes after the background paragraph" "$TB_STORYDOC" \
+    "스토리라인의 여는 방식은 그 다음에 쓴다"
+assert_contains "techblogs storylines.md: the background paragraph does not announce the order of the post" "$TB_STORYDOC" \
+    '글의 순서 안내("이 글에서는 ~를 살펴봅니다")'
+assert_contains "techblogs design-spec.md: the first section of a new post opens with the background paragraph" \
+    "$(cat "$TB_SPEC" 2>/dev/null)" '새 글의 첫 챕터는 `div.prose`의 첫 요소가 배경 문단이다'
+assert_contains "techblogs design-spec.md: the checker warns about the background paragraph" "$(cat "$TB_SPEC" 2>/dev/null)" \
+    '새 글의 첫 챕터가 문단(`<p>`)으로 시작하지 않거나 한국어 첫 문단이 세 문장 이상이면 WARN이다(배경 문단)'
 
 # --- build_post.py: the fixture builds; the result passes check_post.py and lint_prose.py ---
 tb_work work
@@ -405,6 +431,23 @@ if [ "$TB_RC" -eq 0 ] && [ -f "$TB_OUT/$TB_SLUG-report.html" ]; then
         && tb_check "절차, 절반 and an SQL clause are not flagged" '결과: ERROR 0 / WARN 0' 0
     tb_case wordcmp && tb_edit "$TB_R" '<h3>단계별 시간</h3>' '<h3>단계를 견주어 본 시간</h3>' \
         && tb_check "견주다 warns and names 비교하다" "'견주다'는 비교하다로 씁니다" 0
+    # Background paragraph (2026-11-22): the first section opens with a paragraph of one or two sentences
+    tb_case lead3 && tb_edit "$TB_R" '실행된다고 가정합니다.</p>' '실행된다고 가정합니다. 읽기 단계가 가장 깁니다.</p>' \
+        && tb_check "a first paragraph of three sentences warns" 'ko 첫 챕터의 첫 문단이 3문장입니다. 배경 문단은 한두 문장으로 씁니다' 0
+    tb_case leadcode && tb_edit "$TB_R" '<p>이 글은 검사용으로' '<p>이 글은 <code>가. 나. 다. 라</code> 검사용으로' \
+        && tb_check "sentence ends inside inline code are not counted" '결과: ERROR 0 / WARN 0' 0
+    tb_case leaddate && tb_edit "$TB_R" '<p>이 글은 검사용으로' '<p>2026. 1. 15. 기준으로 이 글은 검사용으로' \
+        && tb_check "the dots of a date are not counted as sentence ends" '결과: ERROR 0 / WARN 0' 0
+    tb_case leaden && tb_edit "$TB_R" 'for 40 minutes every night.</p>' 'for 40 minutes every night. The read stage is the longest.</p>' \
+        && tb_check "the sentence count is taken on the Korean side only" '결과: ERROR 0 / WARN 0' 0
+    tb_case leadenko && tb_edit "$TB_R" 'This post is a made-up example for testing. Assume an aggregation batch' '화면 one. 화면 two. 화면 three. Assume an aggregation batch' \
+        && assert_not_contains "check_post: Korean words in the English first paragraph are not counted as its sentences" \
+            "$("${TB_PY[@]}" "$TB_CHECK" "$TB_R" 2>&1)" "첫 문단이"
+    tb_case leadko && tb_resub "$TB_R" '(id="ko-s1">.*?<div class="prose">\s*)<p>.*?</p>\s*' '\1' \
+        && tb_check "a Korean first section that does not start with a paragraph warns" \
+            'ko 첫 챕터가 문단으로 시작하지 않습니다. 새 글의 첫 챕터는 배경 문단(주제의 배경이나 필요, 한두 문장)으로 시작합니다' 0
+    tb_case leadenp && tb_resub "$TB_R" '(id="en-s1">.*?<div class="prose">\s*)<p>.*?</p>\s*' '\1' \
+        && tb_check "an English first section that does not start with a paragraph warns" 'en 첫 챕터가 문단으로 시작하지 않습니다' 0
     tb_case altdot && tb_resub "$TB_R" 'alt="([^"]{3})' 'alt="\\1·' \
         && tb_check "middle dot in an image alt" '은 그림 alt에도 쓰지 않습니다' 1
     tb_case descdash && tb_resub "$TB_R" '<meta name="description" content="([^"]{3})' '<meta name="description" content="\\1—' \
@@ -477,6 +520,11 @@ assert_contains "build_post: canonical is the origin address" "$TB_PAGE" '<link 
 assert_contains "build_post: the head links the original" "$TB_PAGE" \
     'First published on <a href="https://example.com/blog/original-post/" target="_blank" rel="noopener">Example blog</a>'
 assert_contains "build_post: the end names the original and its date" "$TB_PAGE" '</a>, published 2026-01-10.'
+# A republished post keeps the structure of the original: no background paragraph check
+tb_edit "$TB_WK/out/$TB_SLUG-report.html" '실행된다고 가정합니다.</p>' '실행된다고 가정합니다. 읽기 단계가 가장 깁니다.</p>'
+TB_MSG=$("${TB_PY[@]}" "$TB_CHECK" "$TB_WK/out/$TB_SLUG-report.html" 2>&1); TB_RC=$?
+assert_not_contains "check_post: a republished post is not checked for the background paragraph" "$TB_MSG" "첫 챕터"
+assert_contains "check_post: a republished post with a long first paragraph has no ERROR and no WARN" "$TB_MSG" "결과: ERROR 0 / WARN 0"
 tb_work alt
 TB_MSG=$("${TB_PY[@]}" "$TB_BUILD" "$TB_WK" --out "$TB_W/alt-out" 2>&1); TB_RC=$?
 assert_eq "build_post: --out DIR builds (exit 0)" "0" "$TB_RC"
@@ -618,15 +666,30 @@ for tb_k in qa troubleshoot measure compare build anatomy change retro; do
         "$(jq -r '[.storyline, .slug, .date, .title.ko, .category] | join("|")' "$TB_W/np-$tb_k/meta.json" 2>/dev/null)"
     # grep, not a sed pattern with ".": under C.UTF-8 "." does not match every Hangul syllable
     tb_n=$(printf '%s\n' "$TB_NP" | grep -o 'sections: [0-9]*$' | head -1 | tr -dc '0-9')
-    assert_eq "new_post $tb_k: one section per step of the flow, the same in both bodies" "$tb_n $tb_n $tb_n" \
+    assert_eq "new_post $tb_k: one section per step of the flow in both bodies, a guide per section and one for the background paragraph" "$tb_n $tb_n $((tb_n + 1))" \
         "$(grep -c 'id="ko-s' "$TB_W/np-$tb_k/ko.body.html" 2>/dev/null) $(grep -c 'id="en-s' "$TB_W/np-$tb_k/en.body.html" 2>/dev/null) $(grep -c '<!-- 안내: ' "$TB_W/np-$tb_k/ko.body.html" 2>/dev/null)"
     [ "${tb_n:-0}" -ge 5 ] && pass "new_post $tb_k: at least five sections" || fail "new_post $tb_k: at least five sections" "sections: ${tb_n:-none}"
+    # The place of the background paragraph: once per body, with the line of this storyline in storylines.md
+    tb_lead='<!-- 안내: 배경 문단. 한두 문장으로 쓴다. '
+    assert_eq "new_post $tb_k: one place for the background paragraph in each body" "1 1" \
+        "$(grep -cF -- "$tb_lead" "$TB_W/np-$tb_k/ko.body.html" 2>/dev/null) $(grep -cF -- "$tb_lead" "$TB_W/np-$tb_k/en.body.html" 2>/dev/null)"
+    tb_bg=$(grep -F -- "$tb_lead" "$TB_W/np-$tb_k/ko.body.html" 2>/dev/null | head -1)
+    tb_bg=${tb_bg#"$tb_lead"}; tb_bg=${tb_bg%' -->'}
+    [ -n "$tb_bg" ] && sed -n "/^## $tb_k: /,/^## /p" "$TB_DIR/references/storylines.md" | grep -qxF -- "- **배경 문단**: $tb_bg" \
+        && pass "new_post $tb_k: the background guide is the line of this storyline in storylines.md" \
+        || fail "new_post $tb_k: the background guide is the line of this storyline in storylines.md" "guide: ${tb_bg:-none}"
+    assert_contains "new_post $tb_k: the output says the first section opens with the background paragraph" "$TB_NP" \
+        "첫 챕터는 배경 문단(주제의 배경이나 필요, 한두 문장)으로 시작합니다: $tb_bg"
 done
 assert_eq "new_post: the troubleshoot template has the six steps of storylines.md" "6" \
     "$(grep -c 'id="ko-s' "$TB_W/np-troubleshoot/ko.body.html" 2>/dev/null)"
 TB_BODY=$(cat "$TB_W/np-troubleshoot/ko.body.html" 2>/dev/null)
 assert_contains "new_post: the first section carries the step and how the storyline opens" "$TB_BODY" \
     '<!-- 안내: 1번째 챕터. 증상(에러 원문, 화면, 발생 시각) 여는 방식: 증상을 그대로 보여 준다.'
+assert_contains "new_post: the background paragraph comes first in the first section, then the step" "$TB_BODY" \
+    $'<div class="prose">\n<!-- 안내: 배경 문단. 한두 문장으로 쓴다. 증상이 생긴 시스템이 맡은 일과 이 증상 때문에 멈추거나 틀어지는 것 -->\n<p>TODO</p>\n<!-- 안내: 1번째 챕터. 증상('
+assert_eq "new_post: only the first section has the place of the background paragraph" "1" \
+    "$(sed -n '/id="ko-s1"/,/<\/section>/p' "$TB_W/np-troubleshoot/ko.body.html" 2>/dev/null | grep -cF '<!-- 안내: 배경 문단.')"
 assert_contains "new_post: the last section carries how the storyline closes" "$TB_BODY" '<!-- 안내: 6번째 챕터. 재발을 막는 장치 닫는 방식: '
 assert_contains "new_post: the first section has no number, the second is 01" "$TB_BODY" \
     '<section class="sec" id="ko-s2"><header class="sec-head"><p class="eyebrow">01</p><h2>TODO</h2></header>'
