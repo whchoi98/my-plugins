@@ -7,8 +7,9 @@ kor-writing (Korean AI-tell removal), aws-deck (AWS PowerPoint decks) and aws-re
 reports as MS Word + HTML), plus the new html-report skill (common-design bilingual HTML reports), the new
 techblogs skill (posts for the author's personal tech blog) and the new aws-infographic skill (fact-checked
 infographics and an editable deck of the same content), and two skills vendored from other authors' repositories:
-ui-deslop (heydamir/unslop, AI slop in UI) and eng-deslop (blader/humanizer, AI slop in English text). It ships fourteen
-skills, three slash commands, and Python, Bash and Node.js scripts that Claude runs on the user's machine. The `setup`
+ui-deslop (heydamir/unslop, AI slop in UI) and eng-deslop (blader/humanizer, AI slop in English text). aws-diagram-design
+is the AWS edition of cathrynlavery/diagram-design, rebuilt from that repository by a recipe. It ships fourteen
+skills, five slash commands, and Python, Bash and Node.js scripts that Claude runs on the user's machine. The `setup`
 skill checks and installs the external tools and fonts the other skills need.
 
 The repo root **is** the shipped plugin and its marketplace (`.claude-plugin/marketplace.json`,
@@ -25,8 +26,8 @@ Public repo `github.com/whchoi98/my-plugins`, MIT (bundled third-party files kee
   both optional and left to the user)
 - **Render QA tools** — LibreOffice `soffice`, Poppler `pdftoppm`/`pdftotext`, `rsvg-convert` or cairosvg
 - **Packaging** — Claude Code plugin manifests (`.claude-plugin/plugin.json`, `marketplace.json`), JSON
-- **Harness** — Bash 5 hooks and tests, `jq` 1.7, Python 3; `scripts/sync_upstream_skills.py` and a GitHub Actions
-  workflow keep the vendored skills in step with their sources
+- **Harness** — Bash 5 hooks and tests, `jq` 1.7, Python 3; `scripts/sync_upstream_skills.py` and two GitHub Actions
+  workflows keep the vendored skills (weekly) and aws-diagram-design (every second week) in step with their sources
 - **Tooling** — Claude Code CLI (`claude plugin validate|details|marketplace|update`), git, GitHub
 
 ## Project Structure
@@ -36,14 +37,17 @@ skills/           - Shipped skills; module doc skills/CLAUDE.md                 
   aws-blog-skills/  aws-diagram/  aws-diagram-design/  kor-deslop/
   aws-ppt-skills/  consulting-ppt-white-ppt/  pptx-template-fill/  aws-reports/  html-report/  techblogs/
   aws-infographic/  ui-deslop/  eng-deslop/  setup/
-commands/         - export-diagram, import-drawio, import-mermaid (aws-diagram-design)  [ships, loaded]
+commands/         - export-diagram, import-drawio, import-excalidraw, import-mermaid, import-plantuml
+                    (aws-diagram-design; written by the sync from the source's commands)  [ships, loaded]
 third_party/      - upstream licenses and notices                                        [ships, inert]
-.github/          - workflows/sync-upstream-skills.yml: weekly check of the vendored skills [ships, inert]
+.github/          - workflows/sync-upstream-skills.yml (weekly, vendored skills) and
+                    sync-aws-diagram-design.yml (every second week)                      [ships, inert]
 LICENSE, NOTICE.md, README.md, CHANGELOG.md                                              [ships, inert]
 .mcp.json         - Must stay empty: it is also the plugin's MCP config                  [ships, loaded]
 .claude/          - Dev harness: settings, hooks, project skills, commands, agents       [ships, inert]
 docs/             - architecture, onboarding, ADRs, runbooks, reference/; docs/diagrams/ [ships, inert]
-scripts/          - setup.sh, install-hooks.sh, sync_upstream_skills.py + upstream-skills.json (vendored skills);
+scripts/          - setup.sh, install-hooks.sh, sync_upstream_skills.py + upstream-skills.json (vendored and derived
+                    skills); scripts/upstream/aws-diagram-design/ (recipe.json and blocks/ of the AWS edition);
                     scripts/diagrams/ (diagram repo gates, fixtures)
 tests/            - run-all.sh, hooks/, structure/, fixtures/; module doc tests/CLAUDE.md
 ```
@@ -51,7 +55,7 @@ tests/            - run-all.sh, hooks/, structure/, fixtures/; module doc tests/
 a plugin component there. Everything under `.claude/` is only active when this repo is the working directory.
 
 ## Conventions
-- **Plugin components at the root are limited to `commands/`** (three Markdown prompts from aws-diagrams).
+- **Plugin components at the root are limited to `commands/`** (five Markdown prompts of aws-diagram-design, written by the sync).
   Never add `hooks/`, `agents/`, `settings.json`, `bin/`, or entries in `.mcp.json`; they would run for every
   user. Dev-only tooling goes under `.claude/`. `tests/structure` enforces this.
 - **One namespace**: skills call each other as `my-plugins:<skill>` (Skill tool) or `/my-plugins:<name>`.
@@ -104,6 +108,16 @@ a plugin component there. Everything under `.claude/` is only active when this r
     of an infographic holds text boxes, shapes, tables, charts and `icon:` PNG pictures only, so a rule about it
     goes into `references/ppt-deck.md`, `scripts/check_editable.py` and the aws-ppt-skills `addIcon()` and
     `check_deck.py` together (one `ICON_MAX_IN`).
+  - aws-diagram-design: the AWS edition of cathrynlavery/diagram-design (MIT), `"mode": "derived"` in
+    `scripts/upstream-skills.json`. `sync_upstream_skills.py update` rebuilds it from the source by
+    `scripts/upstream/aws-diagram-design/recipe.json`: literal replacements (AWS colors, Amazon Ember, plugin names),
+    anchored edits that put the edition's blocks in, and a list of tokens that may not survive. A file that comes from
+    the source, the five `commands/*.md` included, is never edited by hand: change the recipe or a block, then run
+    `update --skill aws-diagram-design --pinned`. The edition's own files are the ones the recipe lists as `local`
+    (`references/style-guide.md`, `references/primitive-aws-icons.md`, `assets/aws-icons/`, `assets/fonts/`,
+    `scripts/aws_check.py`, `scripts/build_aws_icons.py`); `style-guide.md` keeps the roles and section headings of the
+    source's style guide. The sync, the workflows and `tests/structure/test-aws-diagram-design.sh` run no script of the
+    source: the scripts are copied byte for byte and read as text.
   - ui-deslop, eng-deslop: vendored from heydamir/unslop (CC BY 4.0) and blader/humanizer (MIT) and never edited by
     hand. `scripts/upstream-skills.json` holds the source, the pinned commit, a hash of every file and the `name` and
     `description` my-plugins gives the skill; `scripts/sync_upstream_skills.py update` writes the folders, `render`
@@ -119,7 +133,7 @@ a plugin component there. Everything under `.claude/` is only active when this r
 ```bash
 bash scripts/setup.sh                     # dev: check tools, chmod hooks and scripts, install git hooks
 bash skills/setup/scripts/setup.sh        # user deps: check; add "install" or "install --sudo"
-python3 scripts/sync_upstream_skills.py check   # vendored skills against their sources (exit 10: update); update, render, verify
+python3 scripts/sync_upstream_skills.py check   # vendored and derived skills against their sources (exit 10: update); update [--pinned], render, verify
 bash tests/run-all.sh                     # all harness tests
 bash tests/run-all.sh structure           # structure and shipped-script tests
 claude plugin validate .                  # manifest + skill validation (ICON_MISSING warning is expected)
@@ -158,6 +172,7 @@ After exiting Plan mode (`/plan`), before starting implementation:
 - Changed `skills/aws-ppt-skills/scripts/deck_to_html.py`, `preview_html_deck.py` or `assets/html/` -> Run `bash tests/run-all.sh aws-ppt-skills` with the deck tools and a cached Playwright (the fixture deck is converted and opened in a browser there)
 - Changed deck helper in `skills/aws-infographic/references/ppt-deck.md` or `addIcon()` -> Run `bash tests/run-all.sh aws-infographic` with the deck tools installed (the example deck is built there)
 - Vendored skill (`skills/ui-deslop`, `skills/eng-deslop`) -> Change it only with `scripts/sync_upstream_skills.py` (`update`, or `render` for the description), read the source's diff first, run `bash tests/run-all.sh upstream-skills` (`docs/runbooks/sync-upstream-skills.md`)
+- aws-diagram-design -> Never edit a file of the source or `commands/*.md` by hand. Change `scripts/upstream/aws-diagram-design/recipe.json` or a block, run `python3 scripts/sync_upstream_skills.py update --skill aws-diagram-design --pinned`, then `bash tests/run-all.sh upstream` and `bash tests/run-all.sh 'aws-diagram-design$'`. An edition file (`local` in the recipe) is edited directly (`docs/runbooks/sync-upstream-skills.md`)
 - New vendored skill -> Manifest entry, NOTICE.md row, the lists of a new skill above, and the expected names in `tests/structure/test-upstream-skills.sh`
 - Anything under `skills/` or `commands/` changed -> Version bump + CHANGELOG `[Unreleased]` (both languages)
 - Harness changed (`.claude/`, `tests/`, `scripts/`) -> Update `tests/CLAUDE.md` and `docs/reference/security.md`

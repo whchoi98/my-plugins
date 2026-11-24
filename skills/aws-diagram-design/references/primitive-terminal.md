@@ -16,7 +16,7 @@ This is a **second, fixed skin** — see [style-guide.md § Terminal skin](style
   </div>
   <main class="frame">
     <p class="prompt">
-      <span class="sign">$</span> diagram-design render --type loop
+      <span class="sign">$</span> aws-diagram-design render --type loop
     </p>
     <h1># The self-improving loop</h1>
     <svg>...</svg>

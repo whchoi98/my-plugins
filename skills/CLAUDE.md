@@ -7,7 +7,7 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 |---|---|---|
 | `aws-blog-skills/` | aws-blog-skills 1.2.2 | SKILL.md, `references/` (rule files per step), `scripts/` (lint, structure, URL, diagram lib, render, package), `assets/templates/` |
 | `aws-diagram/` | aws-diagrams 1.0.0 | SKILL.md, `scripts/find_icon.py`, `embed.py`, `build_bundle.py`, `assets/` (icon bundle) |
-| `aws-diagram-design/` | aws-diagrams 1.0.0 | SKILL.md, `references/` (style guide, types, export, import), `scripts/` (self_check, verify-geometry, extractors), `assets/aws-icons/`, `assets/fonts/` |
+| `aws-diagram-design/` | cathrynlavery/diagram-design (MIT), AWS edition rebuilt by a recipe (first from aws-diagrams 1.0.0) | SKILL.md (§0 and the AWS edition rules are the edition's blocks), `references/` (the edition's `style-guide.md` and `primitive-aws-icons.md`; the source's types, profiles, onboarding, export, import), `scripts/` (the source's self_check, verify_geometry, four extractors, export_svg, export_png; the edition's aws_check, build_aws_icons), `assets/` (templates in the AWS skin, the source's examples, `aws-icons/`, `fonts/`). Files of the source are never edited by hand |
 | `kor-deslop/` | kor-writing 1.0.0 | SKILL.md, `references/patterns.md` (A~K, 81 patterns) |
 | `aws-ppt-skills/` | aws-deck 1.0.0 | SKILL.md (output format asked first: PPT, HTML or both), `scripts/` (apply_template, check_deck, svg_to_png, install_fonts.sh; deck_to_html and preview_html_deck for the HTML deck), `assets/templates/`, `assets/fonts/`, `assets/html/` (deck.css, deck.js: the page's stage, controls and presenter view), `references/` (diagrams, html-deck) |
 | `consulting-ppt-white-ppt/` | aws-deck 1.0.0 | SKILL.md, `lib/consult_helpers.js`, `tools/` (fix_pptx, fix_notes, extract_brand_color), `examples/` |
@@ -53,5 +53,9 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
   `scripts/sync_upstream_skills.py update` is the only thing that writes those folders (`render` after a description
   change in the manifest); `verify` and `tests/structure/test-upstream-skills.sh` fail on a hand edit. A rule that should
   change goes to the source's repository, not into the copy.
+- `aws-diagram-design/` is rebuilt from cathrynlavery/diagram-design by `scripts/upstream/aws-diagram-design/recipe.json`.
+  The recipe lists the edition's own files as `local`; every other file there, and `commands/*.md`, is written by
+  `scripts/sync_upstream_skills.py update` and checked by `verify`. A rule of the edition goes into a block of the
+  recipe (`blocks/skill-section-0.md` for SKILL.md) or into `references/style-guide.md`, never into a rebuilt file.
 - A user who also installs the sources (`unslop@heydamir`, `humanizer@humanizer`) or another humanizer skill gets two
   skills for the same request; the README says so.

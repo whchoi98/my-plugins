@@ -16,6 +16,12 @@ A source is other people's text that Claude will follow, so `update` refuses a s
 changed, a symbolic link, a file type the manifest does not allow and a file over the size limit, and it
 writes a report of what changed for the person who reviews the pull request.
 
+A skill with `"mode": "derived"` is not a copy. It is an edition of its source: `update` rebuilds it from
+the source by the recipe the manifest names (literal replacements, anchored edits, files the edition keeps
+as its own). The recipe fails when an anchor is gone or a token it forbids survives, so a change in the
+source that the recipe does not cover stops the update before anything is written. No file of a source is
+ever run, and a script of a source is copied byte for byte.
+
 Standard library only. Exit codes: 0 done, 1 refused or failed, 10 an update is available (`check`).
 """
 import argparse
@@ -40,6 +46,10 @@ KEY = re.compile(r"^([A-Za-z_][\w-]*):(.*)$")
 URL = re.compile(r"https?://[^\s)>\"'`\]]+")
 SAFE_PATH = re.compile(r"[A-Za-z0-9._/ -]+")   # a file name ends up in a report that GitHub renders
 CHANGELOG_ORDER = ["Added", "Changed", "Deprecated", "Removed", "Fixed", "Security"]
+SCHEDULES = ("weekly", "biweekly")
+TEXT_EXT = {".md", ".html"}            # the only file types a recipe may change
+EXTRA = "extra:"                        # a recipe names a file outside the skill folder with this prefix
+MARK = re.compile("(\x00[0-9]+\x00)")  # stands for a block of the edition while the source text is rewritten
 
 
 class Refused(Exception):
@@ -106,6 +116,16 @@ def check_entry(entry):
                       % (name, DESC_MIN, DESC_MAX, len(desc)))
     if "\n" in entry["changes"] or ": " in entry["changes"]:
         raise Refused("%s: `changes` is one line without ': '" % name)
+    if entry.get("mode", "vendored") not in ("vendored", "derived"):
+        raise Refused("%s: `mode` is vendored or derived" % name)
+    if entry.get("schedule", "weekly") not in SCHEDULES:
+        raise Refused("%s: `schedule` is one of %s" % (name, ", ".join(SCHEDULES)))
+    if is_derived(entry) and not entry.get("recipe"):
+        raise Refused("%s: a derived skill names its `recipe` in the manifest" % name)
+
+
+def is_derived(entry):
+    return entry.get("mode") == "derived"
 
 
 def source_url(entry):
@@ -266,6 +286,14 @@ def fetch(entry, args, tmp):
                     git("log", "-1", "--format=%cs", cwd=args.source))
         return args.source, args.commit or "local", args.date or datetime.date.today().isoformat()
     dest = os.path.join(tmp, entry["name"])
+    if getattr(args, "pinned", False):
+        if not entry.get("commit"):
+            raise Refused("%s: --pinned needs a commit in the manifest" % entry["name"])
+        git("init", "--quiet", dest)
+        git("remote", "add", "origin", source_url(entry) + ".git", cwd=dest)
+        git("fetch", "--depth", "1", "--quiet", "origin", entry["commit"], cwd=dest)
+        git("checkout", "--quiet", "FETCH_HEAD", cwd=dest)
+        return dest, git("rev-parse", "HEAD", cwd=dest), git("log", "-1", "--format=%cs", cwd=dest)
     cmd = ["clone", "--depth", "1", "--quiet"]
     if entry.get("ref", "HEAD") != "HEAD":
         cmd += ["--branch", entry["ref"]]
@@ -375,9 +403,12 @@ def report_text(results):
                        % (r["previous"][:7], r["commit"][:7], r["date"], r["repo"], r["previous"], r["commit"]))
         else:
             out.append("Source: `%s` (%s)" % (r["commit"][:7], r["date"]))
+        if r.get("version"):
+            out.append("- version of the source: `%s`" % r["version"])
         for label in ("added", "changed", "removed"):
             if r[label]:
-                out.append("- %s: %s" % (label, ", ".join("`%s`" % f for f in r[label])))
+                out.append("- %s (%d): %s" % (label, len(r[label]), ", ".join("`%s`" % f for f in r[label][:150])
+                                              + (" and %d more" % (len(r[label]) - 150) if len(r[label]) > 150 else "")))
         out += ["- note: %s" % n for n in r["notes"]]
         out.append("")
     out += ["Before a release: `bash tests/run-all.sh`, then `docs/runbooks/sync-upstream-skills.md`.", ""]
@@ -442,12 +473,377 @@ def update_changelog(root, results):
     return ok
 
 
+# ----------------------------------------------------------------------------------------- derived skills
+
+def matches(rel, patterns):
+    return any(fnmatch.fnmatch(rel, p) for p in patterns or [])
+
+
+def no_middle_dot(text):
+    """In the text of SVG <text> elements, write ', ' for ' \u00b7 ' and '/' for a bare middle dot."""
+    def fix(found):
+        pieces = re.split(r"(<[^>]*>)", found.group(2))
+        for i in range(0, len(pieces), 2):
+            pieces[i] = re.sub("[ \\t]+\u00b7[ \\t]+", ", ", pieces[i]).replace("\u00b7", "/")
+        return found.group(1) + "".join(pieces) + found.group(3)
+    return re.sub(r"(<text\b[^>]*>)(.*?)(</text>)", fix, text, flags=re.S | re.I)
+
+
+TRANSFORMS = {"svg-text-separators": no_middle_dot}
+EDIT_KINDS = (("keep",), ("find", "replace"), ("from", "to", "replace"), ("before", "insert"), ("after", "insert"))
+
+
+def load_recipe(root, entry):
+    """The recipe of a derived skill with its block files read in, and one hash over all of it."""
+    name, rel = entry["name"], entry["recipe"]
+    path = os.path.normpath(os.path.join(root, rel))
+    folder = os.path.dirname(path)
+    try:
+        raw = read(path)
+        recipe = json.loads(raw.decode("utf-8"))
+    except (OSError, ValueError) as err:
+        raise Refused("%s: %s: %s" % (name, rel, err))
+    unknown = set(recipe) - {"schema", "local", "replaced", "extra", "steps", "edits", "forbid"}
+    if unknown:
+        raise Refused("%s: the recipe has an unknown key: %s" % (name, ", ".join(sorted(unknown))))
+    blocks = {}
+
+    def block(file_name):
+        if file_name not in blocks:
+            full = os.path.normpath(os.path.join(folder, file_name))
+            if not full.startswith(folder + os.sep) or os.path.islink(full) or not os.path.isfile(full):
+                raise Refused("%s: the recipe names %s, which is not a file in its folder" % (name, file_name))
+            blocks[file_name] = read(full).decode("utf-8")
+        return blocks[file_name]
+
+    ids = set()
+    for edit in recipe.get("edits", []):
+        for key in ("replace_file", "insert_file"):
+            if key in edit:
+                edit[key[:-5]] = block(edit.pop(key))
+        eid, keys = edit.get("id"), set(edit) - {"id", "file", "count"}
+        if not eid or eid in ids or not edit.get("file") or not any(keys == set(kind) for kind in EDIT_KINDS):
+            raise Refused("%s: a recipe edit needs a unique `id`, a `file` and one of keep, find + replace, "
+                          "from + to + replace, before + insert, after + insert (edit %r)" % (name, eid))
+        ids.add(eid)
+        if any("\x00" in edit[k] for k in keys) or not all(edit[k] for k in keys - {"replace", "insert"}):
+            raise Refused("%s: recipe edit `%s` has an empty anchor or a NUL character" % (name, eid))
+    for step in recipe.get("steps", []):
+        kinds = [k for k in ("pairs", "regex", "transform") if k in step]
+        if not step.get("files") or len(kinds) != 1 or (kinds == ["transform"] and step["transform"] not in TRANSFORMS):
+            raise Refused("%s: a recipe step needs `files` and one of pairs, regex, transform" % name)
+    for rule in recipe.get("forbid", []):
+        if not rule.get("files") or not rule.get("tokens"):
+            raise Refused("%s: a recipe `forbid` rule needs `files` and `tokens`" % name)
+    for item in recipe.get("extra", []):
+        to = item.get("to", "")
+        if not item.get("from") or not SAFE_PATH.fullmatch(to) or to.startswith(("/", ".", "skills/")) or ".." in to.split("/"):
+            raise Refused("%s: a recipe `extra` file needs `from` and a plain `to` path outside skills/" % name)
+    if not set(recipe.get("replaced", [])) <= set(recipe.get("local", [])):
+        raise Refused("%s: every `replaced` file of the recipe is also listed in `local`" % name)
+    digest = hashlib.sha256(raw)
+    for file_name in sorted(blocks):
+        digest.update(b"\0" + file_name.encode("utf-8") + b"\0" + blocks[file_name].encode("utf-8"))
+    recipe["_sha256"] = digest.hexdigest()
+    return recipe
+
+
+def run_step(name, step, text):
+    if "pairs" in step:
+        flags = re.I if step.get("ignore_case") else 0
+        for old, new in step["pairs"]:
+            text = re.sub(re.escape(old), lambda _found, new=new: new, text, flags=flags)
+        return text
+    if "regex" in step:
+        for pattern, repl in step["regex"]:
+            try:
+                text = re.sub(pattern, repl, text, flags=re.M)
+            except re.error as err:
+                raise Refused("%s: recipe regex %r: %s" % (name, pattern, err))
+        return text
+    return TRANSFORMS[step["transform"]](text)
+
+
+def derive_text(name, key, text, recipe):
+    """One file of the source rewritten by the recipe. Returns (text, {edit id: hash of a replaced span}).
+
+    Edits anchor on the source's own text. What an edit puts in stands apart as a mark while the steps and
+    the forbid rules run, so they see the source's text only and never the edition's blocks.
+    """
+    if "\x00" in text:
+        raise Refused("%s: %s holds a NUL character" % (name, key))
+    held, spans = [], {}
+
+    def hold(final):
+        held.append(final)
+        return "\x00%d\x00" % (len(held) - 1)
+
+    for edit in recipe.get("edits", []):
+        if edit["file"] != key:
+            continue
+        for anchor_key in ("keep", "find", "from", "to", "before", "after"):
+            if anchor_key in edit:
+                want = edit.get("count", 1) if anchor_key in ("keep", "find") else 1
+                have = text.count(edit[anchor_key])
+                if have != want:
+                    raise Refused("%s: recipe edit `%s` no longer applies to %s: its `%s` text occurs %d time(s), "
+                                  "not %d: %s" % (name, edit["id"], key, anchor_key, have, want, quoted(edit[anchor_key], 160)))
+        if "keep" in edit:
+            text = text.replace(edit["keep"], hold(edit["keep"]))
+        elif "find" in edit:
+            text = text.replace(edit["find"], hold(edit["replace"]))
+        elif "from" in edit:
+            start, end = text.index(edit["from"]), text.index(edit["to"])
+            if start >= end:
+                raise Refused("%s: recipe edit `%s`: `from` comes after `to` in %s" % (name, edit["id"], key))
+            spans[edit["id"]] = sha256(text[start:end].encode("utf-8"))
+            text = text[:start] + hold(edit["replace"]) + text[end:]
+        elif "before" in edit:
+            text = text.replace(edit["before"], hold(edit["insert"]) + edit["before"])
+        else:
+            text = text.replace(edit["after"], edit["after"] + hold(edit["insert"]))
+
+    parts = MARK.split(text)
+    for step in recipe.get("steps", []):
+        if matches(key, step["files"]) and not matches(key, step.get("except")):
+            for i in range(0, len(parts), 2):
+                parts[i] = run_step(name, step, parts[i])
+                if "\x00" in parts[i]:
+                    raise Refused("%s: a recipe step wrote a NUL character into %s" % (name, key))
+    for rule in recipe.get("forbid", []):
+        if not matches(key, rule["files"]) or matches(key, rule.get("except")):
+            continue
+        for token in rule["tokens"]:
+            for i in range(0, len(parts), 2):
+                found = re.search(re.escape(token), parts[i], re.I if rule.get("ignore_case") else 0)
+                if found:
+                    line = parts[i][:found.start()].rsplit("\n", 1)[-1] + parts[i][found.start():].split("\n", 1)[0]
+                    raise Refused("%s: `%s` survives in %s: %s. Add a replacement to the recipe, or `keep` the text "
+                                  "when it belongs there" % (name, token, key, quoted(line.strip(), 200)))
+    return "".join(held[int(p[1:-1])] if i % 2 else p for i, p in enumerate(parts)), spans
+
+
+def extra_sources(entry, recipe, src_root):
+    """{path in this repository: bytes of the source} for the files the recipe takes from outside the skill folder."""
+    found = {}
+    top = os.path.realpath(src_root)
+    for item in recipe.get("extra", []):
+        full = os.path.join(src_root, *item["from"].split("/"))
+        if (os.path.islink(full) or not os.path.isfile(full)
+                or not os.path.realpath(full).startswith(top + os.sep)):
+            raise Refused("%s: the source has no file %s, which the recipe takes" % (entry["name"], item["from"]))
+        if os.path.splitext(full)[1].lower() not in TEXT_EXT or os.path.getsize(full) > MAX_FILE_BYTES:
+            raise Refused("%s: %s is not a .md or .html file under the size limit" % (entry["name"], item["from"]))
+        found[item["to"]] = read(full)
+    return found
+
+
+def upstream_version(src_root):
+    try:
+        version = json.loads(read(os.path.join(src_root, ".claude-plugin", "plugin.json")).decode("utf-8")).get("version")
+    except (OSError, ValueError, AttributeError):
+        return None
+    return version if isinstance(version, str) and re.fullmatch(r"[0-9A-Za-z.+-]{1,40}", version) else None
+
+
+def derive(root, entry, src_root):
+    """Everything `update` writes for a derived skill, built in memory: nothing is written when it refuses."""
+    name = entry["name"]
+    recipe = load_recipe(root, entry)
+    picked, hashes, lic_hash = source_state(entry, src_root)
+    extra_raw = extra_sources(entry, recipe, src_root)
+    replaced = set(recipe.get("replaced", []))
+    for rel in sorted(replaced - set(picked)):
+        raise Refused("%s: the source no longer has %s, which the recipe replaces" % (name, rel))
+    for rel in sorted(picked):
+        if rel not in replaced and matches(rel, recipe.get("local")):
+            raise Refused("%s: the source now has %s, which the recipe lists as a file of the edition" % (name, rel))
+    keys = (set(picked) - replaced) | {EXTRA + to for to in extra_raw}
+    for edit in recipe.get("edits", []):
+        if edit["file"] not in keys:
+            raise Refused("%s: recipe edit `%s` names %s, which is not a file taken from the source" % (name, edit["id"], edit["file"]))
+        if os.path.splitext(edit["file"])[1].lower() not in TEXT_EXT:
+            raise Refused("%s: recipe edit `%s`: a recipe changes .md and .html files only" % (name, edit["id"]))
+
+    def rewrite(key, raw):
+        try:
+            return derive_text(name, key, raw.decode("utf-8"), recipe)
+        except UnicodeDecodeError:
+            raise Refused("%s: %s is not UTF-8" % (name, key))
+
+    out, extras, spans = {}, {}, {}
+    for rel, full in picked.items():
+        if rel in replaced:
+            continue
+        data = read(full)
+        if os.path.splitext(rel)[1].lower() in TEXT_EXT:
+            text, found = rewrite(rel, data)
+            spans.update(found)
+            data = text.encode("utf-8")
+        out[rel] = data
+    for to, raw in extra_raw.items():
+        text, found = rewrite(EXTRA + to, raw)
+        spans.update(found)
+        extras[to] = text.encode("utf-8")
+    return {"recipe": recipe, "picked": picked, "hashes": hashes, "license": lic_hash, "out": out, "spans": spans,
+            "extras": extras, "extra_hashes": {to: sha256(raw) for to, raw in extra_raw.items()}}
+
+
+def edition_files(root, entry, recipe):
+    """{relative path: absolute path} of the files in the skill folder that belong to the edition, not the source."""
+    target, kept = skill_dir(root, entry), {}
+    for base, _dirs, files in os.walk(target):
+        for fname in files:
+            full = os.path.join(base, fname)
+            rel = os.path.relpath(full, target).replace(os.sep, "/")
+            if matches(rel, recipe.get("local")):
+                if os.path.islink(full):
+                    raise Refused("%s: %s is a symbolic link" % (entry["name"], rel))
+                kept[rel] = full
+    for pattern in recipe.get("local", []):
+        if not any(fnmatch.fnmatch(rel, pattern) for rel in kept):
+            raise Refused("%s: nothing in skills/%s matches `%s`, which the recipe lists as a file of the edition"
+                          % (entry["name"], entry["name"], pattern))
+    return kept
+
+
+def apply_derived(root, entry, src_root, commit, date):
+    """Rebuild a derived skill from the source by its recipe. Returns the notes for the report."""
+    name = entry["name"]
+    built = derive(root, entry, src_root)                      # refuses before anything is written
+    recipe, hashes, out = built["recipe"], built["hashes"], built["out"]
+    try:
+        source_fm, _body = split_frontmatter(read(built["picked"]["SKILL.md"]).decode("utf-8"), name)
+    except UnicodeDecodeError:
+        raise Refused("%s: the source's SKILL.md is not UTF-8" % name)
+    upstream_desc = field(source_fm, "description")
+    skill_md, _desc = vendored_skill_md(entry, out["SKILL.md"].decode("utf-8"), commit)
+    out["SKILL.md"] = skill_md.encode("utf-8")
+    target = skill_dir(root, entry)
+    kept = edition_files(root, entry, recipe)
+    if not os.path.isfile(license_path(root, entry)):
+        raise Refused("%s: third_party/LICENSE-%s is missing; a derived skill keeps its own license file" % (name, name))
+    links_before = links_in(target)
+    added, changed, removed = diff_files(entry.get("files", {}), hashes)
+    more = diff_files(entry.get("extra_files", {}), built["extra_hashes"])
+    added, changed, removed = added + more[0], changed + more[1], removed + more[2]
+    notes = []
+    version = upstream_version(src_root)
+    if entry.get("upstream_description_sha256") not in (None, sha256((upstream_desc or "").encode("utf-8"))):
+        notes.append("The source changed its own description. Read it and see whether `description` in the "
+                     "manifest still says what the skill does: %s" % quoted(upstream_desc or ""))
+    if entry.get("license_sha256") not in (None, built["license"]):
+        notes.append("The text of the source's %s changed. third_party/LICENSE-%s is the edition's own file; "
+                     "bring it in line by hand." % (entry["license_file"], name))
+    for rel in sorted(recipe.get("replaced", [])):
+        if entry.get("files", {}).get(rel) not in (None, hashes[rel]):
+            notes.append("The source changed %s, which the edition replaces with its own file. Read the source's "
+                         "diff of that file and port what applies by hand." % rel)
+    for eid, digest in sorted(built["spans"].items()):
+        if entry.get("spans", {}).get(eid) not in (None, digest):
+            notes.append("The source changed the text that recipe edit `%s` replaces. Compare it with the block "
+                         "the recipe puts there." % eid)
+
+    fresh, old = target + ".new", target + ".old"
+    for folder in (fresh, old):
+        if os.path.isdir(folder):
+            shutil.rmtree(folder)
+    for rel, full in kept.items():
+        dest = os.path.join(fresh, *rel.split("/"))
+        os.makedirs(os.path.dirname(dest), exist_ok=True)
+        shutil.copy2(full, dest)
+    for rel, data in out.items():
+        write(os.path.join(fresh, *rel.split("/")), data)
+    os.rename(target, old)
+    os.rename(fresh, target)
+    shutil.rmtree(old)
+    for to, data in built["extras"].items():
+        write(os.path.join(root, *to.split("/")), data)
+    for to in set(entry.get("extra_files", {})) - set(built["extras"]):
+        gone = os.path.join(root, *to.split("/"))
+        if os.path.isfile(gone):
+            os.remove(gone)
+
+    scripts = [rel for rel in added + changed if os.path.splitext(rel)[1].lower() in SCRIPT_EXT]
+    if scripts:
+        notes.append("Code that runs on a user's machine changed: %s" % ", ".join(scripts))
+    new_links = sorted(links_in(target) - links_before)
+    if new_links and entry.get("commit"):
+        notes.append("Links that were not in the skill before: %s" % ", ".join(quoted(u) for u in new_links[:40]))
+    previous = entry.get("commit")
+    entry.update(commit=commit, commit_date=date, files=dict(sorted(hashes.items())),
+                 written={rel: sha256(data) for rel, data in sorted(out.items())
+                          if rel != "SKILL.md" and sha256(data) != hashes[rel]},
+                 extra_files=dict(sorted(built["extra_hashes"].items())),
+                 extra_written={to: sha256(data) for to, data in sorted(built["extras"].items())},
+                 spans=dict(sorted(built["spans"].items())), recipe_sha256=recipe["_sha256"],
+                 skill_md_sha256=sha256(out["SKILL.md"]), license_sha256=built["license"],
+                 upstream_description_sha256=sha256((upstream_desc or "").encode("utf-8")))
+    if version:
+        entry["upstream_version"] = version
+    return {"name": name, "repo": entry["repo"], "previous": previous, "commit": commit, "date": date,
+            "added": added, "changed": changed, "removed": removed, "notes": notes, "version": version}
+
+
+def verify_derived(root, entry):
+    """Problems of one derived skill: a file of the source that differs from what `update` wrote, a file that is
+    neither the source's nor the edition's, a missing file of the edition, a recipe changed after the last update."""
+    name, target, problems = entry["name"], skill_dir(root, entry), []
+    recorded, written = entry.get("files"), entry.get("written", {})
+    if not recorded or not entry.get("commit"):
+        return ["%s: not derived yet (no commit or files in the manifest)" % name]
+    if not os.path.isdir(target):
+        return ["%s: skills/%s is missing" % (name, name)]
+    try:
+        recipe = load_recipe(root, entry)
+    except Refused as err:
+        return [str(err)]
+    if recipe["_sha256"] != entry.get("recipe_sha256"):
+        problems.append("%s: the recipe changed after the last update; run `update --skill %s --pinned`" % (name, name))
+    replaced, local = set(recipe.get("replaced", [])), recipe.get("local", [])
+    present = {}
+    for base, _dirs, files in os.walk(target):
+        for fname in files:
+            full = os.path.join(base, fname)
+            present[os.path.relpath(full, target).replace(os.sep, "/")] = full
+    ours = {rel for rel in present if matches(rel, local)}
+    theirs = set(recorded) - replaced
+    for rel in sorted(set(present) - theirs - ours):
+        problems.append("%s: %s is neither a file of the source nor listed in the recipe's `local`" % (name, rel))
+    for rel in sorted(theirs - set(present)):
+        problems.append("%s: %s is missing" % (name, rel))
+    for pattern in local:
+        if not any(fnmatch.fnmatch(rel, pattern) for rel in ours):
+            problems.append("%s: no file matches `%s`, which the recipe lists as a file of the edition" % (name, pattern))
+    for rel in sorted(present):
+        if os.path.islink(present[rel]):
+            problems.append("%s: %s is a symbolic link" % (name, rel))
+    for rel in sorted(theirs & set(present)):
+        if rel != "SKILL.md" and sha256(read(present[rel])) != written.get(rel, recorded[rel]):
+            problems.append("%s: %s differs from what `update` wrote; a file of the source is changed by the recipe only"
+                            % (name, rel))
+        if os.path.splitext(rel)[1].lower() not in entry["allow_ext"]:
+            problems.append("%s: %s has a file type the manifest does not allow" % (name, rel))
+    for to, digest in sorted(entry.get("extra_written", {}).items()):
+        full = os.path.join(root, *to.split("/"))
+        if not os.path.isfile(full) or os.path.islink(full):
+            problems.append("%s: %s is missing" % (name, to))
+        elif sha256(read(full)) != digest:
+            problems.append("%s: %s differs from what `update` wrote; change the recipe, not the file" % (name, to))
+    problems += frontmatter_problems(entry, present)
+    if not os.path.isfile(license_path(root, entry)):
+        problems.append("%s: third_party/LICENSE-%s is missing" % (name, name))
+    return problems
+
+
 # ---------------------------------------------------------------------------------------------- commands
 
 def chosen(data, args):
     picked = [e for e in data["skills"] if not args.skill or e["name"] == args.skill]
     if not picked:
         raise Refused("no skill named %s in the manifest" % args.skill)
+    if getattr(args, "schedule", None):
+        picked = [e for e in picked if e.get("schedule", "weekly") == args.schedule]
     if args.source and len(picked) != 1:
         raise Refused("--source needs --skill")
     return picked
@@ -464,6 +860,10 @@ def cmd_check(root, args):
             src, commit, date = fetch(entry, args, tmp)
             _picked, hashes, lic_hash = source_state(entry, src)
             added, changed, removed = diff_files(entry.get("files", {}), hashes)
+            if is_derived(entry):
+                extra_now = {to: sha256(raw) for to, raw in extra_sources(entry, load_recipe(root, entry), src).items()}
+                more = diff_files(entry.get("extra_files", {}), extra_now)
+                added, changed, removed = added + more[0], changed + more[1], removed + more[2]
             if not (added or changed or removed) and lic_hash == entry.get("license_sha256"):
                 print("OK %s: %s moved to %s, the skill's files are the same" % (entry["name"], entry["repo"], commit[:7]))
                 continue
@@ -475,6 +875,12 @@ def cmd_check(root, args):
                     print("  %s: %s" % (label, ", ".join(items)))
             if lic_hash != entry.get("license_sha256"):
                 print("  the text of %s changed" % entry["license_file"])
+            if is_derived(entry):
+                try:
+                    derive(root, entry, src)
+                    print("  the recipe applies to the new source")
+                except Refused as err:
+                    print("  RECIPE %s" % err)
     return 10 if updates else 0
 
 
@@ -488,10 +894,14 @@ def cmd_update(root, args):
                 _picked, hashes, lic_hash = source_state(entry, src)
                 same = (hashes == entry.get("files") and lic_hash == entry.get("license_sha256")
                         and not verify_entry(root, entry))
+                if same and is_derived(entry):
+                    recipe = load_recipe(root, entry)
+                    same = (recipe["_sha256"] == entry.get("recipe_sha256") and entry.get("extra_files", {})
+                            == {to: sha256(raw) for to, raw in extra_sources(entry, recipe, src).items()})
                 if same and not args.force:
                     print("OK %s: nothing to update (%s)" % (entry["name"], (entry.get("commit") or "")[:7]))
                     continue
-                result = apply(root, entry, src, commit, date)
+                result = (apply_derived if is_derived(entry) else apply)(root, entry, src, commit, date)
             except Refused as err:
                 failed += 1
                 print("REFUSED %s" % err, file=sys.stderr)
@@ -534,8 +944,32 @@ def cmd_render(root, args):
     return 0
 
 
+def frontmatter_problems(entry, present):
+    """Problems of the SKILL.md that `update` or `render` wrote: its hash and the frontmatter the manifest gives it."""
+    name, problems = entry["name"], []
+    if "SKILL.md" not in present:
+        return problems
+    data = read(present["SKILL.md"])
+    if sha256(data) != entry.get("skill_md_sha256"):
+        problems.append("%s: SKILL.md differs from what `update` or `render` wrote" % name)
+    try:
+        fm, _body = split_frontmatter(data.decode("utf-8"), name)
+    except (Refused, UnicodeDecodeError) as err:
+        return problems + ["%s: %s" % (name, err)]
+    for key, want in (("name", name), ("description", entry["description"]), ("license", entry["license"])):
+        if field(fm, key) != want:
+            problems.append("%s: SKILL.md `%s` is not the manifest's; run `render`" % (name, key))
+    meta = "\n".join(fm)
+    for want in ("upstream: %s" % source_url(entry), "upstream-commit: %s" % entry["commit"]):
+        if not re.search(r"^\s+%s$" % re.escape(want), meta, re.M):
+            problems.append("%s: SKILL.md metadata has no `%s`" % (name, want))
+    return problems
+
+
 def verify_entry(root, entry):
     """Problems of one vendored skill, an empty list when it is what the manifest records."""
+    if is_derived(entry):
+        return verify_derived(root, entry)
     name, target, problems = entry["name"], skill_dir(root, entry), []
     recorded = entry.get("files")
     if not recorded or not entry.get("commit"):
@@ -558,21 +992,7 @@ def verify_entry(root, entry):
             problems.append("%s: %s differs from the source; a vendored file is changed by `update` only" % (name, rel))
         if os.path.splitext(rel)[1].lower() not in entry["allow_ext"]:
             problems.append("%s: %s has a file type the manifest does not allow" % (name, rel))
-    if "SKILL.md" in present:
-        data = read(present["SKILL.md"])
-        if sha256(data) != entry.get("skill_md_sha256"):
-            problems.append("%s: SKILL.md differs from what `update` or `render` wrote" % name)
-        try:
-            fm, _body = split_frontmatter(data.decode("utf-8"), name)
-        except (Refused, UnicodeDecodeError) as err:
-            return problems + ["%s: %s" % (name, err)]
-        for key, want in (("name", name), ("description", entry["description"]), ("license", entry["license"])):
-            if field(fm, key) != want:
-                problems.append("%s: SKILL.md `%s` is not the manifest's; run `render`" % (name, key))
-        meta = "\n".join(fm)
-        for want in ("upstream: %s" % source_url(entry), "upstream-commit: %s" % entry["commit"]):
-            if not re.search(r"^\s+%s$" % re.escape(want), meta, re.M):
-                problems.append("%s: SKILL.md metadata has no `%s`" % (name, want))
+    problems += frontmatter_problems(entry, present)
     lic = license_path(root, entry)
     if not os.path.isfile(lic):
         problems.append("%s: third_party/LICENSE-%s is missing" % (name, name))
@@ -609,6 +1029,10 @@ def main(argv=None):
     parser.add_argument("--commit", help="commit id to record for --source when it is not a git checkout")
     parser.add_argument("--date", help="commit date (YYYY-MM-DD) to record for --source")
     parser.add_argument("--force", action="store_true", help="update: write the skill even when nothing changed")
+    parser.add_argument("--pinned", action="store_true",
+                        help="check, update: take the source at the commit the manifest records (after a recipe change)")
+    parser.add_argument("--schedule", choices=SCHEDULES,
+                        help="only the skills with this `schedule` in the manifest (default weekly)")
     parser.add_argument("--no-changelog", action="store_true", help="update: leave CHANGELOG.md alone")
     parser.add_argument("--report", help="update: write a Markdown report of what changed to this file")
     args = parser.parse_args(argv)

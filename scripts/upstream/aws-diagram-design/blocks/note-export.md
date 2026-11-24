@@ -1,0 +1,2 @@
+> **AWS edition.** The font source of the AWS skin is `system` ([style-guide.md § Font source](style-guide.md#font-source)): always pass `--system-fonts` to `export_svg.py`. Step 5 below, the Google Fonts `@import`, never applies, and an exported SVG names Amazon Ember with its fallback stack. `export_png.py` runs through `uv` where the Python `playwright` package is not installed (SKILL.md § AWS edition rules).
+

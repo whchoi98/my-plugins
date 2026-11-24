@@ -18,37 +18,41 @@ Amazon Ember (and Amazon Ember Mono) as distributed by Amazon at
 | `AmazonEmberMono_W_Rg.woff2` | Amazon Ember Mono | 400 |
 | `AmazonEmberMono_W_Bd.woff2` | Amazon Ember Mono | 700 |
 
-`ttf/` carries the desktop faces (Ember Lt/Rg/RgIt/Medium/Bd/He + Ember Mono Rg/Bd) for OS installation via
-`./install.sh fonts` (repo root).
+`ttf/` carries the desktop faces (Ember Lt/Rg/RgIt/Medium/Bd/He + Ember Mono Rg/Bd). `/my-plugins:setup`
+copies them into the user's font folder.
 
-## Canonical @font-face block
+## How a diagram uses them
 
-Paste into generated diagram HTML, adjusting `FONTS` to the path that reaches this
-directory from the output file (see `references/style-guide.md § Font stack` for the
-loading-order rules):
+The font source of the AWS skin is `system` (`references/style-guide.md`, Font source): a diagram names the
+families and the installed faces answer. A diagram carries no font `<link>`, no `@import` and no CSS `url()`;
+`scripts/self_check.py` rejects a `url()` that is not a fragment, and `scripts/aws_check.py` rejects a font
+loaded from outside the file. Always keep the fallback stacks on `font-family`
+(`'Helvetica Neue', Helvetica, Arial, sans-serif` for Ember; `ui-monospace, monospace` for Ember Mono): a
+machine without the fonts, or a viewer that blocks them such as GitHub's SVG sandbox, falls back to system faces.
+
+## Optional @font-face block (installed faces only)
+
+Without it a weight the installed faces do not have snaps to the nearest one: a 600 node name renders in Bold.
+This block maps 600 to the Medium face. It names installed faces with `local()` only, so it loads nothing:
 
 ```css
-/* FONTS = relative or absolute path to <skill-dir>/assets/fonts/woff2 */
 @font-face { font-family: 'Amazon Ember'; font-weight: 300; font-style: normal;
-  src: local('Amazon Ember Light'), local('Amazon Ember'), url('FONTS/AmazonEmber_W_Lt.woff2') format('woff2'); }
+  src: local('Amazon Ember Light'), local('Amazon Ember'); }
 @font-face { font-family: 'Amazon Ember'; font-weight: 400; font-style: normal;
-  src: local('Amazon Ember'), url('FONTS/AmazonEmber_W_Rg.woff2') format('woff2'); }
+  src: local('Amazon Ember'); }
 @font-face { font-family: 'Amazon Ember'; font-weight: 400; font-style: italic;
-  src: local('Amazon Ember Italic'), local('Amazon Ember'), url('FONTS/AmazonEmber_W_RgIt.woff2') format('woff2'); }
+  src: local('Amazon Ember Italic'), local('Amazon Ember'); }
 @font-face { font-family: 'Amazon Ember'; font-weight: 600; font-style: normal;
-  src: local('Amazon Ember Medium'), local('Amazon Ember'), url('FONTS/AmazonEmber_W_SBd.woff2') format('woff2'); }
+  src: local('Amazon Ember Medium'), local('Amazon Ember'); }
 @font-face { font-family: 'Amazon Ember'; font-weight: 700; font-style: normal;
-  src: local('Amazon Ember Bold'), local('Amazon Ember'), url('FONTS/AmazonEmber_W_Bd.woff2') format('woff2'); }
+  src: local('Amazon Ember Bold'), local('Amazon Ember'); }
 @font-face { font-family: 'Amazon Ember'; font-weight: 800; font-style: normal;
-  src: local('Amazon Ember Heavy'), local('Amazon Ember'), url('FONTS/AmazonEmber_W_He.woff2') format('woff2'); }
+  src: local('Amazon Ember Heavy'), local('Amazon Ember'); }
 @font-face { font-family: 'Amazon Ember Mono'; font-weight: 400; font-style: normal;
-  src: local('Amazon Ember Mono'), url('FONTS/AmazonEmberMono_W_Rg.woff2') format('woff2'); }
+  src: local('Amazon Ember Mono'); }
 @font-face { font-family: 'Amazon Ember Mono'; font-weight: 700; font-style: normal;
-  src: local('Amazon Ember Mono Bold'), local('Amazon Ember Mono'), url('FONTS/AmazonEmberMono_W_Bd.woff2') format('woff2'); }
+  src: local('Amazon Ember Mono Bold'), local('Amazon Ember Mono'); }
 ```
 
-`local()` first — a machine with the fonts installed never fetches the files. Always keep the
-fallback stacks on `font-family` declarations (`'Helvetica Neue', Helvetica, Arial, sans-serif`
-for Ember; `ui-monospace, monospace` for Ember Mono); environments that block file fonts
-(e.g., GitHub's SVG sandbox) fall back to system faces. Ember Mono ships 400/700 — mono specs
-at 500/600 snap to the nearest weight. No external font CDN is needed anywhere.
+The `woff2/` files are for a page that is served with its fonts beside it, such as a web site. A diagram is one
+self-contained file and does not reference them.

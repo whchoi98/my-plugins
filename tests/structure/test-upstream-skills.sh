@@ -2,6 +2,7 @@
 # Skills vendored from other repositories (sourced by tests/run-all.sh): ui-deslop from heydamir/unslop and
 # eng-deslop from blader/humanizer, the manifest scripts/upstream-skills.json, scripts/sync_upstream_skills.py
 # and the weekly workflow. Everything here is offline: a source is a folder passed with --source.
+# The skill that is rebuilt from its source by a recipe (aws-diagram-design) is in test-upstream-derived.sh.
 # Needs python3 and git only, so the workflow can run this file on a GitHub runner.
 
 US_SYNC=scripts/sync_upstream_skills.py
@@ -12,6 +13,15 @@ us_sha() { sha256sum "$1" 2>/dev/null | cut -d' ' -f1; }
 # us_fm <SKILL.md>: the frontmatter lines; us_body <SKILL.md>: everything after the frontmatter
 us_fm() { awk 'NR==1{next} /^---$/{exit} {print}' "$1"; }
 us_body() { awk 'c>=2{print} /^---$/{c++}' "$1"; }
+# us_vendored_manifest <dest folder>: the manifest with the vendored skills only, for a copy that holds just those
+us_vendored_manifest() {
+    python3 -I -B - "$US_MAN" "$1/upstream-skills.json" <<'PY'
+import json, sys
+d = json.load(open(sys.argv[1], encoding="utf-8"))
+d["skills"] = [e for e in d["skills"] if e.get("mode") != "derived"]
+json.dump(d, open(sys.argv[2], "w", encoding="utf-8"), ensure_ascii=False, indent=2)
+PY
+}
 
 assert_file_exists "sync script: $US_SYNC" "$US_SYNC"
 assert_json_valid "manifest: $US_MAN is valid JSON" "$US_MAN"
@@ -22,6 +32,8 @@ assert_eq "verify: the vendored skills are what the manifest records" "0" "$US_R
 US_FACTS=$(python3 -I -B -c '
 import json
 for e in json.load(open("scripts/upstream-skills.json"))["skills"]:
+    if e.get("mode") == "derived":
+        continue
     print("|".join([e["name"], e["repo"], e["license"], e.get("commit", ""), str(len(e.get("files", {})))]))')
 assert_eq "manifest: the vendored skills, their sources and licenses" \
     "ui-deslop|heydamir/unslop|CC-BY-4.0 eng-deslop|blader/humanizer|MIT" \
@@ -78,7 +90,7 @@ fi
 # --- A vendored file changed by hand is found (on a copy, so the repository is not touched) ---
 US_T="$TEST_TMP/us-tamper"
 mkdir -p "$US_T/scripts" "$US_T/skills" "$US_T/third_party"
-cp "$US_MAN" "$US_T/scripts/"
+us_vendored_manifest "$US_T/scripts"
 cp -R skills/ui-deslop skills/eng-deslop "$US_T/skills/"
 cp third_party/LICENSE-ui-deslop third_party/LICENSE-eng-deslop "$US_T/third_party/"
 us_t() { us_sync "$@" --root "$US_T" 2>&1; }
@@ -90,7 +102,7 @@ us_tamper() {
     assert_contains "verify finds: $1 (message)" "$out" "$2"
 }
 us_restore() { rm -rf "$US_T/skills/ui-deslop" "$US_T/skills/eng-deslop"; cp -R skills/ui-deslop skills/eng-deslop "$US_T/skills/"
-               cp third_party/LICENSE-ui-deslop "$US_T/third_party/"; cp "$US_MAN" "$US_T/scripts/"; }
+               cp third_party/LICENSE-ui-deslop "$US_T/third_party/"; us_vendored_manifest "$US_T/scripts"; }
 US_OUT=$(us_t verify); assert_eq "verify: the copy passes before it is changed" "0" "$?"
 echo "extra rule" >> "$US_T/skills/ui-deslop/references/tokens.md"
 us_tamper "a reference file edited by hand" "ui-deslop: references/tokens.md differs from the source"; us_restore
@@ -230,7 +242,7 @@ assert_eq "CHANGELOG: the other entries and the link lines stay" "2 2 2" \
     "$(grep -c '`other`' "$US_R/CHANGELOG.md") $(grep -c '^\[Unreleased\]: ' "$US_R/CHANGELOG.md") $(grep -c '^## \[1.0.0\]' "$US_R/CHANGELOG.md")"
 US_REP=$(cat "$US_E/report1.md" 2>/dev/null)
 assert_contains "report: names the skill and its source" "$US_REP" "## demo-skill (example/demo)"
-assert_contains "report: lists the files" "$US_REP" '- added: `SKILL.md`, `references/a.md`, `scripts/run.mjs`'
+assert_contains "report: lists the files" "$US_REP" '- added (3): `SKILL.md`, `references/a.md`, `scripts/run.mjs`'
 assert_contains "report: points at code that runs on a user's machine" "$US_REP" "Code that runs on a user's machine changed: scripts/run.mjs"
 assert_contains "report: tells the reviewer to read the diff" "$US_REP" "Read the diff of every file below before merging"
 US_OUT=$(us_e verify); assert_eq "verify: passes after the import" "0" "$?"
@@ -276,7 +288,7 @@ US_REP=$(cat "$US_E/report2.md" 2>/dev/null)
 assert_contains "report: links the comparison of the two commits" "$US_REP" "https://github.com/example/demo/compare/$US_C1...$US_C2"
 assert_contains "report: the source's text sits in a code span, backticks removed" "$US_REP" "\`Demo skill, now for @everyone with 'ticks'. Second line.\`"
 assert_contains "report: lists a link that is new" "$US_REP" 'Links that were not in the skill before: `https://example.com/two`'
-assert_contains "report: removed files" "$US_REP" '- removed: `scripts/run.mjs`'
+assert_contains "report: removed files" "$US_REP" '- removed (1): `scripts/run.mjs`'
 US_OUT=$(us_e verify); assert_eq "verify: passes after the update" "0" "$?"
 
 # --- A source that breaks a rule is refused and nothing is written ---
@@ -431,7 +443,7 @@ for us_t in "contents: write" "pull-requests: write" "issues: write"; do
 done
 assert_eq "workflow: every action is pinned to a full commit id" "" \
     "$(printf '%s\n' "$US_W" | grep -E '^ +-? *uses: ' | grep -vE 'uses: [A-Za-z0-9_.-]+/[A-Za-z0-9_./-]+@[0-9a-f]{40}( |$)' | tr '\n' ' ')"
-assert_contains "workflow: updates through the sync script with a report" "$US_W" 'python3 scripts/sync_upstream_skills.py update --report "$RUNNER_TEMP/sync-report.md"'
+assert_contains "workflow: updates the weekly skills through the sync script with a report" "$US_W" 'python3 scripts/sync_upstream_skills.py update --schedule weekly --report "$RUNNER_TEMP/sync-report.md"'
 assert_contains "workflow: verifies the copy" "$US_W" "python3 scripts/sync_upstream_skills.py verify"
 assert_contains "workflow: runs this test file" "$US_W" "bash tests/run-all.sh upstream-skills"
 assert_contains "workflow: works on its own branch" "$US_W" "branch=sync/upstream-skills"

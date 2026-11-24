@@ -1,4 +1,5 @@
-# Weekly check of the skills that come from other repositories (scripts/upstream-skills.json).
+# Weekly check of the skills copied from other repositories (scripts/upstream-skills.json, every skill whose
+# `schedule` is weekly). aws-diagram-design is rebuilt every second week by sync-aws-diagram-design.yml.
 # When a source changed, the updated copy goes to the branch sync/upstream-skills and a pull request
 # asks for a review (an issue with the link when Actions may not open pull requests).
 # Nothing is merged or released here, and no file of a source is ever run.
@@ -26,7 +27,7 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Update the vendored skills
-        run: python3 scripts/sync_upstream_skills.py update --report "$RUNNER_TEMP/sync-report.md"
+        run: python3 scripts/sync_upstream_skills.py update --schedule weekly --report "$RUNNER_TEMP/sync-report.md"
 
       - name: See whether anything changed
         id: diff

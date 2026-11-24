@@ -31,8 +31,8 @@ step with their repositories: `ui-deslop` (heydamir/unslop) removes AI slop from
 |---|---|---|
 | `/my-plugins:aws-blog-skills` | aws-blog-skills 1.2.2 | Korean AWS Korea Tech Blog draft from source to zip: scope, fact and URL check, diagrams, 윤문, packaging |
 | `/my-plugins:aws-diagram` | aws-diagrams 1.0.0 | AWS architecture diagrams with the official AWS and Bedrock AgentCore icon sets |
-| `/my-plugins:aws-diagram-design` | aws-diagrams 1.0.0 | AWS-branded structure diagrams: flowchart, sequence, timeline, ER, charts and more |
-| `/my-plugins:export-diagram`, `/my-plugins:import-drawio`, `/my-plugins:import-mermaid` | aws-diagrams 1.0.0 | Export an aws-diagram-design HTML file to SVG/PNG; redraw draw.io or Mermaid sources |
+| `/my-plugins:aws-diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT), AWS edition | AWS-branded structure diagrams and charts in the source's visual types (flowchart, sequence, timeline, ER, heatmap, Sankey, kanban and more), with draw.io, Mermaid, Excalidraw and PlantUML import |
+| `/my-plugins:export-diagram`, `/my-plugins:import-drawio`, `/my-plugins:import-excalidraw`, `/my-plugins:import-mermaid`, `/my-plugins:import-plantuml` | cathrynlavery/diagram-design (MIT), AWS edition | Export an aws-diagram-design HTML file to SVG/PNG; redraw draw.io, Excalidraw, Mermaid or PlantUML sources |
 | `/my-plugins:kor-deslop` | kor-writing 1.0.0 | Removes AI tells from Korean text in one pass (81 patterns), content unchanged |
 | `/my-plugins:aws-ppt-skills` | aws-deck 1.0.0 | AWS Korea 2026 black or white template decks with pptxgenjs and Korean speaker notes, as PowerPoint, as one HTML file presented in a browser (presenter view with the notes), or both; the skill asks which |
 | `/my-plugins:consulting-ppt-white-ppt` | aws-deck 1.0.0 | Dense consulting-report decks with a customer brand accent |
@@ -49,6 +49,11 @@ step with their repositories: `ui-deslop` (heydamir/unslop) removes AI slop from
 description are ours. A GitHub Actions workflow compares them with their sources every week and opens a pull request
 when a source changed ([runbook](docs/runbooks/sync-upstream-skills.md)). If you also install the sources as plugins
 (`unslop@heydamir`, `humanizer@humanizer`), two skills answer the same request; keep one.
+
+`aws-diagram-design` is the AWS edition of cathrynlavery/diagram-design: the AWS skin, the AWS Architecture Icons and
+the edition's rules are ours, the rest is rebuilt from that repository by a recipe. A second workflow checks the
+source every second week and opens a pull request with the rebuilt skill, or an issue when the recipe no longer
+applies.
 
 ## What Changed from the Four Plugins
 
@@ -190,10 +195,10 @@ skills/
 ├── ui-deslop/           # AI-slop removal for UI, vendored from heydamir/unslop (CC BY 4.0)
 ├── eng-deslop/          # AI-slop removal for English text, vendored from blader/humanizer (MIT)
 └── setup/               # dependency check and install (scripts/setup.sh)
-commands/                # export-diagram, import-drawio, import-mermaid
+commands/                # export-diagram, import-drawio, import-excalidraw, import-mermaid, import-plantuml
 third_party/             # upstream licenses and notices
-scripts/                 # dev setup, git hooks, sync_upstream_skills.py for the vendored skills; scripts/diagrams/ holds the diagram repo gates
-.github/workflows/       # weekly check of the vendored skills against their sources
+scripts/                 # dev setup, git hooks, sync_upstream_skills.py for the vendored and derived skills, scripts/upstream/ (the recipe of aws-diagram-design); scripts/diagrams/ holds the diagram repo gates
+.github/workflows/       # weekly check of the vendored skills, and of aws-diagram-design every second week
 docs/                    # architecture, onboarding, ADRs, runbooks; docs/diagrams/ holds diagram guides and samples
 tests/                   # run-all.sh, hooks/, structure/, fixtures/
 ```
@@ -242,8 +247,8 @@ HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고�
 |---|---|---|
 | `/my-plugins:aws-blog-skills` | aws-blog-skills 1.2.2 | 소재부터 zip까지 AWS Korea Tech Blog 한국어 원고: 범위, 사실과 URL 검증, 다이어그램, 윤문, 패키징 |
 | `/my-plugins:aws-diagram` | aws-diagrams 1.0.0 | 공식 AWS 아이콘과 Bedrock AgentCore 아이콘으로 그리는 AWS 아키텍처 구성도 |
-| `/my-plugins:aws-diagram-design` | aws-diagrams 1.0.0 | 흐름도, 시퀀스, 타임라인, ER, 차트 등 AWS 브랜드 스킨의 구조 다이어그램 |
-| `/my-plugins:export-diagram`, `/my-plugins:import-drawio`, `/my-plugins:import-mermaid` | aws-diagrams 1.0.0 | aws-diagram-design HTML을 SVG/PNG로 내보내기, draw.io와 Mermaid 다시 그리기 |
+| `/my-plugins:aws-diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design)(MIT)의 AWS 판 | 원본의 시각 유형(흐름도, 시퀀스, 타임라인, ER, 히트맵, Sankey, 칸반 등)을 AWS 브랜드 스킨으로 그리는 구조 다이어그램과 차트. draw.io, Mermaid, Excalidraw, PlantUML 가져오기 지원 |
+| `/my-plugins:export-diagram`, `/my-plugins:import-drawio`, `/my-plugins:import-excalidraw`, `/my-plugins:import-mermaid`, `/my-plugins:import-plantuml` | cathrynlavery/diagram-design(MIT)의 AWS 판 | aws-diagram-design HTML을 SVG/PNG로 내보내기, draw.io, Excalidraw, Mermaid, PlantUML 다시 그리기 |
 | `/my-plugins:kor-deslop` | kor-writing 1.0.0 | 한국어 글의 AI 티를 한 번에 제거(패턴 81개). 내용은 그대로 둡니다 |
 | `/my-plugins:aws-ppt-skills` | aws-deck 1.0.0 | 2026 AWS Korea 블랙·화이트 템플릿 덱(pptxgenjs, 한국어 발표 대본). PowerPoint, 브라우저에서 발표하는 HTML 한 파일(노트가 나오는 발표자 보기 포함), 또는 둘 다로 만들며 어느 것을 만들지 skill이 물어봄 |
 | `/my-plugins:consulting-ppt-white-ppt` | aws-deck 1.0.0 | 고객 브랜드 색을 쓰는 고밀도 컨설팅 리포트 덱 |
@@ -259,6 +264,10 @@ HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고�
 `ui-deslop`과 `eng-deslop`은 위 저장소를 고정한 커밋에서 복사한 것이고, 이름과 description만 이 플러그인의 것입니다.
 GitHub Actions 워크플로가 매주 원본과 비교해 원본이 바뀌었으면 pull request를 엽니다([런북](docs/runbooks/sync-upstream-skills.md)).
 원본 플러그인(`unslop@heydamir`, `humanizer@humanizer`)을 함께 설치하면 같은 요청에 skill 두 개가 반응하므로 하나만 둡니다.
+
+`aws-diagram-design`은 cathrynlavery/diagram-design의 AWS 판입니다. AWS 스킨, AWS Architecture Icons, AWS 판의 규칙은
+이 플러그인의 것이고 나머지는 정해 둔 변환 규칙(recipe)으로 원본 저장소에서 다시 만듭니다. 두 번째 워크플로가 2주에 한 번
+원본을 확인해 다시 만든 skill로 pull request를 열고, 변환 규칙이 더 맞지 않으면 issue를 남깁니다.
 
 ## 네 플러그인에서 달라진 점
 
@@ -399,10 +408,10 @@ skills/
 ├── ui-deslop/           # UI의 AI 슬롭 제거, heydamir/unslop(CC BY 4.0)에서 가져옴
 ├── eng-deslop/          # 영어 글의 AI 슬롭 제거, blader/humanizer(MIT)에서 가져옴
 └── setup/               # 의존 프로그램 점검과 설치(scripts/setup.sh)
-commands/                # export-diagram, import-drawio, import-mermaid
+commands/                # export-diagram, import-drawio, import-excalidraw, import-mermaid, import-plantuml
 third_party/             # 원 저작물의 라이선스와 고지
-scripts/                 # 개발 설정, git hooks, 가져온 skill을 맞추는 sync_upstream_skills.py. scripts/diagrams/에 다이어그램 저장소 검사 스크립트
-.github/workflows/       # 가져온 skill을 원본과 매주 비교하는 워크플로
+scripts/                 # 개발 설정, git hooks, 가져온 skill과 다시 만드는 skill을 맞추는 sync_upstream_skills.py, scripts/upstream/(aws-diagram-design의 변환 규칙). scripts/diagrams/에 다이어그램 저장소 검사 스크립트
+.github/workflows/       # 가져온 skill은 매주, aws-diagram-design은 2주에 한 번 원본과 비교하는 워크플로
 docs/                    # 아키텍처, 온보딩, ADR, 런북. docs/diagrams/에 다이어그램 가이드와 샘플
 tests/                   # run-all.sh, hooks/, structure/, fixtures/
 ```

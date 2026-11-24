@@ -11,7 +11,7 @@
 
 ## System Overview
 `my-plugins` is one Claude Code plugin that bundles five earlier plugins by WooHyung Choi: aws-blog-skills
-1.2.2, aws-diagrams 1.0.0, kor-writing 1.0.0, aws-deck 1.0.0 and aws-reports 1.0.0. It ships fourteen skills and three slash
+1.2.2, aws-diagrams 1.0.0, kor-writing 1.0.0, aws-deck 1.0.0 and aws-reports 1.0.0. It ships fourteen skills and five slash
 commands. Each skill is Markdown instructions plus bundled Python, Bash or Node.js scripts that Claude runs on
 the user's machine when the workflow calls for them. Skills call each other inside the plugin with the Skill
 tool as `my-plugins:<skill>`, and reach each other's files only by paths relative to their own folder.
@@ -31,7 +31,7 @@ Output goes to the user's current directory, never into the plugin cache.
 |---|---|---|
 | `aws-blog-skills` | aws-blog-skills 1.2.2 | AWS Korea Tech Blog draft from source to zip, steps 0-7, references per step |
 | `aws-diagram` | aws-diagrams 1.0.0 | AWS architecture SVG with the official AWS and Bedrock AgentCore icon bundle |
-| `aws-diagram-design` | aws-diagrams 1.0.0 | Structure diagrams (27 visual types) as HTML/SVG/PNG; holds the shared `assets/` |
+| `aws-diagram-design` | cathrynlavery/diagram-design (MIT), AWS edition rebuilt by a recipe | Structure diagrams and charts in the source's visual types as HTML/SVG/PNG, with draw.io, Mermaid, Excalidraw and PlantUML import; holds the shared `assets/` |
 | `kor-deslop` | kor-writing 1.0.0 | Korean AI-tell removal in one pass from an 81-pattern rulebook, content unchanged |
 | `aws-ppt-skills` | aws-deck 1.0.0 | Seminar decks on the bundled 2026 black or white template with pptxgenjs, delivered as PowerPoint, as one HTML file presented in a browser, or both |
 | `consulting-ppt-white-ppt` | aws-deck 1.0.0 | Dense, light consulting-report decks with a customer brand accent |
@@ -49,8 +49,9 @@ Output goes to the user's current directory, never into the plugin cache.
 - aws-blog-skills — `lint_prose.py`, `check_structure.py`, `check_urls.py`, `diagram_lib.py` +
   `example_diagrams.py`, `render_diagrams.py` (Playwright), `package_blog.sh`
 - aws-diagram — `find_icon.py`, `embed.py` (inline icons as base64), `build_bundle.py` (maintainer)
-- aws-diagram-design — `self_check.py`, `verify-geometry.py`, `drawio_extract.py`, `mermaid_extract.py`,
-  `build_aws_icons.py` (maintainer)
+- aws-diagram-design — from the source, copied byte for byte: `self_check.py`, `verify_geometry.py`, `drawio_extract.py`,
+  `mermaid_extract.py`, `excalidraw_extract.py`, `plantuml_extract.py`, `export_svg.py`, `export_png.py`; the edition's own:
+  `aws_check.py`, `build_aws_icons.py` (maintainer)
 - aws-ppt-skills — `apply_template.py`, `check_deck.py`, `svg_to_png.py`, `install_fonts.sh`, `deck_to_html.py`, `preview_html_deck.py`
 - consulting-ppt-white-ppt — `lib/consult_helpers.js`, `tools/extract_brand_color.py`, `fix_pptx.py`, `fix_notes.py`
 - pptx-template-fill — `tfill.py`, `inventory.py`, `swap_font.py`, `qa_check.py`, `example_fill.py`
@@ -179,7 +180,7 @@ flowchart LR
 |---|---|---|---|
 | `.claude-plugin/` | yes | yes | Manifests |
 | `skills/<name>/` (14 skills) | yes | yes | Description always, body and references on invoke |
-| `commands/` | yes | yes | Three Markdown prompts; the only root component directory |
+| `commands/` | yes | yes | Five Markdown prompts of aws-diagram-design, written by the sync from the source's commands; the only root component directory |
 | `.mcp.json` | yes | yes | Must stay `{"mcpServers": {}}` |
 | `skills/CLAUDE.md` | yes | no | Module doc, outside any skill folder |
 | `third_party/`, `LICENSE`, `NOTICE.md`, `README.md`, `CHANGELOG.md` | yes | no | Licenses and docs |
@@ -219,6 +220,12 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
   every file; `sync_upstream_skills.py` writes the folders and replaces only the `name` and `description`. A weekly
   workflow opens a pull request when a source changed and never merges or releases
   ([ADR-008](decisions/ADR-008-vendored-skills-synced-by-pull-request.md)).
+- **aws-diagram-design rebuilt from its source by a recipe** — the skill is the AWS edition of
+  cathrynlavery/diagram-design. `scripts/upstream/aws-diagram-design/recipe.json` states what the edition changes
+  (token replacements, anchored edits, the edition's own files), and `sync_upstream_skills.py` rebuilds the skill and
+  the five commands from the source with it. A change the recipe does not cover is refused before anything is
+  written. A second workflow runs every second week and opens a pull request or an issue
+  ([ADR-009](decisions/ADR-009-derived-skill-rebuilt-by-recipe.md)).
 - **aws-blog-skills targets Claude Code** — `${CLAUDE_SKILL_DIR}` paths, a work folder, checks on the assembled
   bundle ([ADR-001](decisions/ADR-001-claude-code-skill-conventions.md)).
 - **Scripts for mechanical rules** — banned words, structure, URLs, diagram geometry and deck lint are scripts
@@ -237,7 +244,7 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 # 한국어
 
 ## 시스템 개요
-`my-plugins`는 WooHyung Choi의 플러그인 다섯 개(aws-blog-skills 1.2.2, aws-diagrams 1.0.0, kor-writing 1.0.0, aws-deck 1.0.0, aws-reports 1.0.0)를 묶은 Claude Code 플러그인 하나입니다. skill 14개와 슬래시 command 3개를 배포합니다. 각 skill은 Markdown 지침과 함께 배포되는 Python, Bash, Node.js 스크립트로 이루어지며, 워크플로가 필요로 할 때 Claude가 사용자 머신에서 스크립트를 실행합니다. skill끼리는 플러그인 안에서 Skill 도구로 `my-plugins:<skill>`을 부르고, 다른 skill의 파일은 자기 폴더 기준 상대 경로로만 찾습니다. 결과물은 사용자의 현재 디렉터리에 만들며 플러그인 캐시에는 쓰지 않습니다.
+`my-plugins`는 WooHyung Choi의 플러그인 다섯 개(aws-blog-skills 1.2.2, aws-diagrams 1.0.0, kor-writing 1.0.0, aws-deck 1.0.0, aws-reports 1.0.0)를 묶은 Claude Code 플러그인 하나입니다. skill 14개와 슬래시 command 5개를 배포합니다. 각 skill은 Markdown 지침과 함께 배포되는 Python, Bash, Node.js 스크립트로 이루어지며, 워크플로가 필요로 할 때 Claude가 사용자 머신에서 스크립트를 실행합니다. skill끼리는 플러그인 안에서 Skill 도구로 `my-plugins:<skill>`을 부르고, 다른 skill의 파일은 자기 폴더 기준 상대 경로로만 찾습니다. 결과물은 사용자의 현재 디렉터리에 만들며 플러그인 캐시에는 쓰지 않습니다.
 
 ## 구성 요소
 
@@ -251,7 +258,7 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 |---|---|---|
 | `aws-blog-skills` | aws-blog-skills 1.2.2 | 소재부터 zip까지 AWS Korea Tech Blog 원고. 0~7단계, 단계별 참조 파일 |
 | `aws-diagram` | aws-diagrams 1.0.0 | 공식 AWS 아이콘과 Bedrock AgentCore 아이콘 묶음으로 그리는 AWS 아키텍처 SVG |
-| `aws-diagram-design` | aws-diagrams 1.0.0 | 구조 다이어그램(시각 유형 27가지) HTML/SVG/PNG. 공용 `assets/`를 가짐 |
+| `aws-diagram-design` | cathrynlavery/diagram-design(MIT)의 AWS 판, 변환 규칙으로 다시 만듦 | 원본의 시각 유형으로 그리는 구조 다이어그램과 차트 HTML/SVG/PNG. draw.io, Mermaid, Excalidraw, PlantUML 가져오기. 공용 `assets/`를 가짐 |
 | `kor-deslop` | kor-writing 1.0.0 | 패턴 81개 규칙집으로 한국어 AI 티를 한 번에 제거. 내용은 그대로 |
 | `aws-ppt-skills` | aws-deck 1.0.0 | 포함된 2026 블랙·화이트 템플릿 위에 pptxgenjs로 만드는 세미나 덱. PowerPoint, 브라우저에서 발표하는 HTML 한 파일, 또는 둘 다로 전달 |
 | `consulting-ppt-white-ppt` | aws-deck 1.0.0 | 고객 브랜드 색을 쓰는 밝은 고밀도 컨설팅 리포트 덱 |
@@ -268,7 +275,7 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 ### Processing Layer: 함께 배포되는 스크립트
 - aws-blog-skills — `lint_prose.py`, `check_structure.py`, `check_urls.py`, `diagram_lib.py` + `example_diagrams.py`, `render_diagrams.py`(Playwright), `package_blog.sh`
 - aws-diagram — `find_icon.py`, `embed.py`(아이콘을 base64로 내장), `build_bundle.py`(관리자용)
-- aws-diagram-design — `self_check.py`, `verify-geometry.py`, `drawio_extract.py`, `mermaid_extract.py`, `build_aws_icons.py`(관리자용)
+- aws-diagram-design — 원본에서 바이트 그대로 복사한 것: `self_check.py`, `verify_geometry.py`, `drawio_extract.py`, `mermaid_extract.py`, `excalidraw_extract.py`, `plantuml_extract.py`, `export_svg.py`, `export_png.py`. AWS 판의 것: `aws_check.py`, `build_aws_icons.py`(관리자용)
 - aws-ppt-skills — `apply_template.py`, `check_deck.py`, `svg_to_png.py`, `install_fonts.sh`, `deck_to_html.py`, `preview_html_deck.py`
 - consulting-ppt-white-ppt — `lib/consult_helpers.js`, `tools/extract_brand_color.py`, `fix_pptx.py`, `fix_notes.py`
 - pptx-template-fill — `tfill.py`, `inventory.py`, `swap_font.py`, `qa_check.py`, `example_fill.py`
@@ -398,6 +405,7 @@ flowchart LR
 - **인포그래픽 내용을 편집 가능한 덱으로 다시 만들기** — aws-infographic은 내용을 aws-ppt-skills에 넘겨 섹션마다 텍스트 상자, 도형, 표, 차트, 아이콘 PNG로 다시 만듭니다. 인포그래픽 그림은 슬라이드에 넣지 않고, 그림이 들어간 덱은 `check_editable.py`가 거부합니다([ADR-006](decisions/ADR-006-infographic-editable-deck.md)).
 - **완성한 덱을 변환해 만드는 HTML 덱** — aws-ppt-skills는 출력 형식(PPT, HTML, 둘 다)을 먼저 묻습니다. HTML 덱은 따로 작성하지 않습니다. `deck_to_html.py`가 최종 `.pptx`를 읽어 한 파일짜리 페이지를 만듭니다. 슬라이드 내용은 HTML과 SVG로, 템플릿의 배경과 로고는 LibreOffice가 그린 그림으로 들어가고, 글꼴은 쓰인 글자만 포함하며, 노트는 발표자 보기에 나옵니다([ADR-007](decisions/ADR-007-html-deck-converted-from-pptx.md)).
 - **가져온 skill은 pull request로 동기화** — `ui-deslop`과 `eng-deslop`은 heydamir/unslop과 blader/humanizer를 고정한 커밋에서 복사한 것입니다. `scripts/upstream-skills.json`이 원본, 커밋, 파일별 해시를 기록하고, `sync_upstream_skills.py`가 폴더를 쓰면서 `name`과 `description`만 바꿉니다. 주간 워크플로는 원본이 바뀌면 pull request를 열 뿐 병합하거나 릴리스하지 않습니다([ADR-008](decisions/ADR-008-vendored-skills-synced-by-pull-request.md)).
+- **aws-diagram-design은 변환 규칙으로 원본에서 다시 만듦** — 이 skill은 cathrynlavery/diagram-design의 AWS 판입니다. `scripts/upstream/aws-diagram-design/recipe.json`이 AWS 판에서 바꾸는 내용(토큰 치환, 원본 문장을 기준으로 한 편집, AWS 판의 파일)을 적고, `sync_upstream_skills.py`가 이 규칙으로 skill과 command 5개를 원본에서 다시 만듭니다. 변환 규칙이 다루지 않는 변경은 쓰기 전에 거부합니다. 두 번째 워크플로가 2주에 한 번 실행되어 pull request나 issue를 엽니다([ADR-009](decisions/ADR-009-derived-skill-rebuilt-by-recipe.md)).
 - **옆 skill 기준 상대 경로** — 다른 skill의 파일은 `../<skill>/...`로 찾고, 플러그인 캐시 glob은 대비책으로만 씁니다([ADR-002](decisions/ADR-002-merge-four-plugins-into-one.md)).
 - **의존 프로그램은 `setup`으로** — 스크립트 하나가 모든 외부 프로그램과 폰트를 점검하고 설치하며, sudo는 요청할 때만 씁니다([런북](runbooks/setup-dependencies.md)).
 - **aws-blog-skills는 Claude Code 대상** — `${CLAUDE_SKILL_DIR}` 경로, 작업 폴더, 조립한 번들 검사([ADR-001](decisions/ADR-001-claude-code-skill-conventions.md)).

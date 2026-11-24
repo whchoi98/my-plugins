@@ -23,6 +23,12 @@ is the only thing that writes those two folders ([ADR-008](../decisions/ADR-008-
 | `python3 scripts/sync_upstream_skills.py verify` | Offline. Fails when a vendored file differs from the manifest |
 
 `--skill NAME` limits a command to one skill. `--source DIR` uses a local checkout in place of a download.
+`--schedule weekly|biweekly` limits a command to the skills with that `schedule` in the manifest, and `--pinned`
+takes the source at the commit the manifest records.
+
+A third skill, `skills/aws-diagram-design/`, is not a copy: it is the AWS edition of cathrynlavery/diagram-design (MIT),
+rebuilt from the source by a recipe. Section 7 covers it
+([ADR-009](../decisions/ADR-009-derived-skill-rebuilt-by-recipe.md)).
 
 ## When to Use
 - The weekly workflow opened a pull request or an issue named "Sync vendored skills with their sources"
@@ -89,6 +95,42 @@ PATCH or MINOR release by what the source changed.
 4. Register it as a new skill (CLAUDE.md "Change Sync Rules"), add a NOTICE.md row and the expected names in
    `tests/structure/test-upstream-skills.sh`.
 
+### 7. aws-diagram-design, the skill rebuilt by a recipe
+The manifest entry has `"mode": "derived"`, `"schedule": "biweekly"` and `recipe`, the path of
+`scripts/upstream/aws-diagram-design/recipe.json`. `update` reads the source, applies the recipe in memory and writes
+the skill folder and the five `commands/*.md` only when every part of the recipe applied.
+
+| Part of the recipe | Meaning |
+|---|---|
+| `local` | Files of the edition. The sync never writes them: `references/style-guide.md`, `references/primitive-aws-icons.md`, `assets/aws-icons/`, `assets/fonts/`, `scripts/aws_check.py`, `scripts/build_aws_icons.py` |
+| `replaced` | Files of the source that the edition replaces with its own (`references/style-guide.md`) |
+| `extra` | Files outside the skill folder that are built from the source (`commands/*.md`); a step or an edit names them `extra:<path>` |
+| `steps` | Literal `pairs`, `regex` and the `svg-text-separators` transform, applied in order to the `.md` and `.html` files they name |
+| `edits` | Anchored on the source's text: `find` + `replace`, `from` + `to` + `replace` (a section), `before` or `after` + `insert`, `keep`. `replace_file` and `insert_file` name a file under `blocks/` |
+| `forbid` | Tokens that may not survive in the source's text after the steps |
+
+1. **The workflow** `.github/workflows/sync-aws-diagram-design.yml` starts every Monday 06:47 Seoul time and goes on
+   in even weeks only (weeks counted from 1970-01-01; 2026-12-07, 2026-12-21 and so on), or when started by hand.
+   It runs `update --schedule biweekly`, `verify`, `bash tests/run-all.sh upstream` and
+   `bash tests/run-all.sh 'aws-diagram-design$'`, pushes `sync/aws-diagram-design` and opens a pull request, or an
+   issue with the compare link.
+2. **Review the pull request** as in section 2, and read these first: every `scripts/*.py` that changed (they run on
+   a user's machine and the workflow never ran them), the notes of the report, and `SKILL.md`. A note that the source
+   changed `references/style-guide.md` means the edition's style guide may need the same change: compare the roles,
+   the headings and the rules by hand. A note about a recipe edit means the source rewrote a text one of our blocks
+   replaces: read the source's new text and adjust the block if it should say something new.
+3. **When the recipe does not apply** the workflow writes nothing, opens the issue "aws-diagram-design: the sync
+   recipe needs a change" with the `REFUSED` line and fails. Clone the source, run
+   `python3 scripts/sync_upstream_skills.py check --skill aws-diagram-design --source <clone>` until it prints
+   `the recipe applies to the new source`, then `update --skill aws-diagram-design --source <clone>`.
+4. **Change a rule of the edition**: edit the recipe or a block, never a rebuilt file, then
+   `python3 scripts/sync_upstream_skills.py update --skill aws-diagram-design --pinned --no-changelog` and `verify`.
+   `verify` fails until then with `the recipe changed after the last update`. A file listed in `local` is edited
+   directly and needs no update.
+5. **After a merge**, before the release, run the whole suite and the source's checks on the templates:
+   `bash tests/run-all.sh`, then `python3 skills/aws-diagram-design/scripts/self_check.py --offline` and
+   `aws_check.py` on a diagram drawn with the new version. This is the first point where a script of the source runs.
+
 ## When `update` Refuses
 `update` exits 1, prints `REFUSED` and writes nothing for that skill. In the workflow the run fails and GitHub
 sends the failure notice.
@@ -100,6 +142,10 @@ sends the failure notice.
 | `is a symbolic link`, `is a hidden file`, `is an unusual file name` | Look at the source. Name the path in `exclude` when the skill works without it |
 | `is ... bytes, over the limit` | Decide whether the plugin should carry the file; `max_file_bytes` in the entry raises the limit |
 | `the source's metadata already has ...` | The source started to use a metadata key of this plugin; rename the key in `OUR_META` of the script |
+| `recipe edit ... no longer applies to ...` | The source reworded or moved the anchor. Open the file in the source, find the new text and change the anchor of that edit in the recipe |
+| `... survives in ...` | The source names its own font, color or plugin in a new form. Add a pair to the steps, or a `keep` edit when the text is not the skin's (a type-scoped color, an example of a user's input) |
+| `the source now has ..., which the recipe lists as a file of the edition` | The source added a file at a path of ours. Rename ours or take theirs, and change `local` |
+| `the source no longer has ..., which the recipe replaces` or `... which the recipe takes` | The source removed or moved the file. Remove it from `replaced` or `extra`, or follow the move |
 
 ## Verification
 - `python3 scripts/sync_upstream_skills.py verify` prints `OK` for both skills
@@ -137,6 +183,12 @@ skill 두 개는 다른 저작자의 저장소를 복사한 것입니다. `skill
 | `python3 scripts/sync_upstream_skills.py verify` | 오프라인으로 동작합니다. 가져온 파일이 매니페스트와 다르면 실패합니다 |
 
 `--skill NAME`은 한 skill만 대상으로 합니다. `--source DIR`은 내려받지 않고 로컬 체크아웃을 사용합니다.
+`--schedule weekly|biweekly`는 매니페스트의 `schedule`이 그 값인 skill만 대상으로 하고, `--pinned`는 매니페스트가 기록한
+커밋의 원본을 사용합니다.
+
+세 번째 skill인 `skills/aws-diagram-design/`은 복사본이 아닙니다. cathrynlavery/diagram-design(MIT)의 AWS 판이며 변환
+규칙(recipe)으로 원본에서 다시 만듭니다. 7번 항목에서 다룹니다
+([ADR-009](../decisions/ADR-009-derived-skill-rebuilt-by-recipe.md)).
 
 ## 사용 시점
 - 주간 워크플로가 "Sync vendored skills with their sources"라는 pull request나 issue를 열었을 때
@@ -203,6 +255,43 @@ python3 scripts/sync_upstream_skills.py verify
 4. 새 skill로 등록하고(CLAUDE.md "Change Sync Rules"), NOTICE.md에 행을 더하고,
    `tests/structure/test-upstream-skills.sh`의 기대값에 이름을 넣습니다.
 
+### 7. 변환 규칙으로 다시 만드는 aws-diagram-design
+매니페스트 항목에 `"mode": "derived"`, `"schedule": "biweekly"`, 그리고 변환 규칙 파일의 경로인 `recipe`
+(`scripts/upstream/aws-diagram-design/recipe.json`)가 있습니다. `update`는 원본을 읽어 변환 규칙을 메모리에서 적용하고,
+변환 규칙 전체가 적용된 경우에만 skill 폴더와 `commands/*.md` 5개를 씁니다.
+
+| 변환 규칙의 항목 | 뜻 |
+|---|---|
+| `local` | AWS 판의 파일. 동기화가 쓰지 않습니다. `references/style-guide.md`, `references/primitive-aws-icons.md`, `assets/aws-icons/`, `assets/fonts/`, `scripts/aws_check.py`, `scripts/build_aws_icons.py` |
+| `replaced` | 원본의 파일 가운데 AWS 판이 자기 파일로 대신하는 것(`references/style-guide.md`) |
+| `extra` | skill 폴더 밖에 있고 원본에서 만드는 파일(`commands/*.md`). 단계와 편집에서는 `extra:<경로>`로 적습니다 |
+| `steps` | 문자열 치환(`pairs`), 정규식(`regex`), `svg-text-separators` 변환. 지정한 `.md`와 `.html` 파일에 순서대로 적용합니다 |
+| `edits` | 원본의 문장을 기준으로 하는 편집. `find` + `replace`, `from` + `to` + `replace`(섹션), `before`나 `after` + `insert`, `keep`. `replace_file`과 `insert_file`은 `blocks/` 아래 파일을 가리킵니다 |
+| `forbid` | 단계를 적용한 뒤 원본의 글에 남으면 안 되는 토큰 |
+
+1. **워크플로** `.github/workflows/sync-aws-diagram-design.yml`은 매주 월요일 06:47(서울)에 시작해 짝수 주에만
+   진행합니다(1970-01-01부터 센 주 번호 기준. 2026-12-07, 2026-12-21 순). 직접 실행하면 항상 진행합니다.
+   `update --schedule biweekly`, `verify`, `bash tests/run-all.sh upstream`,
+   `bash tests/run-all.sh 'aws-diagram-design$'`를 실행하고 `sync/aws-diagram-design`을 push한 뒤 pull request를 열거나
+   비교 링크가 든 issue를 남깁니다.
+2. **pull request 검토**는 2번 항목과 같습니다. 먼저 읽을 것은 바뀐 `scripts/*.py` 전부(사용자 머신에서 실행되며
+   워크플로는 한 번도 실행하지 않았습니다), 보고서의 note, `SKILL.md`입니다. 원본이 `references/style-guide.md`를
+   바꿨다는 note가 있으면 AWS 판의 스타일 가이드에도 같은 변경이 필요한지 역할, 제목, 규칙을 직접 비교합니다. 변환
+   규칙의 편집에 관한 note는 AWS 판의 블록이 대신하는 문장을 원본이 다시 썼다는 뜻입니다. 원본의 새 문장을 읽고
+   블록에 반영할 내용이 있으면 수정합니다.
+3. **변환 규칙이 맞지 않으면** 워크플로는 아무것도 쓰지 않고, `REFUSED` 줄을 담아 "aws-diagram-design: the sync recipe
+   needs a change" issue를 연 뒤 실패합니다. 원본을 클론하고
+   `python3 scripts/sync_upstream_skills.py check --skill aws-diagram-design --source <클론>`이
+   `the recipe applies to the new source`를 출력할 때까지 변환 규칙을 수정한 다음
+   `update --skill aws-diagram-design --source <클론>`을 실행합니다.
+4. **AWS 판의 규칙을 바꿀 때**는 다시 만든 파일이 아니라 변환 규칙이나 블록을 수정하고
+   `python3 scripts/sync_upstream_skills.py update --skill aws-diagram-design --pinned --no-changelog`와 `verify`를
+   실행합니다. 그 전까지 `verify`는 `the recipe changed after the last update`로 실패합니다. `local`에 있는 파일은 직접
+   수정하며 update가 필요 없습니다.
+5. **병합한 뒤** 릴리스하기 전에 전체 테스트와 원본의 검사를 실행합니다. `bash tests/run-all.sh`를 실행하고, 새 버전으로
+   그린 다이어그램에 `python3 skills/aws-diagram-design/scripts/self_check.py --offline`과 `aws_check.py`를
+   실행합니다. 원본의 스크립트가 처음 실행되는 시점이 여기입니다.
+
 ## `update`가 거부할 때
 `update`는 exit 1로 끝나며 `REFUSED`를 출력하고 그 skill에는 아무것도 쓰지 않습니다. 워크플로에서는 실행이
 실패하고 GitHub가 실패 알림을 보냅니다.
@@ -214,6 +303,10 @@ python3 scripts/sync_upstream_skills.py verify
 | `is a symbolic link`, `is a hidden file`, `is an unusual file name` | 원본을 확인합니다. 없어도 skill이 동작하면 그 경로를 `exclude`에 넣습니다 |
 | `is ... bytes, over the limit` | 플러그인에 넣을 파일인지 판단합니다. 항목의 `max_file_bytes`로 한도를 올립니다 |
 | `the source's metadata already has ...` | 원본이 이 플러그인의 metadata 키를 쓰기 시작한 경우입니다. 스크립트의 `OUR_META`에서 키 이름을 바꿉니다 |
+| `recipe edit ... no longer applies to ...` | 원본이 기준 문장을 고쳐 쓰거나 옮긴 경우입니다. 원본에서 그 파일을 열어 새 문장을 찾고 변환 규칙에서 그 편집의 기준 문장을 바꿉니다 |
+| `... survives in ...` | 원본이 자기 글꼴, 색, 플러그인 이름을 새 형태로 적은 경우입니다. 단계에 치환을 더합니다. 스킨의 값이 아닌 글(유형 전용 색, 사용자 입력의 예)이면 `keep` 편집을 더합니다 |
+| `the source now has ..., which the recipe lists as a file of the edition` | 원본이 AWS 판의 파일과 같은 경로에 파일을 추가한 경우입니다. AWS 판의 파일 이름을 바꾸거나 원본의 파일을 받고 `local`을 수정합니다 |
+| `the source no longer has ..., which the recipe replaces` 또는 `... which the recipe takes` | 원본이 그 파일을 없애거나 옮긴 경우입니다. `replaced`나 `extra`에서 빼거나 옮긴 경로를 따라갑니다 |
 
 ## 검증
 - `python3 scripts/sync_upstream_skills.py verify`가 두 skill에 `OK`를 출력합니다

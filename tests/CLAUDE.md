@@ -1,7 +1,7 @@
 # Tests Module
 
 ## Role
-Harness tests for the dev hooks, for invariants of the shipped my-plugins plugin (twelve skills, three
+Harness tests for the dev hooks, for invariants of the shipped my-plugins plugin (fourteen skills, five
 commands, manifests, licenses, docs), and for the behavior of the scripts it ships. Bash + `jq` + Python 3;
 no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL checker. Optional tools
 (`node`, `claude`) are skipped when absent. Run with `bash tests/run-all.sh [filter]`.
@@ -139,7 +139,36 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   file, no frontmatter, no SKILL.md, no license file, metadata that has our keys, no skill folder). Manifest and
   argument errors, the helpers of the script, and the workflow: schedule, permissions, actions pinned to a commit id,
   one push to `sync/upstream-skills`, no merge or release, no file of a source run, every command block valid bash.
-  Needs python3 and git only, because the workflow runs this file on a GitHub runner.
+  Needs python3 and git only, because the workflow runs this file on a GitHub runner. The copies used for the
+  hand-edit checks get the manifest without the derived skill (`us_vendored_manifest`).
+- `structure/test-upstream-derived.sh` — the `derived` mode of `sync_upstream_skills.py`, on a made-up source and a
+  made-up recipe in `$TEST_TMP` (nothing of a real source is read or run): the first build (pairs in order, a regex
+  step, the separator transform in SVG text only, a section replaced by a block, a line inserted before its anchor, a
+  kept text, a block that the steps do not rewrite and that may hold a forbidden token, a script copied byte for byte,
+  a replaced file and the edition's files kept, an extra file written outside the skill folder, the edition's own
+  license file), the manifest fields, the report, `render`, `--schedule`; nine hand changes that `verify` finds (a
+  rebuilt file, a script, SKILL.md, an extra file, a stray file, a removed edition file, a removed source file, a
+  changed recipe, a changed block) and the edition file that may change; a changed source (the notes for a replaced
+  file and for the text an edit replaces, a new and a dropped file); twenty sources or recipes that are refused with
+  nothing written (anchor gone or doubled, the end of a section gone, a kept text doubled, a surviving token, a file
+  at an edition path, a dropped replaced or extra file, a missing edition file or license file, a changed license, a
+  symbolic link, an edit on a script or on a file the source lacks, a doubled edit id, a block outside the recipe
+  folder, an unknown key, an extra path that leaves the repository, a replaced file not listed as local, a regex
+  that does not compile); `check` saying whether the recipe applies; parts of the script that need no source; and the
+  workflow `sync-aws-diagram-design.yml` (one weekly cron line, the even-week gate with the manual run let through,
+  `update --schedule biweekly`, `verify`, the two test filters, one push to `sync/aws-diagram-design`, the issue when
+  the recipe does not apply, backticks and `@` taken out of the quoted log, actions pinned, no merge or release, no
+  file of the skill run, every command block valid bash and gated on the week). Needs python3 and git only.
+- `structure/test-aws-diagram-design.sh` — the real aws-diagram-design, read as text: `verify`, the manifest entry
+  (derived, biweekly, source, pinned commit, version), the frontmatter and description, the edition's sections in
+  SKILL.md, the Playwright version equal to `PW_SPEC` of setup.sh, no font, web font, color or name of the source's
+  skin in the documents, templates and commands, the AWS tokens of the four templates, every role and every linked
+  section in the edition's style guide, the edition's files (icons, fonts, the README block without `url()`), the
+  set of shipped scripts, the five commands, the read-only rule in onboarding and profiles, the type sizes in the
+  ramp and the core markup. The source's scripts are parsed with `ast`, never run: they must parse on this Python,
+  import only the modules in the test's list and call nothing that runs code or a process. `aws_check.py` is run on
+  pages made in `$TEST_TMP` (twelve cases), on the four templates and on every shipped page (no middle dot in SVG
+  text). The sync workflow runs this file, so it must never run a script of the source.
 - `structure/test-integration.sh` — behavior of the merge fixes, each run with `HOME` on a scratch folder:
   `diagram_lib.py` asset lookup order (sibling skill, `AWS_DIAGRAM_ASSETS`, `.aws-diagram-assets`, plugin
   caches in numeric version order), `skills/setup/scripts/setup.sh` check mode and usage exit codes, sudo
@@ -162,7 +191,7 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   non-zero (`|| true`, or capture `$?`). Run `cd` only in a subshell.
 - Sourcing shares the runner's scope. Never assign `TOTAL`, `PASSED`, `FAILED`, `SKIPPED`, `FAILURES`,
   `FILTER`, `TEST_TMP`, `PROJECT_ROOT` or `SCRIPT_DIR`; a structure test rejects it. Prefix test-local
-  names per file (`PS_`, `AB_`, `SCR_`, `KD_`, `IT_`, `HK_`, `SP_`, `AR_`, `HR_`, `TB_`, `IG_`, `PP_`, `US_`). Never export or assign `HOME`; pass it
+  names per file (`PS_`, `AB_`, `SCR_`, `KD_`, `IT_`, `HK_`, `SP_`, `AR_`, `HR_`, `TB_`, `IG_`, `PP_`, `US_`, `UD_`, `AD_`). Never export or assign `HOME`; pass it
   per command (`env HOME="$TEST_TMP/..." ...`).
 - Never write a complete secret literal anywhere; split it into prefix and body.
 - Use `$TEST_TMP` for scratch files and repos; it is removed on exit. Never write into `skills/`

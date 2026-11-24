@@ -65,7 +65,6 @@ dark: false
   - **Array form:** `["<INPUT_CODE>", "<OUTPUT_CODE>"]` — first item is input, second is output.
   - Codes from §8 (`WB`, `DB`, `TB`, `FL`, `LS`). Position is **fixed**: input chip on the node's bottom-**left**, output chip on the bottom-**right**.
 - `nodes[i].color` — optional **per-node color override**. Any valid `"#hex"` string is accepted; the §4 palette is recommended for cross-diagram consistency but not required. Every node can carry its own color independently of others.
-- `nodes[i].aws_icon` — official AWS Architecture Icon for the node's primary service (path under `assets/aws-icons/`). **Required whenever `tool` names a specific AWS service** (AWS-skin install) — see [primitive-aws-icons.md § Compact nodes](primitive-aws-icons.md). Rendered in the 16px top-right corner slot (§2.4); one icon per node, the dominant service when `tool` lists several.
 
 ---
 
@@ -149,17 +148,13 @@ Per-lane `color` override (§4): replaces the label fill with `C` and the lane t
 
 ```
 role_chip          rect 18×10 at (node_x+4, node_y+4),  rx=3
-aws_icon           16×16 at (node_x+80, node_y+4)                  # top-right corner slot, scale 16/64=0.25
-                                                                   # only when nodes[i].aws_icon is set
+role_chip_text     centered at (node_x+13, node_y+9), eyebrow role, font-size=6, weight=600
 title              centered at (step_cx(j), node_y+23), node-name role, font-size=9
 sub                centered at (step_cx(j), node_y+35), sublabel role, font-size=6.5, muted
 tool               centered at (step_cx(j), node_y+47), sublabel role, font-size=6.5, soft
 data chip IN       rect 16×8 at (node_x+4,   node_y+54), rx=3      # payload type entering the node
 data chip OUT      rect 16×8 at (node_x+80,  node_y+54), rx=3      # payload type leaving the node
-role_chip_text     centered at (node_x+13, node_y+9), eyebrow role, font-size=6, weight=600
 ```
-
-When `aws_icon` is present, cap the title at **~13 characters** so the centered title clears the corner icon (see [primitive-aws-icons.md § Compact nodes](primitive-aws-icons.md)).
 
 Empty cells (no node entry) render **nothing**. No placeholder rect, no role chip, no label — the cell is invisible.
 
@@ -374,6 +369,3 @@ Above 4 lanes or 6 steps: split into two diagrams (e.g., ingestion pipeline / an
 - `assets/example-data-flow.html` — minimal light (the platform, 4-role × 5-step: Admin, Engineers, Scientists, Consumers). Gallery default.
 - `assets/example-data-flow-dark.html` — same, dark skin.
 - `assets/example-data-flow-full.html` — same, editorial-card frame.
-- `assets/example-data-flow-extended.html` — exercises §4 color override: Access Control node in rust-red (governance), Clean & Stage node in slate-blue (data quality). Focal accent on Analyze step + Explore & Model node + anon-data arrow unchanged.
-- `assets/example-data-flow-extended-dark.html` — extended pattern, dark skin.
-- `assets/example-data-flow-extended-full.html` — extended pattern, editorial-card frame.

@@ -1,0 +1,681 @@
+{
+  "schema": 1,
+  "local": [
+    "assets/aws-icons/*",
+    "assets/aws-icons.html",
+    "assets/fonts/*",
+    "references/primitive-aws-icons.md",
+    "references/style-guide.md",
+    "scripts/aws_check.py",
+    "scripts/build_aws_icons.py"
+  ],
+  "replaced": [
+    "references/style-guide.md"
+  ],
+  "extra": [
+    {
+      "from": "commands/export-diagram.md",
+      "to": "commands/export-diagram.md"
+    },
+    {
+      "from": "commands/import-drawio.md",
+      "to": "commands/import-drawio.md"
+    },
+    {
+      "from": "commands/import-excalidraw.md",
+      "to": "commands/import-excalidraw.md"
+    },
+    {
+      "from": "commands/import-mermaid.md",
+      "to": "commands/import-mermaid.md"
+    },
+    {
+      "from": "commands/import-plantuml.md",
+      "to": "commands/import-plantuml.md"
+    }
+  ],
+  "steps": [
+    {
+      "files": [
+        "SKILL.md",
+        "references/*.md",
+        "extra:commands/*.md"
+      ],
+      "pairs": [
+        [
+          "a diagram-design HTML file",
+          "an aws-diagram-design HTML file"
+        ],
+        [
+          "/diagram-design:",
+          "/my-plugins:"
+        ],
+        [
+          "python3 scripts/verify-motion.py",
+          "python3 scripts/diagrams/verify-motion.py"
+        ],
+        [
+          "python3 <repo-root>/scripts/verify-motion.py",
+          "python3 <repo-root>/scripts/diagrams/verify-motion.py"
+        ],
+        [
+          " plus the skin linter",
+          ""
+        ]
+      ]
+    },
+    {
+      "files": [
+        "SKILL.md",
+        "references/*.md",
+        "extra:commands/*.md"
+      ],
+      "regex": [
+        [
+          "(?<!cathrynlavery/)(?<!aws-)diagram-design",
+          "aws-diagram-design"
+        ]
+      ]
+    },
+    {
+      "files": [
+        "references/animation.md"
+      ],
+      "regex": [
+        [
+          "^python3 scripts/test-verify-motion\\.py\\n",
+          ""
+        ],
+        [
+          "^python3 scripts/lint-skin\\.py [^\\n]*\\n",
+          ""
+        ]
+      ]
+    },
+    {
+      "files": [
+        "assets/template.html",
+        "assets/template-full.html",
+        "assets/template-motion.html",
+        "assets/template-dark.html"
+      ],
+      "regex": [
+        [
+          "^[ \\t]*<link href=\"https://fonts\\.googleapis\\.com/css2\\?[^\"\\n]*\" rel=\"stylesheet\">\\n",
+          "  <!-- Fonts: Amazon Ember and Amazon Ember Mono are installed fonts (Font source: system, references/style-guide.md). No font <link>, so nothing loads from a CDN. -->\n"
+        ]
+      ]
+    },
+    {
+      "files": [
+        "references/*.md"
+      ],
+      "regex": [
+        [
+          "(https://fonts\\.googleapis\\.com/css2\\?)[^\\s'\"<>)]+",
+          "\\1family=..."
+        ]
+      ]
+    },
+    {
+      "files": [
+        "SKILL.md",
+        "references/*.md",
+        "extra:commands/*.md",
+        "assets/template.html",
+        "assets/template-full.html",
+        "assets/template-motion.html",
+        "assets/template-dark.html"
+      ],
+      "pairs": [
+        [
+          "Drop Instrument Serif and Geist sans entirely",
+          "Drop Amazon Ember entirely"
+        ],
+        [
+          "a Geist",
+          "an Amazon Ember"
+        ],
+        [
+          "A Geist",
+          "An Amazon Ember"
+        ],
+        [
+          "'Instrument Serif', 'Noto Serif', 'Noto Serif KR', 'Times New Roman', serif",
+          "'Amazon Ember', 'Noto Sans KR', 'Noto Sans CJK KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif"
+        ],
+        [
+          "'Instrument Serif', 'Noto Serif', 'Noto Serif KR', serif",
+          "'Amazon Ember', 'Noto Sans KR', 'Noto Sans CJK KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif"
+        ],
+        [
+          "'Instrument Serif', serif",
+          "'Amazon Ember', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+        ],
+        [
+          "'Geist', system-ui, sans-serif",
+          "'Amazon Ember', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+        ],
+        [
+          "'Geist', sans-serif",
+          "'Amazon Ember', 'Helvetica Neue', Helvetica, Arial, sans-serif"
+        ],
+        [
+          "Geist, sans-serif",
+          "Amazon Ember, Helvetica Neue, Helvetica, Arial, sans-serif"
+        ],
+        [
+          "'Geist Mono', monospace",
+          "'Amazon Ember Mono', ui-monospace, monospace"
+        ],
+        [
+          "Geist Mono",
+          "Amazon Ember Mono"
+        ],
+        [
+          "Geist sans",
+          "Amazon Ember"
+        ],
+        [
+          "Geist (sans)",
+          "Amazon Ember"
+        ],
+        [
+          "Geist",
+          "Amazon Ember"
+        ],
+        [
+          "Instrument Serif",
+          "Amazon Ember"
+        ],
+        [
+          "'Noto Sans KR', 'Apple SD Gothic Neo'",
+          "'Noto Sans KR', 'Noto Sans CJK KR', 'Apple SD Gothic Neo'"
+        ]
+      ]
+    },
+    {
+      "files": [
+        "assets/template.html",
+        "assets/template-full.html",
+        "assets/template-motion.html",
+        "assets/template-dark.html"
+      ],
+      "regex": [
+        [
+          "(<p class=\"(?:header-)?eyebrow\">[^<\\n]*?) · ([^<\\n]*</p>)",
+          "\\1, \\2"
+        ],
+        [
+          "(<span>\\[Project Name\\]) · ",
+          "\\1, "
+        ]
+      ]
+    },
+    {
+      "files": [
+        "assets/template-dark.html"
+      ],
+      "ignore_case": true,
+      "pairs": [
+        [
+          "#2d3142",
+          "#161E2D"
+        ],
+        [
+          "#f5f5f5",
+          "#FFFFFF"
+        ],
+        [
+          "#bfc0c0",
+          "#B6BEC9"
+        ],
+        [
+          "#f08a59",
+          "#FF9900"
+        ],
+        [
+          "#739fdf",
+          "#539FE5"
+        ],
+        [
+          "rgba(245,245,245,",
+          "rgba(255,255,255,"
+        ],
+        [
+          "deep warm charcoal",
+          "dark squid"
+        ],
+        [
+          "warm off-white",
+          "white"
+        ]
+      ]
+    },
+    {
+      "files": [
+        "SKILL.md",
+        "references/*.md",
+        "extra:commands/*.md",
+        "assets/template.html",
+        "assets/template-full.html",
+        "assets/template-motion.html"
+      ],
+      "ignore_case": true,
+      "pairs": [
+        [
+          "#f5f5f5",
+          "#ffffff"
+        ],
+        [
+          "#ececec",
+          "#F2F3F3"
+        ],
+        [
+          "#2d3142",
+          "#232F3E"
+        ],
+        [
+          "#4f5d75",
+          "#545B64"
+        ],
+        [
+          "#5a6580",
+          "#7D8998"
+        ],
+        [
+          "#bfc0c0",
+          "#D5DBDB"
+        ],
+        [
+          "#bf4520",
+          "#EC7211"
+        ],
+        [
+          "#eb6c36",
+          "#EC7211"
+        ],
+        [
+          "#2e5aa8",
+          "#0972D3"
+        ],
+        [
+          "rgba(45,49,66,",
+          "rgba(35,47,62,"
+        ],
+        [
+          "rgba(45, 49, 66,",
+          "rgba(35, 47, 62,"
+        ],
+        [
+          "rgba(191,69,32,",
+          "rgba(255,153,0,"
+        ],
+        [
+          "rgba(79,93,117,",
+          "rgba(84,91,100,"
+        ],
+        [
+          "rgba(90,101,128,",
+          "rgba(125,137,152,"
+        ],
+        [
+          "#393e53",
+          "#232F3E"
+        ],
+        [
+          "#949eb2",
+          "#8D99A8"
+        ],
+        [
+          "#f08a59",
+          "#FF9900"
+        ],
+        [
+          "#739fdf",
+          "#539FE5"
+        ],
+        [
+          "rgba(245,245,245,",
+          "rgba(255,255,255,"
+        ],
+        [
+          "rgba(240,138,89,",
+          "rgba(255,153,0,"
+        ],
+        [
+          "rgba(191,192,192,",
+          "rgba(255,255,255,"
+        ],
+        [
+          "/* white-smoke */",
+          "/* white */"
+        ],
+        [
+          "/* jet-black */",
+          "/* squid ink */"
+        ],
+        [
+          "/* blue-slate */",
+          "/* AWS grey-blue */"
+        ],
+        [
+          "/* burnt-tangerine */",
+          "/* smile orange */"
+        ]
+      ]
+    },
+    {
+      "files": [
+        "assets/*.html"
+      ],
+      "transform": "svg-text-separators"
+    }
+  ],
+  "edits": [
+    {
+      "id": "skill-section-0",
+      "file": "SKILL.md",
+      "from": "## 0. First-time setup — style guide gate\n",
+      "to": "## 1. Philosophy\n",
+      "replace_file": "blocks/skill-section-0.md"
+    },
+    {
+      "id": "skill-brand",
+      "file": "SKILL.md",
+      "find": "To apply a brand, edit `style-guide.md` or run the URL-based flow in [`references/onboarding.md`](references/onboarding.md).",
+      "replace": "To apply another brand, run the flow in [`references/onboarding.md`](references/onboarding.md): it saves a profile and leaves this folder as it is (§0)."
+    },
+    {
+      "id": "skill-type-sizes",
+      "file": "SKILL.md",
+      "find": "Sizes, weights, and the font `<link>`:",
+      "replace": "Sizes and weights:"
+    },
+    {
+      "id": "skill-font-source",
+      "file": "SKILL.md",
+      "find": "When the user asks for offline output, system fonts, or no Google Fonts, follow [style-guide.md § Font source](references/style-guide.md#font-source).",
+      "replace": "Fonts are installed, not linked: [style-guide.md § Font source](references/style-guide.md#font-source)."
+    },
+    {
+      "id": "skill-icons",
+      "file": "SKILL.md",
+      "before": "- Icon set (laptop, server, DB, K8s, Docker, AWS, …) → [primitive-icons.md](references/primitive-icons.md).",
+      "insert": "- **Official AWS Architecture Icons** (EC2, Lambda, S3, … and the VPC, subnet and account zones) → [primitive-aws-icons.md](references/primitive-aws-icons.md). Use them whenever a diagram names an AWS service (§ AWS edition rules).\n"
+    },
+    {
+      "id": "skill-checklist",
+      "file": "SKILL.md",
+      "before": "---\n\n## 10. Templates & Variants\n",
+      "insert_file": "blocks/skill-checklist.md"
+    },
+    {
+      "id": "skill-output-css",
+      "file": "SKILL.md",
+      "find": "- Embedded CSS (no external except Google Fonts)",
+      "replace": "- Embedded CSS and nothing external: the AWS skin has no font `<link>` (§ AWS edition rules)"
+    },
+    {
+      "id": "onboarding-goal",
+      "file": "references/onboarding.md",
+      "find": "then rewrite `style-guide.md` so every future diagram inherits that skin.",
+      "replace": "then save the result as a profile bound to the project, so every future diagram in that project inherits that skin. The skill's own `references/style-guide.md` is never changed: in an installed plugin it is the plugin cache (SKILL.md §0)."
+    },
+    {
+      "id": "onboarding-manual",
+      "file": "references/onboarding.md",
+      "find": "write them under a new `Custom tokens` section in `style-guide.md`, then offer to save a named profile.",
+      "replace": "add them under a new `Custom tokens` section in a copy of `style-guide.md` and save that copy as a named profile (SKILL.md §0)."
+    },
+    {
+      "id": "onboarding-write",
+      "file": "references/onboarding.md",
+      "find": "Write the new tokens to `style-guide.md`.",
+      "replace": "Apply the new tokens to a copy of `style-guide.md` and save that copy as a named profile bound to the project with the marker ([`profiles.md`](profiles.md) `save`, on the branch for an install directory that cannot be written: SKILL.md §0)."
+    },
+    {
+      "id": "profiles-note",
+      "file": "references/profiles.md",
+      "before": "## Paths and terms\n",
+      "insert_file": "blocks/note-profiles.md"
+    },
+    {
+      "id": "profiles-default-font-source",
+      "file": "references/profiles.md",
+      "find": "and the shipped `Font source` value (`web`).",
+      "replace": "and the shipped `Font source` value (`system`)."
+    },
+    {
+      "id": "profiles-custom-font-source",
+      "file": "references/profiles.md",
+      "find": "A guide whose only change is `Font source: system` is customized: the offline preference must survive as a saved profile.",
+      "replace": "A guide whose only change is `Font source: web` is customized: that choice must survive as a saved profile."
+    },
+    {
+      "id": "export-note",
+      "file": "references/export.md",
+      "before": "**Prefer the packaged helper.** From this skill's directory run:\n",
+      "insert_file": "blocks/note-export.md"
+    },
+    {
+      "id": "export-missing-fonts",
+      "file": "references/export.md",
+      "find": "Check that the source HTML has the `<link href=\"...fonts.googleapis.com...\">` tag in `<head>`. If absent, the file isn't from a current template — fix the source rather than working around it in export.",
+      "replace": "The AWS skin has no font `<link>`: check that Amazon Ember and Amazon Ember Mono are installed (`/my-plugins:setup`), and fix that rather than working around it in export."
+    },
+    {
+      "id": "annotation-voice",
+      "file": "references/primitive-annotation.md",
+      "find": "- Italic + serif together signal \"editorial voice\" against the diagram's sans/mono body. Don't substitute italic sans or italic mono — the combination is load-bearing.",
+      "replace": "- Italic signals \"editorial voice\" against the diagram's upright sans/mono body. In the AWS skin the `callout` role is italic Amazon Ember. Don't substitute upright text or italic mono: the italic is load-bearing."
+    },
+    {
+      "id": "annotation-anti",
+      "file": "references/primitive-annotation.md",
+      "find": "- Italic sans or italic mono — the serif is load-bearing.",
+      "replace": "- Upright text or italic mono: the italic is load-bearing."
+    },
+    {
+      "id": "quadrant-paper",
+      "file": "references/type-quadrant.md",
+      "find": "- Plain white background — the warm paper + dot pattern is load-bearing across the skill; dropping it to \"look consultant\" turns the diagram generic.",
+      "replace": "- Dropping the dot pattern to \"look consultant\": on the white AWS paper the dot pattern is what carries this variant, and without it the diagram turns generic."
+    },
+    {
+      "id": "quadrant-title",
+      "file": "references/type-quadrant.md",
+      "find": "- Sans-serif H1 — keep the `title` role's serif for the page title. The title/diagram contrast is the house signature.",
+      "replace": "- Body-weight H1: keep the `title` role (Amazon Ember Bold) for the page title. The title/diagram contrast is the house signature."
+    },
+    {
+      "id": "icons-note",
+      "file": "references/primitive-icons.md",
+      "before": "## Usage\n",
+      "insert_file": "blocks/note-icons.md"
+    },
+    {
+      "id": "nonlatin-korean",
+      "file": "references/output-spec.md",
+      "find": "Noto Sans KR ships in the skin's font link, so it leads that stack and the local families follow it;",
+      "replace": "The Korean faces are installed fonts in this skin, named in order of preference;"
+    },
+    {
+      "id": "nonlatin-chinese",
+      "file": "references/output-spec.md",
+      "find": "Noto Sans TC now ships in the link too, so it leads the Traditional stack and the local families follow;",
+      "replace": "The Traditional Chinese faces are installed fonts as well;"
+    },
+    {
+      "id": "ramp-title",
+      "file": "references/output-spec.md",
+      "find": "| Title (Instrument Serif) | 28 | 40 | 32 |",
+      "replace": "| Title (Amazon Ember 700) | 28 | 40 | 32 |"
+    },
+    {
+      "id": "ramp-name",
+      "file": "references/output-spec.md",
+      "find": "| Node name (Geist 600) | 12 | 16 | 12 |",
+      "replace": "| Node name (Amazon Ember 600) | 13 | 16 | 13 |"
+    },
+    {
+      "id": "ramp-sublabel",
+      "file": "references/output-spec.md",
+      "find": "| Sublabel (Geist Mono) | 9 | 12 | 9 |",
+      "replace": "| Sublabel (Amazon Ember Mono) | 11 | 12 | 11 |"
+    },
+    {
+      "id": "ramp-arrow",
+      "file": "references/output-spec.md",
+      "find": "| Arrow label (Geist Mono) | 8 | 12 | 8 |",
+      "replace": "| Arrow label (Amazon Ember Mono) | 10 | 12 | 10 |"
+    },
+    {
+      "id": "core-name",
+      "file": "references/primitives-core.md",
+      "find": "<text x=\"CX\" y=\"CY+2\" fill=\"{ink}\" font-size=\"12\" font-weight=\"600\"",
+      "replace": "<text x=\"CX\" y=\"CY+2\" fill=\"{ink}\" font-size=\"13\" font-weight=\"600\""
+    },
+    {
+      "id": "core-sublabel",
+      "file": "references/primitives-core.md",
+      "find": "<text x=\"CX\" y=\"CY+18\" fill=\"{muted}\" font-size=\"9\"",
+      "replace": "<text x=\"CX\" y=\"CY+18\" fill=\"{muted}\" font-size=\"11\""
+    },
+    {
+      "id": "core-arrow-label",
+      "file": "references/primitives-core.md",
+      "find": "<!-- Mask sits 14px above the arrow (8px text height + 6px gap). Stroke is at ARROW_Y. -->\n<rect x=\"MID_X-18\" y=\"ARROW_Y-20\" width=\"36\" height=\"12\" rx=\"2\" fill=\"{paper}\"/>\n<text x=\"MID_X\" y=\"ARROW_Y-11\" fill=\"{soft}\" font-size=\"8\"\n      font-family=\"{arrow-label}\" text-anchor=\"middle\" letter-spacing=\"0.06em\">WRITE</text>",
+      "replace": "<!-- Mask spans ARROW_Y-23 to ARROW_Y-9: a 14px plate with a 9px gap above the stroke at ARROW_Y. -->\n<rect x=\"MID_X-24\" y=\"ARROW_Y-23\" width=\"48\" height=\"14\" rx=\"2\" fill=\"{paper}\"/>\n<text x=\"MID_X\" y=\"ARROW_Y-12\" fill=\"{muted}\" font-size=\"10\"\n      font-family=\"{arrow-label}\" text-anchor=\"middle\" letter-spacing=\"0.04em\">WRITE</text>"
+    },
+    {
+      "id": "steps-paper",
+      "file": "references/type-steps.md",
+      "find": "(`#f5f5f5` light, `#2d3142` dark)",
+      "replace": "(`#ffffff` light, `#161E2D` dark)"
+    },
+    {
+      "id": "band-1",
+      "file": "references/type-high-level.md",
+      "keep": "| `band-1` | `#2d3142` |"
+    },
+    {
+      "id": "band-label",
+      "file": "references/type-high-level.md",
+      "keep": "| `band-label` | `#f5f5f5` |"
+    },
+    {
+      "id": "drawio-grey",
+      "file": "references/import-drawio.md",
+      "keep": "| `#f5f5f5` / grey |"
+    },
+    {
+      "id": "onboarding-row",
+      "file": "references/onboarding.md",
+      "keep": "`| accent | #eb6c36 |`"
+    },
+    {
+      "id": "onboarding-json",
+      "file": "references/onboarding.md",
+      "keep": "\"value\": \"#eb6c36\""
+    },
+    {
+      "id": "title-template",
+      "file": "assets/template.html",
+      "before": "  </style>\n</head>",
+      "insert": "    /* AWS skin: the page title is Amazon Ember Bold */\n    h1 { font-weight: 700; }\n"
+    },
+    {
+      "id": "title-template-full",
+      "file": "assets/template-full.html",
+      "before": "  </style>\n</head>",
+      "insert": "    /* AWS skin: the page title is Amazon Ember Bold */\n    h1 { font-weight: 700; }\n"
+    },
+    {
+      "id": "title-template-motion",
+      "file": "assets/template-motion.html",
+      "before": "  </style>\n</head>",
+      "insert": "    /* AWS skin: the page title is Amazon Ember Bold */\n    h1 { font-weight: 700; }\n"
+    },
+    {
+      "id": "title-template-dark",
+      "file": "assets/template-dark.html",
+      "before": "  </style>\n</head>",
+      "insert": "    /* AWS skin: the page title is Amazon Ember Bold */\n    h1 { font-weight: 700; }\n"
+    }
+  ],
+  "forbid": [
+    {
+      "files": [
+        "SKILL.md",
+        "references/*.md",
+        "extra:commands/*.md",
+        "assets/template.html",
+        "assets/template-full.html",
+        "assets/template-motion.html",
+        "assets/template-dark.html"
+      ],
+      "tokens": [
+        "Geist",
+        "Instrument Serif"
+      ]
+    },
+    {
+      "files": [
+        "SKILL.md",
+        "extra:commands/*.md",
+        "assets/template.html",
+        "assets/template-full.html",
+        "assets/template-motion.html",
+        "assets/template-dark.html"
+      ],
+      "tokens": [
+        "fonts.googleapis.com",
+        "fonts.gstatic.com"
+      ]
+    },
+    {
+      "files": [
+        "SKILL.md",
+        "references/*.md",
+        "extra:commands/*.md",
+        "assets/template.html",
+        "assets/template-full.html",
+        "assets/template-motion.html",
+        "assets/template-dark.html"
+      ],
+      "ignore_case": true,
+      "tokens": [
+        "#f5f5f5",
+        "#2d3142",
+        "#4f5d75",
+        "#5a6580",
+        "#bf4520",
+        "#eb6c36",
+        "#2e5aa8",
+        "#ececec",
+        "#bfc0c0",
+        "#f08a59",
+        "#739fdf",
+        "#949eb2",
+        "#393e53",
+        "rgba(45,49,66",
+        "rgba(191,69,32",
+        "rgba(79,93,117",
+        "rgba(240,138,89"
+      ]
+    },
+    {
+      "files": [
+        "SKILL.md",
+        "references/*.md",
+        "extra:commands/*.md"
+      ],
+      "tokens": [
+        "/diagram-design:",
+        "skills/diagram-design",
+        "~/.diagram-design"
+      ]
+    }
+  ]
+}

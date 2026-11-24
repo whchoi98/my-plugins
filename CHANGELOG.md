@@ -15,7 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `aws-diagram-design`: rebuilt from cathrynlavery/diagram-design 2.6.174 (`0eeda75`, 2026-11-23) in place of the 2.3.2 it started from. The source's visual types go from 27 to 52 (heatmap, treemap, waterfall, Sankey, fishbone, kanban, user journey, service blueprint, deployment, dependency graph, UML class, database schema, git graph, steps, story map, Wardley map and others), with Excalidraw and PlantUML import, the packaged `export_svg.py`, `export_png.py` and `verify_geometry.py`, a plan stated before drawing, a render-and-look step and named profiles for custom skins
+- Commands `/my-plugins:import-excalidraw` and `/my-plugins:import-plantuml`, and the three existing diagram commands rebuilt from the source's commands
+- `skills/aws-diagram-design/scripts/aws_check.py`: the AWS edition's own check (no middle dot in SVG text, no font loaded from outside the file, a fallback on every Amazon Ember `font-family`)
+- `scripts/sync_upstream_skills.py`: a `derived` mode that rebuilds a skill from its source by a recipe (`scripts/upstream/aws-diagram-design/recipe.json`: replacement steps, edits anchored on the source's text, tokens that may not survive, the edition's own files). `update` refuses before writing when the recipe does not apply, `verify` fails on a hand edit and on a recipe changed after the last update, `--pinned` rebuilds at the recorded commit and `--schedule` selects the weekly or the biweekly skills. Decision: ADR-009
+- `.github/workflows/sync-aws-diagram-design.yml`: every second Monday the workflow rebuilds the skill. When the source changed it pushes the branch `sync/aws-diagram-design` and opens a pull request, or an issue when Actions may not open one or when the recipe no longer applies. It merges and releases nothing and runs no file of the source
+
 ### Changed
+- `aws-diagram-design`: a custom skin is a profile under `~/.aws-diagram-design/profiles/`, bound to a project by a `.aws-diagram-design` marker, and the skill folder is read-only. A project folder `.aws-diagram-design/style-guide.md` from an earlier version is still read
+- `aws-diagram-design`: fonts follow the source's `system` mode. A diagram names the installed Amazon Ember faces and carries no font `<link>`, `@import` or `@font-face` with a file path, because the source's `self_check.py` rejects CSS `url()`. `assets/fonts/README.md` gives a `local()`-only block
+- `aws-diagram-design`: the style guide follows the structure of the source's (the `ink-strong` role, the contrast contract, the font source, Korean, Chinese and Cyrillic labels) and states the measured contrast of the AWS skin: in the light skin `accent` (3.01:1) and `soft` (3.56:1) are for marks and large text, not for small text. The colors did not change
+- `aws-diagram-design`: the separator check moved from `self_check.py`, which is the source's file again, to `aws_check.py`; the skill's own `scripts/verify-geometry.py` gave way to the source's `verify_geometry.py`
+- The weekly workflow runs `update --schedule weekly`, so it leaves aws-diagram-design to the workflow above
 - `techblogs`: a newly written post stays within a reading time of 15 minutes, so that it is easy to understand and to read. A longer post is cut first (the same number in a table and a figure, repeated sentences, settings the claim does not need) and, if it is still longer, split into a series whose parts each stay within 15 minutes. SKILL.md settles the length with the scope (step 0), has the rule in step 2 and does not keep the warning in a new post (step 5); `references/storylines.md` and `references/design-spec.md` name it. `scripts/check_post.py` warns when the Korean body reads in more than 15 minutes (characters outside code boxes divided by 700, the number `build_post.py` shows; `minutes` written by hand in meta.json does not change it; republished posts are not checked) and `scripts/new_post.py` prints the limit. A post from before the rule is cut or split only when the user asks
 
 ## [1.9.1] - 2026-11-22
@@ -207,7 +219,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `aws-diagram-design`: 처음 가져온 2.3.2 대신 cathrynlavery/diagram-design 2.6.174(`0eeda75`, 2026-11-23)에서 다시 만듦. 원본의 시각 유형이 27가지에서 52가지로 늘어남(히트맵, 트리맵, 워터폴, Sankey, 피시본, 칸반, 사용자 여정, 서비스 블루프린트, 배포, 의존 그래프, UML 클래스, 데이터베이스 스키마, git 그래프, 단계, 스토리 맵, Wardley 맵 등). Excalidraw와 PlantUML 가져오기, 함께 배포되는 `export_svg.py`, `export_png.py`, `verify_geometry.py`, 그리기 전 계획 제시, 렌더해서 확인하는 단계, 사용자 스킨용 프로필 추가
+- command `/my-plugins:import-excalidraw`, `/my-plugins:import-plantuml` 추가. 기존 다이어그램 command 3개도 원본의 command에서 다시 만듦
+- `skills/aws-diagram-design/scripts/aws_check.py` 추가. AWS 판이 따로 두는 검사(SVG 텍스트의 가운뎃점, 파일 밖에서 불러오는 글꼴, 대체 글꼴이 없는 Amazon Ember `font-family`)
+- `scripts/sync_upstream_skills.py`에 `derived` 방식 추가. 변환 규칙(`scripts/upstream/aws-diagram-design/recipe.json`: 치환 단계, 원본 문장을 기준으로 한 편집, 남으면 안 되는 토큰, AWS 판의 파일)으로 skill을 원본에서 다시 만듦. 변환 규칙이 맞지 않으면 `update`가 쓰기 전에 거부하고, 손으로 수정한 파일이나 마지막 업데이트 뒤에 바뀐 변환 규칙이 있으면 `verify`가 실패함. `--pinned`는 기록한 커밋에서 다시 만들고 `--schedule`은 주간 또는 격주 skill을 고름. 결정은 ADR-009
+- `.github/workflows/sync-aws-diagram-design.yml` 추가. 2주에 한 번 월요일에 skill을 다시 만들고, 원본이 바뀌었으면 `sync/aws-diagram-design` 브랜치를 push한 뒤 pull request를 엶(Actions가 열 수 없거나 변환 규칙이 더 맞지 않으면 issue). 병합과 릴리스는 하지 않고 원본의 파일을 실행하지 않음
+
 ### Changed
+- `aws-diagram-design`: 사용자 스킨을 `~/.aws-diagram-design/profiles/`의 프로필로 두고 `.aws-diagram-design` 마커로 프로젝트에 연결함. skill 폴더는 읽기 전용. 이전 버전이 만든 프로젝트 폴더 `.aws-diagram-design/style-guide.md`도 계속 읽음
+- `aws-diagram-design`: 글꼴을 원본의 `system` 방식으로 변경. 다이어그램은 설치된 Amazon Ember의 이름만 적고 글꼴 `<link>`, `@import`, 파일 경로가 든 `@font-face`를 넣지 않음. 원본의 `self_check.py`가 CSS `url()`을 거부하기 때문. `assets/fonts/README.md`의 블록도 `local()`만 사용
+- `aws-diagram-design`: 스타일 가이드를 원본의 구조(`ink-strong` 역할, 대비 기준, 글꼴 출처, 한국어와 중국어, 키릴 문자 레이블)에 맞추고 AWS 스킨의 대비 측정값을 적음. 밝은 스킨의 `accent`(3.01:1)와 `soft`(3.56:1)는 표시와 큰 글자에만 쓰고 작은 글자에는 쓰지 않음. 색은 바꾸지 않음
+- `aws-diagram-design`: 구분 기호 검사를 원본의 파일로 되돌린 `self_check.py`에서 `aws_check.py`로 옮김. skill의 `scripts/verify-geometry.py`는 원본의 `verify_geometry.py`로 대체
+- 주간 워크플로가 `update --schedule weekly`를 실행하여 aws-diagram-design은 위 워크플로에 맡김
 - `techblogs`: 새로 쓰는 글은 이해하기 쉽고 읽기 편하도록 읽는 시간 15분 이하로 씀. 넘으면 먼저 겹치는 내용(표와 그림의 같은 수치, 되풀이하는 문장, 주장과 관계없는 세부 설정)을 줄이고, 그래도 넘으면 편마다 15분 이하인 연재로 나눔. SKILL.md는 0단계에서 분량을 정하고 2단계에 규칙을 두며 5단계에서 새 글에 경고를 남기지 않음. `references/storylines.md`와 `references/design-spec.md`에 같은 규칙 추가. `scripts/check_post.py`는 한국어 본문의 읽는 시간이 15분을 넘으면 경고(코드 상자를 뺀 글자 수를 700으로 나눈 값으로 `build_post.py`가 표시하는 값과 같음, meta.json에 직접 적은 `minutes`로 바뀌지 않음, 옮겨 싣는 글은 검사하지 않음). `scripts/new_post.py`는 한도를 출력. 규칙 전에 올린 글은 사용자가 요청할 때만 줄이거나 나눔
 
 ## [1.9.1] - 2026-11-22

@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>[PROJECT NAME] Architecture</title>
-  <!-- Amazon Ember + Amazon Ember Mono are bundled with the skill (assets/fonts/README.md) — add the @font-face block when shipping the file; local() resolves installed copies with no CDN. -->
+  <!-- Fonts: Amazon Ember and Amazon Ember Mono are installed fonts (Font source: system, references/style-guide.md). No font <link>, so nothing loads from a CDN. -->
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -21,6 +21,7 @@
       --color-accent-tint: rgba(255,153,0,0.08);
       --color-link:        #0972D3;
       --font-sans:   'Amazon Ember', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      --font-serif:  'Amazon Ember', 'Noto Sans KR', 'Noto Sans CJK KR', 'Apple SD Gothic Neo', 'Malgun Gothic', sans-serif;
       --font-mono:   'Amazon Ember Mono', ui-monospace, Menlo, monospace;
     }
 
@@ -48,9 +49,9 @@
     }
 
     h1 {
-      font-family: var(--font-sans);
+      font-family: var(--font-serif);
       font-size: clamp(1.75rem, 3vw + 1rem, 2.5rem);
-      font-weight: 700;
+      font-weight: 400;
       letter-spacing: -0.02em;
       line-height: 1.1;
       color: var(--color-ink);
@@ -79,8 +80,15 @@
       /* padding: 1.5rem; */
     }
 
-    svg { width: 100%; min-width: 900px; display: block; }
-    .frame { overflow-x: auto; }
+    svg { width: 100%; min-width: 1000px; display: block; }  /* == viewBox width: never scale the type ramp down */
+    /* Paper has no scrollbar, so the local scroller would clip instead of
+       scroll. Let the diagram scale down to the sheet: smaller but whole
+       beats sharp but cut off. Must come after the svg rule above - a media
+       query adds no specificity, so a later plain rule would win. */
+    @media print {
+      .diagram-container { overflow-x: visible; }
+      svg { min-width: 0; }
+    }
 
     /* ── Info cards ───────────────────────────────────────────────── */
     .cards {
@@ -161,6 +169,8 @@
       flex-wrap: wrap;
       gap: 0.5rem;
     }
+    /* AWS skin: the page title is Amazon Ember Bold */
+    h1 { font-weight: 700; }
   </style>
 </head>
 <body>
@@ -168,7 +178,7 @@
 
     <!-- Header -->
     <div class="header">
-      <p class="header-eyebrow">Architecture · [Date]</p>
+      <p class="header-eyebrow">Architecture, [Date]</p>
       <h1>[Project Name]</h1>
       <p class="subtitle">[One-sentence description of what this diagram shows.]</p>
     </div>
@@ -176,7 +186,7 @@
     <!-- Main Diagram -->
     <div class="diagram-container">
       <!-- Replace [diagram-slug] with a unique slug for this diagram before export. -->
-      <svg viewBox="0 0 1000 700" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="[diagram-slug]-title [diagram-slug]-desc">
+      <svg viewBox="0 0 1000 720" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="[diagram-slug]-title [diagram-slug]-desc">
         <title id="[diagram-slug]-title">[Diagram title]</title>
         <desc id="[diagram-slug]-desc">[One sentence describing what the diagram shows]</desc>
         <defs>
@@ -404,7 +414,7 @@
 
     <!-- Footer -->
     <div class="footer">
-      <span>[Project Name] · Architecture Overview</span>
+      <span>[Project Name], Architecture Overview</span>
       <span>[Date]</span>
     </div>
 

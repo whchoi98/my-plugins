@@ -8,7 +8,7 @@ content from the following third-party sources under their respective licenses.
 ## diagram-design (upstream base)
 
 - **License:** MIT
-- **Upstream:** https://github.com/cathrynlavery/diagram-design (base version 2.3.2)
+- **Upstream:** https://github.com/cathrynlavery/diagram-design (first taken at version 2.3.2; `scripts/upstream-skills.json` records the commit and the version the skill is rebuilt from)
 - **Used in:** the entire skill structure — `skills/aws-diagram-design/` (SKILL.md, references, templates, examples, scripts), `commands/`, and `scripts/`.
 
 ## AWS Architecture Icons

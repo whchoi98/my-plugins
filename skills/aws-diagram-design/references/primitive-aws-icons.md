@@ -101,7 +101,7 @@ Renamed services to know: SageMaker → `Arch_Amazon-SageMaker-AI`, QuickSight �
 
 ## Inlining an icon
 
-Read the SVG file, keep only its **inner `<g>`** (drop the XML declaration, the outer `<svg>` wrapper, and the `<title>`), strip `id` attributes (two icons from the same category collide on the BG-group id), and wrap in a positioned group:
+Read the SVG file, keep only its **inner `<g>`** (drop the XML declaration, the outer `<svg>` wrapper, and the `<title>`), strip `id` attributes (two icons from the same category collide on the BG-group id), and wrap in a positioned group. Some files carry no XML declaration or `<title>` and put `fill="none"` on the outer `<svg>`: move a `fill` or `stroke` attribute of the wrapper onto the positioned group, or a shape without its own fill turns black:
 
 ```svg
 <!-- 24×24 service icon at (x,y): scale = 24 / 64 = 0.375 -->
@@ -126,10 +126,12 @@ The icon replaces the rectangular type tag from SKILL.md §6 — don't stack bot
   …inlined icon group…
 </g>
 <text x="X+48" y="Y+28" fill="#232F3E" font-size="13" font-weight="600"
-      font-family="'Amazon Ember', 'Helvetica Neue', Arial, sans-serif">Order API</text>
+      font-family="'Amazon Ember', 'Helvetica Neue', Helvetica, Arial, sans-serif">Order API</text>
 <text x="X+48" y="Y+46" fill="#545B64" font-size="11"
       font-family="'Amazon Ember Mono', ui-monospace, monospace">Lambda, python3.13</text>
 <!-- more sublabels: y = Y+46+16*i; node height 56 (one line), 80 (two), 96 (three) -->
+<!-- no sublabel: the name sits on the icon's center line, y = Y+33 -->
+<!-- a Korean name extends the family on its <text>: style-guide.md, Korean labels -->
 ```
 
 ### Compact nodes (non-architecture types)
@@ -151,7 +153,7 @@ Rules for the corner slot:
 - Scale factors at 16px: service `16/64 = 0.25`, resource `16/48 ≈ 0.333`, group badge `16/40 = 0.4`.
 - **One icon per node** — the node's primary service. A node listing two tools (`Kinesis, DMS`) shows the dominant one; the sublabel already names the rest.
 - **Keep the title clear of the icon.** With a centered title and a 16px top-right icon on a 100px-wide node, cap the title at ~13 characters; if the title can't shrink, move to the icon-left pattern or a wider node.
-- Nodes for non-AWS subjects (roles, generic actors, on-prem tools) take no AWS icon — mixing generic monochrome marks ([primitive-icons.md](primitive-icons.md)) in the same diagram is fine.
+- Nodes for non-AWS subjects (roles, generic actors, on-prem tools) take no AWS service icon. A generic mark from `resource/General-Icons/` (client, user, internet) or from the monochrome set ([primitive-icons.md](primitive-icons.md)) is fine in the same diagram; pick one of the two sets per diagram.
 
 ### Group containers (zones)
 
@@ -178,7 +180,7 @@ AWS zone containers follow the official convention: **border in the group color,
 <rect x="X" y="Y" width="W" height="H" fill="none" stroke="#8C4FFF" stroke-width="1"/>
 <g transform="translate(X,Y) scale(0.6)" aria-hidden="true">…group/Virtual-private-cloud-VPC_32.svg inner g…</g>
 <text x="X+32" y="Y+16" fill="#232F3E" font-size="12" font-weight="600"
-      font-family="'Amazon Ember', 'Helvetica Neue', Arial, sans-serif">VPC, 10.0.0.0/16</text>
+      font-family="'Amazon Ember', 'Helvetica Neue', Helvetica, Arial, sans-serif">VPC, 10.0.0.0/16</text>
 ```
 
 Zone dashes use `stroke-dasharray="4,4"`; nested zones inset by ≥16px. These zone borders are *identity colors* and don't count against the accent budget — but the §6 connector rules and §7 complexity budget still apply unchanged.
@@ -187,7 +189,7 @@ Zone dashes use `stroke-dasharray="4,4"`; nested zones inset by ≥16px. These z
 
 1. **Never recolor, restyle, distort, rotate, or crop an official icon.** If the diagram must be monochrome, use the generic set ([primitive-icons.md](primitive-icons.md)) instead of tinting AWS icons.
 2. **Minimum render 16px**; 24–32px inside nodes is the sweet spot. Keep the 1:1 aspect ratio.
-3. **Icon and zone-border colors are identity marks, exempt from the accent budget.** The `accent` (#FF9900) budget of 1–2 still governs editorial elements: focal node strokes, highlighted arrows, callouts.
+3. **Icon and zone-border colors are identity marks, exempt from the accent budget.** The `accent` budget of 1–2 still governs editorial elements: focal node strokes, highlighted arrows, callouts.
 4. **Don't pair a full-color icon with a colored type tag** — the icon already carries the category signal. Node text stays `ink`/`muted`.
 5. **Latest names**: this release renames several services (see Lookup workflow). Label nodes with the current service name, not the icon's historical one.
 6. **Density**: full-color icons are visually loud. Above ~7 icons, consider zoning the diagram or dropping icons from secondary nodes (text-only nodes are fine).

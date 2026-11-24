@@ -28,8 +28,9 @@ the dev harness cannot be bypassed silently.
 | Blog packaging | `skills/aws-blog-skills/scripts/package_blog.sh` | Deletes only `<out>/<slug>` and `<out>/<slug>.zip` (`${OUT:?}` guard) |
 | URL checker | `skills/aws-blog-skills/scripts/check_urls.py` | GET only, URLs taken from the given drafts, no credentials |
 | Blog renderer | `skills/aws-blog-skills/scripts/render_diagrams.py` | Opens only local `file://` pages from the given images directory |
-| Diagram import parsers | `skills/aws-diagram-design/scripts/mermaid_extract.py`, `drawio_extract.py` | Mermaid is parsed as bounded text and never evaluated, rendered, fetched or executed; draw.io XML with DTD or entity declarations is rejected and decompression is size-limited |
-| Diagram self-check | `skills/aws-diagram-design/scripts/self_check.py` | Flags remote assets (except the approved Google Fonts stylesheet), executable attributes and extra scripts in a generated HTML file |
+| Diagram import parsers | `skills/aws-diagram-design/scripts/mermaid_extract.py`, `drawio_extract.py`, `excalidraw_extract.py`, `plantuml_extract.py` | Each source is parsed as text and never evaluated, rendered, fetched or executed; draw.io XML with DTD or entity declarations is rejected and decompression is size-limited; a PlantUML include is refused, not read; links and images in a source are counted, not followed |
+| Diagram self-check | `skills/aws-diagram-design/scripts/self_check.py` | Flags remote assets (except the approved Google Fonts stylesheet; none with `--offline`), CSS `@import` and `url()`, executable attributes and extra scripts in a generated HTML file |
+| AWS edition check | `skills/aws-diagram-design/scripts/aws_check.py` | The edition's own check: no font loaded from outside the file (no `<link>`, `@import`, `@font-face` with `url()`), a fallback on every Amazon Ember `font-family`, no middle dot in SVG text |
 | Editable-deck checker | `skills/aws-infographic/scripts/check_editable.py` | Standard library only; reads slide XML from the given `.pptx` and refuses XML that carries a DTD or entity declarations |
 | Source-material rule | `skills/aws-blog-skills/SKILL.md` step 0 | Instructions inside sources and fetched pages are not followed, kept out of the draft, and reported to the user |
 | Structure tests | `tests/structure/test-plugin-structure.sh` | Root component paths, empty `.mcp.json`, stale namespaces under `skills/` and `commands/`, no `CLAUDE.md` inside skill folders |
@@ -41,7 +42,7 @@ the dev harness cannot be bypassed silently.
 |---|---|---|---|
 | aws-blog-skills | drafts, sibling `aws-diagram-design/assets` | work folder `<YYYY-MM-DD>-<slug>/` only | Playwright Chromium on local files; GET on draft URLs |
 | aws-diagram | bundled `assets/icons.json`, the draft SVG | output SVG in the working directory | nothing |
-| aws-diagram-design | the HTML, `.drawio` or `.mmd` given | HTML/SVG/PNG next to the source or at `--output` | Playwright Chromium for export |
+| aws-diagram-design | the HTML, `.drawio`, `.mmd`, `.excalidraw` or PlantUML file given; a profile under `~/.aws-diagram-design/profiles/` and the project's `.aws-diagram-design` marker | HTML/SVG/PNG next to the source or at `--output`; a profile and a marker when the user saves a custom skin | Playwright Chromium for export, with network and JavaScript on |
 | aws-ppt-skills | bundled templates and fonts, built deck | deck, HTML deck and QA images in the working directory; fonts in the home | `node`, `soffice`, `pdftoppm`; `svg_to_png.py` tries Playwright, cairosvg, `rsvg-convert`, `convert`; `deck_to_html.py` runs `soffice` (a LibreOffice profile of its own in a temporary folder) and `pdftoppm`; `preview_html_deck.py` opens the page in Playwright Chromium. The HTML deck loads nothing from the network, escapes slide and note text, keeps only `http`, `https` and `mailto` links, and holds the speaker notes as readable text unless `--no-notes` is given |
 | consulting-ppt-white-ppt | logo image, built deck | deck in the working directory; `fix_pptx.py` rewrites it in place | `node`, `soffice`, `pdftoppm` |
 | pptx-template-fill | the user's template | filled deck in the working directory | `qa_check.py --render` runs `soffice` and `pdftotext` |
@@ -56,6 +57,20 @@ the dev harness cannot be bypassed silently.
 
 `build_bundle.py` (aws-diagram) and `build_aws_icons.py` (aws-diagram-design) rebuild a skill's own `assets/`
 from an icon package. They are maintainer tools for a clone; no workflow step runs them.
+
+**Derived skill.** `aws-diagram-design` is the AWS edition of cathrynlavery/diagram-design. `sync_upstream_skills.py`
+rebuilds it from the source by `scripts/upstream/aws-diagram-design/recipe.json`: it rewrites `.md` and `.html` files
+only, copies the source's eight Python scripts byte for byte, and refuses before writing anything when an anchor of
+the recipe is gone or a token the recipe forbids survives. Neither the sync, nor
+`.github/workflows/sync-aws-diagram-design.yml` (every second week, same permissions and one branch,
+`sync/aws-diagram-design`), nor `tests/structure/test-aws-diagram-design.sh` runs a script of the source; that test
+parses them and fails on an import outside its list or on a call that runs code or a process. A read-only review of
+the eight scripts at the pinned commit (2026-11-24) found no network call, no process or dynamic code, no access to the
+environment or the home folder, and writes only to the path given on the command line. Two limits remain.
+`export_png.py` opens the HTML in Chromium with network and JavaScript on, so it is for a diagram the skill generated
+and that passed `self_check.py` and `aws_check.py`, never for an HTML file from elsewhere. And a hostile source or
+HTML file can make `export_svg.py`, `self_check.py`, `verify_geometry.py` and three of the extractors run for a very
+long time (regular expressions that backtrack, a loop over a huge coordinate), which costs time, not data.
 
 **Vendored skills.** `ui-deslop` and `eng-deslop` are other authors' text that Claude follows, copied at a pinned commit
 (`scripts/upstream-skills.json`). `scripts/sync_upstream_skills.py` copies files and never runs one. It refuses a source
@@ -93,10 +108,10 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
   `commands/` is the only root component and holds prompts, not code.
 - Scripts never write into a skill folder, which is the plugin cache. Output goes to the work folder or the
   user's current directory ([ADR-001](../decisions/ADR-001-claude-code-skill-conventions.md)); `setup` and
-  `install_fonts.sh` write only under the user's home. One exception is model-driven, not a script: the
-  aws-diagram-design brand onboarding (`skills/aws-diagram-design/references/onboarding.md`) rewrites the skill's
-  own `references/style-guide.md` after the user approves the diff. In an installed copy that file is in the
-  plugin cache, so the change is lost on the next update.
+  `install_fonts.sh` write only under the user's home. The same holds for what the model writes: the aws-diagram-design brand
+  onboarding (`skills/aws-diagram-design/references/onboarding.md`) saves a custom skin as a profile under
+  `~/.aws-diagram-design/profiles/` and a marker in the project, and SKILL.md §0 declares the skill folder
+  read-only.
 - `setup.sh` runs sudo only when given `--sudo`, and then only `sudo -n`, which never prompts. When a password is
   needed it prints the command, and `skills/setup/SKILL.md` makes Claude show the command and ask before the sudo
   step. The user runs it as `! <command>`.
@@ -118,6 +133,9 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
   through a pull request that a person reads and reaches users only through a release by the maintainer. The copy is
   pinned to a commit with a hash per file, and a new file type has to be allowed in the manifest first
   ([ADR-008](../decisions/ADR-008-vendored-skills-synced-by-pull-request.md)).
+- aws-diagram-design is not a copy of its source: a recipe rebuilds it. A change in the source that the recipe does
+  not cover is refused before anything is written and ends in an issue, and no script of the source runs anywhere
+  before a person has reviewed it ([ADR-009](../decisions/ADR-009-derived-skill-rebuilt-by-recipe.md)).
 
 ### 4. Code Pointers
 - `.claude/hooks/secret-scan.sh`
@@ -143,6 +161,11 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 - `tests/structure/test-aws-infographic.sh`
 - `scripts/sync_upstream_skills.py`
 - `scripts/upstream-skills.json`
+- `scripts/upstream/aws-diagram-design/recipe.json`
+- `skills/aws-diagram-design/scripts/aws_check.py`
+- `.github/workflows/sync-aws-diagram-design.yml`
+- `tests/structure/test-upstream-derived.sh`
+- `tests/structure/test-aws-diagram-design.sh`
 - `.github/workflows/sync-upstream-skills.yml`
 - `tests/structure/test-upstream-skills.sh`
 
@@ -174,8 +197,9 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 | 블로그 패키징 | `skills/aws-blog-skills/scripts/package_blog.sh` | `<out>/<slug>`와 `<out>/<slug>.zip`만 삭제(`${OUT:?}` 가드) |
 | URL 검사기 | `skills/aws-blog-skills/scripts/check_urls.py` | GET만 사용, 지정한 원고에서 찾은 URL만 요청, 자격 증명 없음 |
 | 블로그 렌더러 | `skills/aws-blog-skills/scripts/render_diagrams.py` | 지정한 images 폴더의 로컬 `file://` 페이지만 열기 |
-| 다이어그램 가져오기 파서 | `skills/aws-diagram-design/scripts/mermaid_extract.py`, `drawio_extract.py` | Mermaid는 범위가 정해진 텍스트로만 파싱하고 평가, 렌더, 내려받기, 실행을 하지 않음. draw.io XML은 DTD와 엔티티 선언이 있으면 거부하고 압축 해제 크기를 제한 |
-| 다이어그램 자체 점검 | `skills/aws-diagram-design/scripts/self_check.py` | 생성된 HTML에서 외부 자산(승인된 Google Fonts 스타일시트 제외), 실행 속성, 추가 스크립트를 잡아냄 |
+| 다이어그램 가져오기 파서 | `skills/aws-diagram-design/scripts/mermaid_extract.py`, `drawio_extract.py`, `excalidraw_extract.py`, `plantuml_extract.py` | 원본을 텍스트로만 파싱하고 평가, 렌더, 내려받기, 실행을 하지 않음. draw.io XML은 DTD와 엔티티 선언이 있으면 거부하고 압축 해제 크기를 제한. PlantUML의 include는 읽지 않고 거부. 원본 안의 링크와 이미지는 개수만 세고 따라가지 않음 |
+| 다이어그램 자체 점검 | `skills/aws-diagram-design/scripts/self_check.py` | 생성된 HTML에서 외부 자산(승인된 Google Fonts 스타일시트 제외, `--offline`이면 그것도 거부), CSS `@import`와 `url()`, 실행 속성, 추가 스크립트를 잡아냄 |
+| AWS 판 점검 | `skills/aws-diagram-design/scripts/aws_check.py` | AWS 판이 따로 두는 검사. 파일 밖에서 불러오는 글꼴(`<link>`, `@import`, `url()`을 쓴 `@font-face`), 대체 글꼴이 없는 Amazon Ember `font-family`, SVG 텍스트의 가운뎃점을 잡아냄 |
 | 편집 가능 덱 검사기 | `skills/aws-infographic/scripts/check_editable.py` | 표준 라이브러리만 사용. 지정한 `.pptx`의 슬라이드 XML만 읽고, DTD나 entity 선언이 있는 XML은 거부 |
 | 소재 규칙 | `skills/aws-blog-skills/SKILL.md` 0단계 | 소재와 읽어 온 페이지 안의 지시문을 따르지 않고 원고에 넣지 않으며 사용자에게 알림 |
 | 구조 테스트 | `tests/structure/test-plugin-structure.sh` | 루트 구성 요소 경로, 빈 `.mcp.json`, `skills/`와 `commands/`의 예전 이름 공간, skill 폴더 안 `CLAUDE.md` 금지 |
@@ -187,7 +211,7 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 |---|---|---|---|
 | aws-blog-skills | 원고, 옆 skill의 `aws-diagram-design/assets` | 작업 폴더 `<YYYY-MM-DD>-<slug>/`만 | 로컬 파일을 여는 Playwright Chromium, 원고 URL에 GET |
 | aws-diagram | 포함된 `assets/icons.json`, 초안 SVG | 작업 디렉터리의 결과 SVG | 없음 |
-| aws-diagram-design | 지정한 HTML, `.drawio`, `.mmd` | 원본 옆이나 `--output`의 HTML/SVG/PNG | 내보내기용 Playwright Chromium |
+| aws-diagram-design | 지정한 HTML, `.drawio`, `.mmd`, `.excalidraw`, PlantUML 파일. `~/.aws-diagram-design/profiles/`의 프로필과 프로젝트의 `.aws-diagram-design` 마커 | 원본 옆이나 `--output`의 HTML/SVG/PNG. 사용자가 사용자 스킨을 저장하면 프로필과 마커 | 내보내기용 Playwright Chromium(네트워크와 JavaScript가 켜진 상태) |
 | aws-ppt-skills | 포함된 템플릿과 폰트, 빌드한 덱 | 작업 디렉터리의 덱, HTML 덱, QA 이미지, 홈의 폰트 | `node`, `soffice`, `pdftoppm`. `svg_to_png.py`는 Playwright, cairosvg, `rsvg-convert`, `convert` 순으로 시도. `deck_to_html.py`는 `soffice`(임시 폴더의 전용 LibreOffice 프로필)와 `pdftoppm`을 실행하고, `preview_html_deck.py`는 Playwright Chromium으로 페이지를 엽니다. HTML 덱은 네트워크에서 아무것도 불러오지 않고, 슬라이드와 노트의 글자를 이스케이프하며, `http`, `https`, `mailto` 링크만 남깁니다. 발표자 노트는 `--no-notes`를 주지 않으면 읽을 수 있는 글자로 들어갑니다 |
 | consulting-ppt-white-ppt | 로고 이미지, 빌드한 덱 | 작업 디렉터리의 덱. `fix_pptx.py`가 제자리에서 고침 | `node`, `soffice`, `pdftoppm` |
 | pptx-template-fill | 사용자의 템플릿 | 작업 디렉터리의 채운 덱 | `qa_check.py --render`가 `soffice`와 `pdftotext` 실행 |
@@ -201,6 +225,8 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 | setup | 자기 폴더와 옆 skill 폴더 | 사용자 홈(아래 참고). 시스템 패키지는 `--sudo`일 때만 | 아래 내려받기 |
 
 `build_bundle.py`(aws-diagram)와 `build_aws_icons.py`(aws-diagram-design)는 아이콘 패키지로 skill 자신의 `assets/`를 다시 만드는 관리자용 도구입니다. 클론에서만 쓰며, 워크플로 단계에서는 실행하지 않습니다.
+
+**다시 만드는 skill.** `aws-diagram-design`은 cathrynlavery/diagram-design의 AWS 판입니다. `sync_upstream_skills.py`가 `scripts/upstream/aws-diagram-design/recipe.json`의 변환 규칙으로 원본에서 다시 만듭니다. `.md`와 `.html` 파일만 변환하고, 원본의 Python 스크립트 8개는 바이트 그대로 복사하며, 변환 규칙의 기준 문장이 사라졌거나 금지한 토큰이 남으면 아무것도 쓰기 전에 거부합니다. 동기화, `.github/workflows/sync-aws-diagram-design.yml`(2주에 한 번, 같은 권한, 브랜치는 `sync/aws-diagram-design` 하나), `tests/structure/test-aws-diagram-design.sh`는 원본의 스크립트를 실행하지 않습니다. 이 테스트는 스크립트를 파싱만 하고, 목록에 없는 import나 코드와 프로세스를 실행하는 호출이 있으면 실패합니다. 고정한 커밋의 스크립트 8개를 읽기 전용으로 검토한 결과(2026-11-24) 네트워크 호출, 프로세스와 동적 코드 실행, 환경 변수와 홈 폴더 접근이 없고, 쓰기는 명령줄에서 지정한 경로에만 합니다. 한계는 두 가지입니다. `export_png.py`는 HTML을 네트워크와 JavaScript가 켜진 Chromium으로 엽니다. 그래서 skill이 만들었고 `self_check.py`와 `aws_check.py`를 통과한 다이어그램에만 쓰고, 다른 곳에서 받은 HTML에는 쓰지 않습니다. 그리고 악의적으로 만든 원본이나 HTML은 `export_svg.py`, `self_check.py`, `verify_geometry.py`, 추출기 세 개를 아주 오래 실행되게 할 수 있습니다(역추적이 많은 정규식, 큰 좌표를 도는 반복). 잃는 것은 시간이고 데이터는 아닙니다.
 
 **가져온 skill.** `ui-deslop`과 `eng-deslop`은 Claude가 따르는 다른 저작자의 글이며, 고정한 커밋에서 복사합니다(`scripts/upstream-skills.json`). `scripts/sync_upstream_skills.py`는 파일을 복사할 뿐 실행하지 않습니다. 라이선스가 바뀐 원본, 심볼릭 링크, 숨김 파일, skill의 `allow_ext`에 없는 파일 형식, 특이한 파일 이름, 2 MB를 넘는 파일은 거부하고, 가져온 파일이 기록한 해시와 다르면 `verify`가 실패합니다. `.github/workflows/sync-upstream-skills.yml`은 이 저장소에만 유효한 토큰(`contents`, `pull-requests`, `issues` 쓰기)으로 GitHub에서 매주 스크립트를 실행합니다. `sync/upstream-skills` 브랜치 하나만 push하고 pull request나 issue를 엽니다. 병합과 릴리스를 하지 않고, 원본의 파일을 실행하지 않으며, 원본이나 이벤트의 글을 명령에 넣지 않습니다. 보고서에는 원본의 글이 코드 표기 안에 들어갑니다. ui-deslop의 선택 기능에 쓰는 Node Playwright와 ffmpeg는 사용자가 설치하고, `setup`은 ffmpeg가 있는지만 알립니다.
 
@@ -224,13 +250,14 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 - PreToolUse는 exit 2로 차단하고 `|| true`를 붙이지 않습니다. exit 1은 경고만 합니다.
 - 명령에 `git add`나 `commit -a`가 들어 있으면 PreToolUse 스캔이 수정 파일과 추적되지 않은 파일까지 확인합니다. 스테이징이 훅 실행 뒤에 일어나기 때문입니다. Claude Code 밖에서 만든 커밋은 git pre-commit 훅이 막습니다.
 - 루트에는 훅, agent, MCP 서버, `bin/`, `settings.json`을 배포하지 않으므로 설치만으로는 아무것도 실행되지 않습니다. 루트의 구성 요소는 `commands/`뿐이며, 코드가 아니라 프롬프트입니다.
-- 스크립트는 플러그인 캐시인 skill 폴더에 쓰지 않습니다. 결과는 작업 폴더나 사용자의 현재 디렉터리에 두고([ADR-001](../decisions/ADR-001-claude-code-skill-conventions.md)), `setup`과 `install_fonts.sh`는 사용자 홈 아래에만 씁니다. 예외가 하나 있는데, 스크립트가 아니라 모델이 하는 일입니다. aws-diagram-design 브랜드 온보딩(`skills/aws-diagram-design/references/onboarding.md`)은 사용자가 diff를 승인하면 skill 자신의 `references/style-guide.md`를 다시 씁니다. 설치본에서는 이 파일이 플러그인 캐시에 있으므로 다음 업데이트 때 변경이 사라집니다.
+- 스크립트는 플러그인 캐시인 skill 폴더에 쓰지 않습니다. 결과는 작업 폴더나 사용자의 현재 디렉터리에 두고([ADR-001](../decisions/ADR-001-claude-code-skill-conventions.md)), `setup`과 `install_fonts.sh`는 사용자 홈 아래에만 씁니다. 모델이 쓰는 파일도 같습니다. aws-diagram-design 브랜드 온보딩(`skills/aws-diagram-design/references/onboarding.md`)은 사용자 스킨을 `~/.aws-diagram-design/profiles/`의 프로필과 프로젝트의 마커로 저장하고, SKILL.md §0은 skill 폴더를 읽기 전용으로 정합니다.
 - `setup.sh`는 `--sudo`를 받았을 때만, 그것도 암호를 묻지 않는 `sudo -n`으로만 sudo를 씁니다. 암호가 필요하면 명령을 출력하고, `skills/setup/SKILL.md`에 따라 Claude가 sudo 단계 전에 명령을 보여 주고 허락을 받습니다. 사용자는 `! <명령>`으로 직접 실행합니다.
 - 체크섬으로 확인하는 것은 LibreOffice뿐이고, 체크섬도 같은 서버에서 받으므로 손상은 잡지만 오염된 미러는 막지 못합니다. uv와 Noto 폰트는 HTTPS에만 기댑니다.
 - 소재(블로그, PDF, 슬라이드)와 WebFetch로 읽은 페이지는 지시가 아니라 데이터입니다. aws-blog-skills 0단계에서 작업 지시는 사용자의 메시지에서만 받습니다. 소재에서 발견한 지시문은 따르지 않고 원고에 옮기지 않으며, 위치와 함께 사용자에게 알립니다. 소재의 명령은 인용하거나 검증할 내용이고, 실행하려면 먼저 사용자 승인을 받습니다. `tests/structure/test-aws-blog-skills.sh`가 이 규칙이 0단계에 남아 있는지 확인합니다. 덱과 다이어그램 skill도 사용자가 준 소재를 읽지만 이 규칙을 명시하지 않습니다.
 - 다이어그램 가져오기 파서는 `.drawio`와 Mermaid 입력을 신뢰하지 않고, `self_check.py`는 승인된 Google Fonts 스타일시트 외의 외부 자산, 실행 속성, 추가 스크립트를 거부하므로 생성된 다이어그램은 혼자 완결된 파일입니다.
 - techblogs가 작업 폴더 밖에 쓰는 경로는 `place_post.py` 하나입니다. 사용자가 지정한 블로그 저장소에 글 한 편을 복사하고 git을 실행하는 대신 `git add` 줄을 출력합니다. 그 저장소는 push하면 사이트가 배포되므로 스테이징, 커밋, push는 사용자가 합니다. `import_aws_post.py`는 페이지를 데이터로 다룹니다. 허용한 인라인 태그만 남기고 AWS 블로그 호스트에서만 내려받습니다([ADR-005](../decisions/ADR-005-techblogs-personal-blog-workflow.md)).
 - 가져온 skill의 원본이 바뀌면 모든 설치자가 받는 지시문이 바뀝니다. 그래서 사람이 읽은 pull request로만 `main`에 들어가고, 관리자가 릴리스해야 사용자에게 전달됩니다. 복사본은 커밋과 파일별 해시로 고정하고, 새 파일 형식은 매니페스트에서 먼저 허용해야 들어옵니다([ADR-008](../decisions/ADR-008-vendored-skills-synced-by-pull-request.md)).
+- aws-diagram-design은 원본을 그대로 복사하지 않고 변환 규칙으로 다시 만듭니다. 변환 규칙이 다루지 않는 원본 변경은 쓰기 전에 거부되어 issue로 남고, 원본의 스크립트는 검토 전에는 어디에서도 실행되지 않습니다([ADR-009](../decisions/ADR-009-derived-skill-rebuilt-by-recipe.md)).
 
 ### 4. 코드 포인터
 - `.claude/hooks/secret-scan.sh`
@@ -256,6 +283,11 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 - `tests/structure/test-aws-infographic.sh`
 - `scripts/sync_upstream_skills.py`
 - `scripts/upstream-skills.json`
+- `scripts/upstream/aws-diagram-design/recipe.json`
+- `skills/aws-diagram-design/scripts/aws_check.py`
+- `.github/workflows/sync-aws-diagram-design.yml`
+- `tests/structure/test-upstream-derived.sh`
+- `tests/structure/test-aws-diagram-design.sh`
 - `.github/workflows/sync-upstream-skills.yml`
 - `tests/structure/test-upstream-skills.sh`
 

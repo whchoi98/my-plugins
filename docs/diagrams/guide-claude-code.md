@@ -73,7 +73,8 @@ bash skills/setup/scripts/setup.sh install
 
 ```bash
 python3 skills/aws-diagram-design/scripts/self_check.py <생성된.html>   # 접근성·단일 파일 계약
-python3 scripts/diagrams/verify-geometry.py <생성된.html>               # 라벨 마스크-노드 겹침
+python3 skills/aws-diagram-design/scripts/verify_geometry.py <생성된.html>   # 연결선 규칙, 라벨 마스크와 노드 겹침
+python3 skills/aws-diagram-design/scripts/aws_check.py <생성된.html>     # AWS 판 규칙: 가운뎃점, 글꼴
 python3 scripts/diagrams/verify-motion.py <생성된.html>                 # 모션 사용 시
 ```
 
