@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.10.0] - 2026-11-24
+
 ### Added
 - `aws-diagram-design`: rebuilt from cathrynlavery/diagram-design 2.6.174 (`0eeda75`, 2026-11-23) in place of the 2.3.2 it started from. The source's visual types go from 27 to 52 (heatmap, treemap, waterfall, Sankey, fishbone, kanban, user journey, service blueprint, deployment, dependency graph, UML class, database schema, git graph, steps, story map, Wardley map and others), with Excalidraw and PlantUML import, the packaged `export_svg.py`, `export_png.py` and `verify_geometry.py`, a plan stated before drawing, a render-and-look step and named profiles for custom skins
 - Commands `/my-plugins:import-excalidraw` and `/my-plugins:import-plantuml`, and the three existing diagram commands rebuilt from the source's commands
@@ -189,7 +191,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.9.1...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/whchoi98/my-plugins/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/whchoi98/my-plugins/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/whchoi98/my-plugins/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/whchoi98/my-plugins/compare/v1.7.0...v1.8.0
@@ -218,6 +221,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.10.0] - 2026-11-24
 
 ### Added
 - `aws-diagram-design`: 처음 가져온 2.3.2 대신 cathrynlavery/diagram-design 2.6.174(`0eeda75`, 2026-11-23)에서 다시 만듦. 원본의 시각 유형이 27가지에서 52가지로 늘어남(히트맵, 트리맵, 워터폴, Sankey, 피시본, 칸반, 사용자 여정, 서비스 블루프린트, 배포, 의존 그래프, UML 클래스, 데이터베이스 스키마, git 그래프, 단계, 스토리 맵, Wardley 맵 등). Excalidraw와 PlantUML 가져오기, 함께 배포되는 `export_svg.py`, `export_png.py`, `verify_geometry.py`, 그리기 전 계획 제시, 렌더해서 확인하는 단계, 사용자 스킨용 프로필 추가
@@ -393,7 +398,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.9.1...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.10.0...HEAD
+[1.10.0]: https://github.com/whchoi98/my-plugins/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/whchoi98/my-plugins/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/whchoi98/my-plugins/compare/v1.8.0...v1.9.0
 [1.8.0]: https://github.com/whchoi98/my-plugins/compare/v1.7.0...v1.8.0
