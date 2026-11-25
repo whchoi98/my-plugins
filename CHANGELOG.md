@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.11.0] - 2026-11-25
+
 ### Added
 - `aws-blog-skills`: a pre-check before the draft goes to a reviewer (step 6), following the blog-precheck skill of github.com/comeddy/blog-precheck-plugin (MIT, Youngjin Kim). Score the draft on six criteria into `gate-report.md` (minimums: consistency 80, structure 70, notation 70, repetition and filler 60, distinctiveness and evidence 60, readability 60; total 70), correct only the criteria below their minimum and score a second time at most. `references/precheck.md` holds the criteria, what each one looks at in this skill, the report layout and the order of correcting and scoring again
 - `aws-blog-skills`: `scripts/redundancy_metrics.py` measures repetition and filler (repeated paragraphs and sentences, meta sentences, quoted coinages, paragraphs of six sentences or more, stock words). It reads a draft the way `lint_prose.py` does, so table rows, code, captions, the reference list and the author bio are not counted. `--restated N` takes off 5 points for each restatement counted by hand and prints the score of criterion 4
@@ -204,7 +206,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.11.0...HEAD
+[1.11.0]: https://github.com/whchoi98/my-plugins/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/whchoi98/my-plugins/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/whchoi98/my-plugins/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/whchoi98/my-plugins/compare/v1.8.0...v1.9.0
@@ -234,6 +237,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.11.0] - 2026-11-25
 
 ### Added
 - `aws-blog-skills`: 리뷰어에게 넘기기 전 사전 점검(6단계) 추가. github.com/comeddy/blog-precheck-plugin의 blog-precheck skill(MIT, Youngjin Kim)을 따름. 여섯 기준으로 채점해 `gate-report.md`에 기록(최저선: 정합성 80, 구조 완결성 70, 표기 규범 70, 중복과 군더더기 60, 차별성과 근거 60, 가독성 60, 총점 70)하고, 미달 기준만 수정해 두 번째 채점까지만 진행. 기준, 이 skill에서 기준마다 보는 것, 리포트 형식, 수정과 재채점 순서는 `references/precheck.md`에 정리
@@ -424,7 +429,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.10.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.11.0...HEAD
+[1.11.0]: https://github.com/whchoi98/my-plugins/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/whchoi98/my-plugins/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/whchoi98/my-plugins/compare/v1.9.0...v1.9.1
 [1.9.0]: https://github.com/whchoi98/my-plugins/compare/v1.8.0...v1.9.0
