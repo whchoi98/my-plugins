@@ -8,6 +8,7 @@ title: "<제목>"
 date: YYYY-MM-DD
 author: "Woohyung Choi"
 status: draft
+slug: <english-url-slug>
 ---
 
 # <제목>
@@ -28,6 +29,11 @@ by WOO HYUNG CHOI on {일} {월}월 {연도} in [카테고리 A](URL), [카테�
 
 ## 저자 소개
 ```
+
+## 프론트매터
+
+- `title`, `date`, `author`, `status: draft`는 필수다
+- `slug`는 게시 URL에 들어갈 영어 slug다(소문자, 숫자, 하이픈). 제목의 핵심어를 영어로 옮기고 서비스 이름은 공식 영문 표기를 따른다. `md_to_wordpress.py`가 변환본 맨 위 주석에 적는다. 없으면 파일 이름에서 날짜를 뺀 값을 쓴다 (2026-11-25 추가, publishing.md)
 
 ## 제목
 
@@ -83,9 +89,9 @@ by WOO HYUNG CHOI on {일} {월}월 {연도} in [카테고리 A](URL), [카테�
 
 ## 계산식
 
-코드 블록 한 개로 계산식을 보여준다. 마이너스는 하이픈, 나누기는 `÷`.
+코드 블록 한 개로 계산식을 보여준다. 마이너스는 하이픈, 나누기는 `÷`. 펜스의 언어 라벨은 `text`로 적는다(WordPress 변환본의 `lang-text`가 된다. 2026-11-25 추가).
 
-```
+```text
 손익분기 DTO(GB) = (월 정액 요금 - 월 종량제 포트 비용) ÷ DTO 단가(USD/GB)
 ```
 

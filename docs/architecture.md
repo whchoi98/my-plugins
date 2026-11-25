@@ -29,7 +29,7 @@ Output goes to the user's current directory, never into the plugin cache.
 ### AI/ML Layer: skills and commands
 | Skill / command | Source | Role |
 |---|---|---|
-| `aws-blog-skills` | aws-blog-skills 1.2.2 | AWS Korea Tech Blog draft from source to zip, steps 0-7, references per step |
+| `aws-blog-skills` | aws-blog-skills 1.2.2 | AWS Korea Tech Blog draft from source to zip, steps 0-8 (a scored pre-check before packaging, HTML for WordPress in the bundle), references per step |
 | `aws-diagram` | aws-diagrams 1.0.0 | AWS architecture SVG with the official AWS and Bedrock AgentCore icon bundle |
 | `aws-diagram-design` | cathrynlavery/diagram-design (MIT), AWS edition rebuilt by a recipe | Structure diagrams and charts in the source's visual types as HTML/SVG/PNG, with draw.io, Mermaid, Excalidraw and PlantUML import; holds the shared `assets/` |
 | `kor-deslop` | kor-writing 1.0.0 | Korean AI-tell removal in one pass from an 81-pattern rulebook, content unchanged |
@@ -226,6 +226,11 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
   the five commands from the source with it. A change the recipe does not cover is refused before anything is
   written. A second workflow runs every second week and opens a pull request or an issue
   ([ADR-009](decisions/ADR-009-derived-skill-rebuilt-by-recipe.md)).
+- **The blog pre-check is part of aws-blog-skills and its gate is a script** — the six criteria, minimums and report
+  layout follow comeddy/blog-precheck-plugin (MIT), measured with the skill's own check scripts.
+  `check_gate.py` recomputes the verdict, `md_to_wordpress.py` writes the WordPress form, and `package_blog.sh`
+  writes no zip without a gate report it accepts
+  ([ADR-010](decisions/ADR-010-blog-precheck-adapted-into-aws-blog-skills.md)).
 - **aws-blog-skills targets Claude Code** — `${CLAUDE_SKILL_DIR}` paths, a work folder, checks on the assembled
   bundle ([ADR-001](decisions/ADR-001-claude-code-skill-conventions.md)).
 - **Scripts for mechanical rules** — banned words, structure, URLs, diagram geometry and deck lint are scripts
@@ -256,7 +261,7 @@ aws-diagram-design and aws-diagram icons and fonts (about 9 MB).
 ### AI/ML Layer: skill과 command
 | skill / command | 출처 | 역할 |
 |---|---|---|
-| `aws-blog-skills` | aws-blog-skills 1.2.2 | 소재부터 zip까지 AWS Korea Tech Blog 원고. 0~7단계, 단계별 참조 파일 |
+| `aws-blog-skills` | aws-blog-skills 1.2.2 | 소재부터 zip까지 AWS Korea Tech Blog 원고. 0~8단계(패키징 전 사전 점검 채점, 번들에 WordPress용 HTML 포함), 단계별 참조 파일 |
 | `aws-diagram` | aws-diagrams 1.0.0 | 공식 AWS 아이콘과 Bedrock AgentCore 아이콘 묶음으로 그리는 AWS 아키텍처 SVG |
 | `aws-diagram-design` | cathrynlavery/diagram-design(MIT)의 AWS 판, 변환 규칙으로 다시 만듦 | 원본의 시각 유형으로 그리는 구조 다이어그램과 차트 HTML/SVG/PNG. draw.io, Mermaid, Excalidraw, PlantUML 가져오기. 공용 `assets/`를 가짐 |
 | `kor-deslop` | kor-writing 1.0.0 | 패턴 81개 규칙집으로 한국어 AI 티를 한 번에 제거. 내용은 그대로 |
@@ -406,6 +411,7 @@ flowchart LR
 - **완성한 덱을 변환해 만드는 HTML 덱** — aws-ppt-skills는 출력 형식(PPT, HTML, 둘 다)을 먼저 묻습니다. HTML 덱은 따로 작성하지 않습니다. `deck_to_html.py`가 최종 `.pptx`를 읽어 한 파일짜리 페이지를 만듭니다. 슬라이드 내용은 HTML과 SVG로, 템플릿의 배경과 로고는 LibreOffice가 그린 그림으로 들어가고, 글꼴은 쓰인 글자만 포함하며, 노트는 발표자 보기에 나옵니다([ADR-007](decisions/ADR-007-html-deck-converted-from-pptx.md)).
 - **가져온 skill은 pull request로 동기화** — `ui-deslop`과 `eng-deslop`은 heydamir/unslop과 blader/humanizer를 고정한 커밋에서 복사한 것입니다. `scripts/upstream-skills.json`이 원본, 커밋, 파일별 해시를 기록하고, `sync_upstream_skills.py`가 폴더를 쓰면서 `name`과 `description`만 바꿉니다. 주간 워크플로는 원본이 바뀌면 pull request를 열 뿐 병합하거나 릴리스하지 않습니다([ADR-008](decisions/ADR-008-vendored-skills-synced-by-pull-request.md)).
 - **aws-diagram-design은 변환 규칙으로 원본에서 다시 만듦** — 이 skill은 cathrynlavery/diagram-design의 AWS 판입니다. `scripts/upstream/aws-diagram-design/recipe.json`이 AWS 판에서 바꾸는 내용(토큰 치환, 원본 문장을 기준으로 한 편집, AWS 판의 파일)을 적고, `sync_upstream_skills.py`가 이 규칙으로 skill과 command 5개를 원본에서 다시 만듭니다. 변환 규칙이 다루지 않는 변경은 쓰기 전에 거부합니다. 두 번째 워크플로가 2주에 한 번 실행되어 pull request나 issue를 엽니다([ADR-009](decisions/ADR-009-derived-skill-rebuilt-by-recipe.md)).
+- **블로그 사전 점검은 aws-blog-skills 안에 두고 게이트는 스크립트가 판정** — 여섯 기준, 최저선, 리포트 형식은 comeddy/blog-precheck-plugin(MIT)을 따르고, 측정은 이 skill의 검사 스크립트로 합니다. `check_gate.py`가 판정을 다시 계산하고, `md_to_wordpress.py`가 WordPress 형식을 만들며, `package_blog.sh`는 통과한 게이트 리포트가 없으면 zip을 만들지 않습니다([ADR-010](decisions/ADR-010-blog-precheck-adapted-into-aws-blog-skills.md)).
 - **옆 skill 기준 상대 경로** — 다른 skill의 파일은 `../<skill>/...`로 찾고, 플러그인 캐시 glob은 대비책으로만 씁니다([ADR-002](decisions/ADR-002-merge-four-plugins-into-one.md)).
 - **의존 프로그램은 `setup`으로** — 스크립트 하나가 모든 외부 프로그램과 폰트를 점검하고 설치하며, sudo는 요청할 때만 씁니다([런북](runbooks/setup-dependencies.md)).
 - **aws-blog-skills는 Claude Code 대상** — `${CLAUDE_SKILL_DIR}` 경로, 작업 폴더, 조립한 번들 검사([ADR-001](decisions/ADR-001-claude-code-skill-conventions.md)).

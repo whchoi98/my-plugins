@@ -5,7 +5,7 @@ Shipped skills. Each directory is one skill, invoked as `/my-plugins:<name>`. Th
 
 | Skill | Source | Entry points |
 |---|---|---|
-| `aws-blog-skills/` | aws-blog-skills 1.2.2 | SKILL.md, `references/` (rule files per step), `scripts/` (lint, structure, URL, diagram lib, render, package), `assets/templates/` |
+| `aws-blog-skills/` | aws-blog-skills 1.2.2; the pre-check follows comeddy/blog-precheck-plugin (MIT) | SKILL.md (steps 0 to 8), `references/` (rule files per step; `precheck.md` for the gate, `publishing.md` for WordPress and the notice text), `scripts/` (lint, structure, URL, diagram lib, render; redundancy_metrics, check_gate, md_to_wordpress; package), `assets/templates/` |
 | `aws-diagram/` | aws-diagrams 1.0.0 | SKILL.md, `scripts/find_icon.py`, `embed.py`, `build_bundle.py`, `assets/` (icon bundle) |
 | `aws-diagram-design/` | cathrynlavery/diagram-design (MIT), AWS edition rebuilt by a recipe (first from aws-diagrams 1.0.0) | SKILL.md (§0 and the AWS edition rules are the edition's blocks), `references/` (the edition's `style-guide.md` and `primitive-aws-icons.md`; the source's types, profiles, onboarding, export, import), `scripts/` (the source's self_check, verify_geometry, four extractors, export_svg, export_png; the edition's aws_check, build_aws_icons), `assets/` (templates in the AWS skin, the source's examples, `aws-icons/`, `fonts/`). Files of the source are never edited by hand |
 | `kor-deslop/` | kor-writing 1.0.0 | SKILL.md, `references/patterns.md` (A~K, 81 patterns) |

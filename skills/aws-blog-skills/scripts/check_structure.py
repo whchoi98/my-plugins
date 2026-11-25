@@ -3,7 +3,7 @@
 """Check an AWS Korea Tech Blog Markdown draft against references/structure.md.
 
 Usage: python3 check_structure.py <draft.md>
-Checks: frontmatter fields, H1 then byline, byline format and category count/order,
+Checks: frontmatter fields (and the form of the optional slug), H1 then byline, byline format and category count/order,
 lead without heading, numbered H2/H3 depth, table/figure caption placement (below) and numbering,
 image files exist relative to the md, 참고 자료 and 저자 소개 present, author bio verbatim.
 """
@@ -24,6 +24,9 @@ def main(path):
         for f in ("title:", "date:", "author:", "status: draft"):
             if f not in fm.group(1):
                 issues.append(f"frontmatter에 {f} 없음")
+        slug = re.search(r"^slug:\s*(.*?)\s*$", fm.group(1), flags=re.M)
+        if slug and not re.match(r"^[a-z0-9]+(?:-[a-z0-9]+)*$", slug.group(1).strip("\"'")):
+            issues.append(f"frontmatter slug 형식 오류 (영어 소문자, 숫자, 하이픈): {slug.group(1)}")
     body = md[fm.end():] if fm else md
     blines = body.strip().splitlines()
     if not blines or not blines[0].startswith("# "):

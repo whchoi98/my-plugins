@@ -16,8 +16,9 @@ Improve structure without changing what the skills do or what the harness checks
 - **Deck skills**: the confirmation questions, template handling, lint rules, and the QA loop.
 - **setup**: the three modes, the items checked and installed, where they go, and sudo gating.
 - **Scripts**: which inputs each script accepts or rejects and its exit codes (`lint_prose.py` and
-  `check_structure.py` exit 1 on findings, `check_urls.py` exit 1 on FAIL/REDIRECT, `package_blog.sh` writes no
-  zip on failure, `setup.sh` exits 2 on a bad mode).
+  `check_structure.py` exit 1 on findings, `check_urls.py` exit 1 on FAIL/REDIRECT, `check_gate.py` exit 0 hand
+  over, 3 반려, 1 inconsistent report, `md_to_wordpress.py` exit 1 and no file when it refuses, `package_blog.sh`
+  writes no zip on failure, `setup.sh` exits 2 on a bad mode).
 - **Cross-skill links**: `my-plugins:<skill>` calls and sibling-relative paths (`../aws-diagram-design/assets`,
   `../aws-ppt-skills/scripts/install_fonts.sh`), and the `find_assets()` order.
 - **Harness**: which inputs each hook and test accepts or rejects.

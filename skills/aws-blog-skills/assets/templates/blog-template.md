@@ -3,6 +3,7 @@ title: "<질문 또는 주장> – <서비스명> <주제>"
 date: YYYY-MM-DD
 author: "Woohyung Choi"
 status: draft
+slug: <english-url-slug>
 ---
 
 # <질문 또는 주장> – <서비스명> <주제>
@@ -37,7 +38,7 @@ by WOO HYUNG CHOI on {일} {월}월 {연도} in [Best Practices](https://aws.ama
 
 ## 4. <핵심 계산>
 
-```
+```text
 <계산식 한 줄, 마이너스는 하이픈, 나누기는 ÷>
 ```
 

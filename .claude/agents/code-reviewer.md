@@ -27,7 +27,10 @@ as `my-plugins@my-plugins` and call `/my-plugins:<skill>`.
      `scripts/lint_prose.py`; the author bio is identical in `references/structure.md` and
      `assets/templates/blog-template.md` and its first sentence equals `BIO_HEAD` in `scripts/check_structure.py`;
      no claude.ai-only names (`present_files`, `/mnt/user-data`, `web_fetch`, `web_search`, `` `view` ``);
-     `package_blog.sh` writes only under its out directory and no zip on failure; `check_urls.py` keeps the
+     `package_blog.sh` writes only under its out directory and no zip on failure (a missing or 반려 gate report
+     included, `--no-gate` aside); the criteria and minimums in `references/precheck.md` equal `CRITERIA` in
+     `scripts/check_gate.py` and the example report there passes the checker; `md_to_wordpress.py` writes the
+     markup `references/publishing.md` shows, escapes raw HTML and uploads nothing; `check_urls.py` keeps the
      final-URL comparison; the step 0 source-material rule is intact; the `find_assets()` order and the
      `.aws-diagram-assets` pointer step in SKILL.md stay in step.
    - kor-deslop: the pattern count (81) is the same in SKILL.md, its rulebook under `references/` and the README.

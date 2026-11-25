@@ -18,7 +18,7 @@ Public repo `github.com/whchoi98/my-plugins`, MIT (bundled third-party files kee
 
 ## Tech Stack
 - **Content** — Markdown skills (`skills/<name>/SKILL.md`) with on-demand references, templates and assets
-- **Shipped scripts** — Python 3 (blog lint, structure, URL, diagram generation; icon lookup and embedding;
+- **Shipped scripts** — Python 3 (blog lint, structure, URL, diagram generation, pre-check metrics and report check, WordPress HTML conversion; icon lookup and embedding;
   diagram self-checks; python-pptx template tools and the deck-to-HTML converter; HTML report checks and image embedding; personal blog post import,
   build, check and placement; infographic SVG builder, render QA and the editable-deck check), Playwright for Python (`uv run --no-project --with playwright`),
   Node.js + pptxgenjs v4 (deck builds), Node.js + docx 9 + marked 18 (report builds, `report.mjs`),
@@ -80,6 +80,13 @@ a plugin component there. Everything under `.claude/` is only active when this r
   - aws-blog-skills: confirmed rules are appended to references with `(YYYY-MM-DD 확정)`; a term added to
     `style.md` or `humanize-checklist.md` is mirrored in `scripts/lint_prose.py`; the author bio is verbatim in
     `references/structure.md` and `assets/templates/blog-template.md`; keep the description trigger phrases.
+    The pre-check (step 6) is one rule in three places: the criteria and minimums of `references/precheck.md` equal
+    `CRITERIA` and `PASS_TOTAL` in `scripts/check_gate.py`, and the example report in `precheck.md` is one the checker
+    accepts. `scripts/package_blog.sh` writes no zip without a gate report it accepts (`--no-gate` only when the user
+    asked), and ends its output with the score table (`scores:`) that the last response of a session shows without
+    being asked (user rule of 2026-11-25; SKILL.md steps 6 and 7 and `precheck.md` say so together). The markup `scripts/md_to_wordpress.py` writes is the one `references/publishing.md` shows; the converter
+    uploads nothing and escapes raw HTML. The criteria, the report layout and the measures follow
+    comeddy/blog-precheck-plugin (MIT, `third_party/LICENSE-blog-precheck`), so keep the report's names and verdict words.
   - kor-deslop: the pattern count (81) comes from `references/patterns.md` and is the same in `skills/CLAUDE.md`, this file
     and the README in both languages.
   - aws-ppt-skills: slides keep the template's background, logo, footer and page numbers; no `·` or `—`. The HTML

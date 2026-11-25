@@ -29,7 +29,7 @@ step with their repositories: `ui-deslop` (heydamir/unslop) removes AI slop from
 
 | Skill / command | Source plugin | What it does |
 |---|---|---|
-| `/my-plugins:aws-blog-skills` | aws-blog-skills 1.2.2 | Korean AWS Korea Tech Blog draft from source to zip: scope, fact and URL check, diagrams, 윤문, packaging |
+| `/my-plugins:aws-blog-skills` | aws-blog-skills 1.2.2 | Korean AWS Korea Tech Blog draft from source to zip: scope, fact and URL check, diagrams, 윤문, a pre-check before review (six criteria, `gate-report.md`; the scores are shown at the end without being asked), HTML for the WordPress code editor (`wordpress.md`), packaging, and the notice text after publishing |
 | `/my-plugins:aws-diagram` | aws-diagrams 1.0.0 | AWS architecture diagrams with the official AWS and Bedrock AgentCore icon sets |
 | `/my-plugins:aws-diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design) (MIT), AWS edition | AWS-branded structure diagrams and charts in the source's visual types (flowchart, sequence, timeline, ER, heatmap, Sankey, kanban and more), with draw.io, Mermaid, Excalidraw and PlantUML import |
 | `/my-plugins:export-diagram`, `/my-plugins:import-drawio`, `/my-plugins:import-excalidraw`, `/my-plugins:import-mermaid`, `/my-plugins:import-plantuml` | cathrynlavery/diagram-design (MIT), AWS edition | Export an aws-diagram-design HTML file to SVG/PNG; redraw draw.io, Excalidraw, Mermaid or PlantUML sources |
@@ -48,7 +48,8 @@ step with their repositories: `ui-deslop` (heydamir/unslop) removes AI slop from
 `ui-deslop` and `eng-deslop` are copied from the repositories above at a pinned commit; only the name and the
 description are ours. A GitHub Actions workflow compares them with their sources every week and opens a pull request
 when a source changed ([runbook](docs/runbooks/sync-upstream-skills.md)). If you also install the sources as plugins
-(`unslop@heydamir`, `humanizer@humanizer`), two skills answer the same request; keep one.
+(`unslop@heydamir`, `humanizer@humanizer`), two skills answer the same request; keep one. The same holds for the
+pre-check of `aws-blog-skills` and the plugin it follows (`blog-precheck@comeddy`).
 
 `aws-diagram-design` is the AWS edition of cathrynlavery/diagram-design: the AWS skin, the AWS Architecture Icons and
 the edition's rules are ours, the rest is rebuilt from that repository by a recipe. A second workflow checks the
@@ -153,6 +154,7 @@ Then ask in plain Korean, or call a skill directly:
 
 ```text
 이 PDF를 AWS 블로그 스타일로 블로그 초안 작성해줘
+이 원고 리뷰 요청 전에 블로그 사전 점검해줘
 이 구성을 AWS 아키텍처 다이어그램으로 그려줘
 이 글 AI 티 빼줘
 이 영문 README에서 AI 슬롭 제거해줘
@@ -218,7 +220,8 @@ Details per part are in [NOTICE.md](NOTICE.md). aws-diagram-design is MIT from i
 the AWS PowerPoint templates and deck fonts follow their own terms and are not covered by the MIT license.
 `ui-deslop` is CC BY 4.0 by Damir Sokolovsky ([third_party/LICENSE-ui-deslop](third_party/LICENSE-ui-deslop)) and
 `eng-deslop` is MIT by Siqi Chen ([third_party/LICENSE-eng-deslop](third_party/LICENSE-eng-deslop)); both are copies of
-their repositories, not the plugin's own work.
+their repositories, not the plugin's own work. The pre-check of `aws-blog-skills` follows the blog-precheck skill by
+Youngjin Kim (MIT, [third_party/LICENSE-blog-precheck](third_party/LICENSE-blog-precheck)).
 
 ## Contact
 
@@ -245,7 +248,7 @@ HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고�
 
 | skill / command | 원래 플러그인 | 하는 일 |
 |---|---|---|
-| `/my-plugins:aws-blog-skills` | aws-blog-skills 1.2.2 | 소재부터 zip까지 AWS Korea Tech Blog 한국어 원고: 범위, 사실과 URL 검증, 다이어그램, 윤문, 패키징 |
+| `/my-plugins:aws-blog-skills` | aws-blog-skills 1.2.2 | 소재부터 zip까지 AWS Korea Tech Blog 한국어 원고: 범위, 사실과 URL 검증, 다이어그램, 윤문, 리뷰 전 사전 점검(여섯 기준, `gate-report.md`. 점수는 묻지 않아도 마지막에 제시), WordPress 코드 편집기용 HTML(`wordpress.md`), 패키징, 게시 후 공지 문구 |
 | `/my-plugins:aws-diagram` | aws-diagrams 1.0.0 | 공식 AWS 아이콘과 Bedrock AgentCore 아이콘으로 그리는 AWS 아키텍처 구성도 |
 | `/my-plugins:aws-diagram-design` | [cathrynlavery/diagram-design](https://github.com/cathrynlavery/diagram-design)(MIT)의 AWS 판 | 원본의 시각 유형(흐름도, 시퀀스, 타임라인, ER, 히트맵, Sankey, 칸반 등)을 AWS 브랜드 스킨으로 그리는 구조 다이어그램과 차트. draw.io, Mermaid, Excalidraw, PlantUML 가져오기 지원 |
 | `/my-plugins:export-diagram`, `/my-plugins:import-drawio`, `/my-plugins:import-excalidraw`, `/my-plugins:import-mermaid`, `/my-plugins:import-plantuml` | cathrynlavery/diagram-design(MIT)의 AWS 판 | aws-diagram-design HTML을 SVG/PNG로 내보내기, draw.io, Excalidraw, Mermaid, PlantUML 다시 그리기 |
@@ -264,6 +267,7 @@ HTML)를 한 번에 설치하고, 공통 디자인의 한영 단일 HTML 보고�
 `ui-deslop`과 `eng-deslop`은 위 저장소를 고정한 커밋에서 복사한 것이고, 이름과 description만 이 플러그인의 것입니다.
 GitHub Actions 워크플로가 매주 원본과 비교해 원본이 바뀌었으면 pull request를 엽니다([런북](docs/runbooks/sync-upstream-skills.md)).
 원본 플러그인(`unslop@heydamir`, `humanizer@humanizer`)을 함께 설치하면 같은 요청에 skill 두 개가 반응하므로 하나만 둡니다.
+`aws-blog-skills`의 사전 점검과 그 바탕이 된 플러그인(`blog-precheck@comeddy`)도 같습니다.
 
 `aws-diagram-design`은 cathrynlavery/diagram-design의 AWS 판입니다. AWS 스킨, AWS Architecture Icons, AWS 판의 규칙은
 이 플러그인의 것이고 나머지는 정해 둔 변환 규칙(recipe)으로 원본 저장소에서 다시 만듭니다. 두 번째 워크플로가 2주에 한 번
@@ -366,6 +370,7 @@ aws-ppt-skills의 덱 도구(pptxgenjs, python-pptx, LibreOffice)를 씁니다. 
 
 ```text
 이 PDF를 AWS 블로그 스타일로 블로그 초안 작성해줘
+이 원고 리뷰 요청 전에 블로그 사전 점검해줘
 이 구성을 AWS 아키텍처 다이어그램으로 그려줘
 이 글 AI 티 빼줘
 이 영문 README에서 AI 슬롭 제거해줘
@@ -431,7 +436,8 @@ claude plugin validate .          # Claude Code manifest와 skill 검증(ICON_MI
 AWS PowerPoint 템플릿, 덱 폰트는 MIT 대상이 아니며 각자의 이용 조건을 따릅니다.
 `ui-deslop`은 Damir Sokolovsky의 CC BY 4.0 저작물([third_party/LICENSE-ui-deslop](third_party/LICENSE-ui-deslop))이고
 `eng-deslop`은 Siqi Chen의 MIT 저작물([third_party/LICENSE-eng-deslop](third_party/LICENSE-eng-deslop))입니다. 둘 다 원본
-저장소를 복사한 것이며 이 플러그인의 저작물이 아닙니다.
+저장소를 복사한 것이며 이 플러그인의 저작물이 아닙니다. `aws-blog-skills`의 사전 점검은 Youngjin Kim의 blog-precheck skill
+(MIT, [third_party/LICENSE-blog-precheck](third_party/LICENSE-blog-precheck))을 따랐습니다.
 
 ## 연락처
 

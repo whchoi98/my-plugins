@@ -1,11 +1,11 @@
 ---
 name: "aws-blog-skills"
-description: "AWS Korea Tech Blog(aws.amazon.com/ko/blogs/tech) 게시용 한국어 원고를 처음부터 끝까지 만드는 통합 워크플로우 — 소재(개인 블로그, PDF 분석 리포트, 발표 자료, 고객 사례) 인입 → 구조 설계 → 한국어 초안 → 공식 문서 사실 검증(URL 전수 HTTP 200) → 프로그래밍 방식 다이어그램(SVG/PNG, Amazon Ember, 1280×720 블로그 프로필) → AI 티 제거 윤문 → 확정 규칙 등록 → Markdown + 이미지 + zip 패키징. 사용자가 \"블로그 작성\", \"원고 작성\", \"AWS 블로그 스타일로\", \"테크 블로그로 정리\", \"블로그 초안\", \"이 PDF/발표자료를 블로그로\", \"AWS Korea Tech Blog\", \"aws-blog\"라고 말하면 반드시 이 스킬을 사용한다. 기존 원고의 문장 교정(\"X → Y\"), 다이어그램 수정, 손익분기·비용 비교 그래프 추가, 바이라인/카테고리 확인, 참고 자료 링크 검증 같은 후속 요청도 모두 이 스킬이 담당한다. 공동 저자 원고의 섹션 분담, 코멘트, 협업 도구 이관 점검도 이 스킬이 담당한다. 글쓴이의 개인 블로그(whchoi98.github.io)에 올릴 글은 이 스킬이 아니라 my-plugins:techblogs를 쓴다. 개별 blog-writing, humanize-korean, kor-deslop 스킬보다 이 스킬을 우선하고, 그림은 같은 플러그인의 aws-diagram, aws-diagram-design skill과 내부 diagram_lib을 나눠 사용한다."
+description: "AWS Korea Tech Blog(aws.amazon.com/ko/blogs/tech) 게시용 한국어 원고를 처음부터 끝까지 만드는 통합 워크플로우 — 소재(개인 블로그, PDF 분석 리포트, 발표 자료, 고객 사례) 인입 → 구조 설계 → 한국어 초안 → 공식 문서 사실 검증(URL 전수 HTTP 200) → 프로그래밍 방식 다이어그램(SVG/PNG, Amazon Ember, 1280×720 블로그 프로필) → AI 티 제거 윤문 → 확정 규칙 등록 → Markdown + 이미지 + zip 패키징. 사용자가 \"블로그 작성\", \"원고 작성\", \"AWS 블로그 스타일로\", \"테크 블로그로 정리\", \"블로그 초안\", \"이 PDF/발표자료를 블로그로\", \"AWS Korea Tech Blog\", \"aws-blog\"라고 말하면 반드시 이 스킬을 사용한다. 기존 원고의 문장 교정(\"X → Y\"), 다이어그램 수정, 손익분기·비용 비교 그래프 추가, 바이라인/카테고리 확인, 참고 자료 링크 검증 같은 후속 요청도 모두 이 스킬이 담당한다. 공동 저자 원고의 섹션 분담, 코멘트, 협업 도구 이관 점검도 이 스킬이 담당한다. 리뷰 요청 전 사전 점검(\"블로그 사전 점검\", \"리뷰 전 점검\", 여섯 기준 채점과 gate-report.md), WordPress 붙여넣기용 변환(\"워드프레스 변환\", wordpress.md), 게시 후 공지 문구(\"publish 문구\", \"슬랙 문구\")도 이 스킬이 담당한다. 글쓴이의 개인 블로그(whchoi98.github.io)에 올릴 글은 이 스킬이 아니라 my-plugins:techblogs를 쓴다. 개별 blog-writing, humanize-korean, kor-deslop 스킬보다 이 스킬을 우선하고, 그림은 같은 플러그인의 aws-diagram, aws-diagram-design skill과 내부 diagram_lib을 나눠 사용한다."
 ---
 
 # AWS Blog Skills — AWS Korea Tech Blog 원고 통합 워크플로우
 
-한 세션의 결과물은 항상 세 가지다: **Markdown 원고 + 다이어그램(PNG와 SVG) + zip 번들**. 마지막 응답에 이 셋의 절대 경로를 모두 적지 않으면 세션은 끝나지 않는다. 세션 중 사용자가 확정한 규칙은 references에 등록하고 패치 파일로도 남긴다(7단계. 설치된 skill 폴더는 플러그인 캐시라서 고쳐도 업데이트 때 사라진다).
+한 세션의 결과물은 항상 세 가지다: **Markdown 원고 + 다이어그램(PNG와 SVG) + zip 번들**. 번들에는 WordPress 붙여넣기용 변환본(`wordpress.md`)과 사전 점검 리포트(`gate-report.md`)가 함께 들어간다. 마지막 응답에 이 파일들의 절대 경로와 사전 점검 점수표를 모두 적지 않으면 세션은 끝나지 않는다. 점수는 사용자가 묻지 않아도 제시한다. 세션 중 사용자가 확정한 규칙은 references에 등록하고 패치 파일로도 남긴다(8단계. 설치된 skill 폴더는 플러그인 캐시라서 고쳐도 업데이트 때 사라진다).
 
 참조 파일은 필요한 단계에서 읽는다.
 
@@ -18,6 +18,8 @@ description: "AWS Korea Tech Blog(aws.amazon.com/ko/blogs/tech) 게시용 한국
 | [references/diagrams.md](references/diagrams.md) | 다이어그램을 만들 때. 블로그 프로필 토큰, 타입 램프, 색 규칙, 렌더 파이프라인 |
 | [references/exemplars.md](references/exemplars.md) | 톤·밀도 기준이 필요할 때 |
 | [references/collaboration.md](references/collaboration.md) | 공동 저자가 있을 때. 시작 합의, 코멘트 형식, 협업 도구 이관 점검 |
+| [references/precheck.md](references/precheck.md) | 패키징 전 사전 점검. 여섯 기준과 최저선, 채점 원칙, gate-report.md 형식, 수정과 재채점 |
+| [references/publishing.md](references/publishing.md) | 패키징할 때와 게시가 끝난 뒤. WordPress 변환 규칙, URL slug, 리뷰어에게 넘길 것, 게시 후 공지 문구 |
 
 ## 실행 환경 (Claude Code)
 
@@ -107,13 +109,30 @@ uv run --no-project --with playwright==1.64.1 python "${CLAUDE_SKILL_DIR}/script
 
 ## 5. 구조 검사
 
-`python3 "${CLAUDE_SKILL_DIR}/scripts/check_structure.py" "$W/drafts/<slug>.md"`로 프론트매터, 바이라인 형식, 표·그림 캡션 위치(항상 아래), 캡션 번호 연속성, 이미지 경로 존재, 저자 소개 원문 일치를 확인한다. 이미지 경로는 md 파일 기준으로 찾으므로 작업 폴더를 만들 때 건 `drafts/images` 링크가 있어야 통과한다. 패키징 단계에서는 조립한 번들에 대해 같은 검사를 다시 한다.
+`python3 "${CLAUDE_SKILL_DIR}/scripts/check_structure.py" "$W/drafts/<slug>.md"`로 프론트매터(`slug:`가 있으면 그 형식 포함), 바이라인 형식, 표·그림 캡션 위치(항상 아래), 캡션 번호 연속성, 이미지 경로 존재, 저자 소개 원문 일치를 확인한다. 이미지 경로는 md 파일 기준으로 찾으므로 작업 폴더를 만들 때 건 `drafts/images` 링크가 있어야 통과한다. 패키징 단계에서는 조립한 번들에 대해 같은 검사를 다시 한다.
 
-## 6. 패키징과 전달
+## 6. 사전 점검
+
+패키징하기 전에 [references/precheck.md](references/precheck.md)의 여섯 기준(정합성, 구조 완결성, 표기 규범, 중복과 군더더기, 차별성과 근거, 가독성)으로 원고를 채점하고 `$W/gate-report.md`를 쓴다. 총점이 70 이상이고 모든 기준이 최저선 이상이어야 통과다.
+
+```bash
+python3 "${CLAUDE_SKILL_DIR}/scripts/redundancy_metrics.py" "$W/drafts/<slug>.md" --restated <재진술 건수>
+python3 "${CLAUDE_SKILL_DIR}/scripts/check_gate.py" "$W/gate-report.md"
+```
+
+정합성, 표기 규범, 중복과 군더더기는 스크립트 출력(`check_structure.py`, `check_urls.py`, `lint_prose.py`, `redundancy_metrics.py`)과 전수 검색으로 얻은 값만 쓴다. 구조 완결성, 차별성과 근거, 가독성은 근거가 된 원고 문장을 인용해 점수를 적고, 차별성과 근거는 WebSearch로 같은 주제의 글을 3개 이상 확인한 뒤 매긴다. 깎인 점수는 모두 원문 인용과 수정안 쌍으로 남긴다.
+
+`check_gate.py`는 총점과 판정을 점수에서 다시 계산한다. 반려(종료 코드 3)면 미달 기준의 감점 사유만 수정하고, 그 기준만 다시 채점해 2회차 리포트를 쓴다. 통과한 기준은 다시 손대지 않는다. 2회차에도 미달이면 판정을 "2회 초과 전달"로 적고 미달 기준을 리포트에 남긴 채 넘긴다. 사용자가 수정하지 않기로 한 감점 사유에는 "의도적으로 유지"와 이유를 적는다.
+
+채점할 때마다 `check_gate.py`가 출력한 점수표(여섯 기준의 점수, 최저선, 판정, 총점)를 사용자에게 보여 준다. 사용자가 점수를 묻기를 기다리지 않는다(2026-11-25 확정).
+
+## 7. 패키징과 전달
 
 ```
 <slug>/
 ├── <slug>.md              # 이미지 경로는 images/ 상대 경로
+├── wordpress.md           # WordPress 코드 편집기에 붙여넣을 변환본
+├── gate-report.md         # 사전 점검 리포트
 └── images/
     ├── <slug>-fig01-*.png / .svg
     └── ...
@@ -124,13 +143,17 @@ uv run --no-project --with playwright==1.64.1 python "${CLAUDE_SKILL_DIR}/script
 bash "${CLAUDE_SKILL_DIR}/scripts/package_blog.sh" "$W" <slug>   # 세 번째 인자로 출력 폴더 지정 가능, 기본값 $W/out
 ```
 
-스크립트는 `$W/out/<slug>/`에 md와 images/를 조립하고, 조립한 번들에 구조 검사와 lint를 실행한 뒤 `$W/out/<slug>.zip`을 만든다. 검사가 실패하면 zip을 만들지 않으므로 고친 뒤 다시 실행한다. 마지막 응답에는 스크립트가 출력한 `deliverables:` 목록, 즉 **md, PNG 전부, SVG 전부, zip**의 절대 경로를 빠짐없이 적는다. 사용자가 "MD와 이미지 모두 제시"라고 하면 같은 목록을 다시 적는다. 수정 후에는 바뀐 파일만이 아니라 zip도 다시 만든다.
+스크립트는 `$W/out/<slug>/`에 md와 images/를 조립하고, 조립한 번들에 구조 검사와 lint를 실행한다. 이어서 `$W/gate-report.md`를 `check_gate.py`로 검사해 번들에 넣고, 원고를 `md_to_wordpress.py`로 변환해 `wordpress.md`를 만든 뒤 `$W/out/<slug>.zip`을 만든다. 검사나 변환이 실패하거나, 리포트가 없거나, 리포트가 반려 상태면 zip을 만들지 않으므로 수정한 뒤 다시 실행한다. 리포트의 지표 원본은 번들의 원고에서 다시 잰 값과 같아야 하므로, 채점한 뒤 원고를 수정했으면 `redundancy_metrics.py`를 다시 실행해 리포트의 기준 4와 지표 원본을 갱신한다. 사용자가 사전 점검을 빼 달라고 한 경우에만 `--no-gate`를 붙인다.
 
-## 7. 규칙 등록
+변환본은 WordPress에 올리지 않는다. 이미지 `src`는 로컬 경로로 남기고 업로드는 리뷰어가 한다. 변환 규칙, 추천 URL slug(프론트매터 `slug:`), 스크립트가 `[!]`로 알린 항목의 처리는 [references/publishing.md](references/publishing.md)를 따른다.
+
+마지막 응답에는 스크립트가 출력한 `deliverables:` 목록, 즉 **md, wordpress.md, gate-report.md, 번들에 든 이미지 전부(PNG와 SVG), zip**의 절대 경로를 빠짐없이 적는다. 이어서 스크립트가 끝에 출력한 `scores:` 점수표를 그대로 넣고, 100점이 아닌 기준마다 감점 사유를 한 줄씩 적는다. 2회차로 끝났으면 1회차 총점과 수정한 내용을 덧붙인다. 변환 시 바꾼 것(`[변환]` 줄)도 함께 적는다. `--no-gate`로 패키징했으면 점수 대신 사전 점검을 하지 않았다고 적는다. 사용자가 "MD와 이미지 모두 제시"라고 하면 같은 목록을 다시 적는다. 수정 후에는 바뀐 파일만이 아니라 zip도 다시 만든다.
+
+## 8. 규칙 등록
 
 세션에서 확정된 규칙은 references의 해당 파일 끝에 "(YYYY-MM-DD 확정)" 표시와 함께 추가한다. 설치된 skill 폴더(`${CLAUDE_SKILL_DIR}`)는 플러그인 캐시라서 버전이 바뀌면 통째로 교체되므로 고치지 않는다.
 
-- 추가한 블록만 모은 `$W/skill-rule-updates-<날짜>.md`를 항상 만들고 경로를 알린다
+- 규칙을 확정한 세션에서는 추가한 블록만 모은 `$W/skill-rule-updates-<날짜>.md`를 항상 만들고 경로를 알린다
 - my-plugins 저장소(github.com/whchoi98/my-plugins)의 로컬 클론 위치를 사용자가 알려 주면, 그 클론의 `skills/aws-blog-skills/references/`에 같은 블록을 넣고 `.claude-plugin/plugin.json`의 `version`을 올려 커밋한다. push는 사용자에게 확인을 받은 뒤 한다
 - 사용자가 "스킬 업데이트 되었나요"라고 물으면 저장소 원본과 설치본의 차이를 설명한다. 설치본에 반영하려면 push 후 `claude plugin marketplace update my-plugins`, `claude plugin update my-plugins@my-plugins`를 실행하고 `/reload-plugins`가 필요하다
 
@@ -141,7 +164,11 @@ bash "${CLAUDE_SKILL_DIR}/scripts/package_blog.sh" "$W" <slug>   # 세 번째 �
 ## 후속 요청 처리
 
 - **예시 구성 변경**("20G로", "8월 청구서 기준으로"): 0단계로 돌아가 계산을 다시 하고, 본문·표·그림·마치며·말미 고지를 한 턴에 모두 갱신한다
-- **문장 삭제/교정**: 적용 → 전수 스윕 → 관련 문장(예: 리드 질문을 지우면 마치며의 "글머리 질문" 언급도 수정) → md와 zip 갱신 → 제시
+- **문장 삭제/교정**: 적용 → 전수 스윕 → 관련 문장(예: 리드 질문을 지우면 마치며의 "글머리 질문" 언급도 수정) → 스크립트를 다시 실행하고 `gate-report.md`를 새 값으로 갱신 → md와 zip 갱신 → 경로와 점수표 제시. 교정문에 새 사실(수치, 제약)이 들어 있으면 1단계처럼 원문과 대조한다. 교정으로 어떤 기준이 최저선 아래로 내려가면 요청받지 않은 문장은 수정하지 않고, 원인과 수정안을 제시해 선택을 받는다([references/precheck.md](references/precheck.md)의 "채점 뒤에 원고를 교정했을 때")
 - **섹션 축소·재구성**: 섹션을 빼거나 순서를 바꾼 뒤에는 본문의 섹션 번호 참조("1.3절", "4장", "챕터 3")가 남지 않았는지 스윕하고, 그림·표 번호와 파일명을 다시 맞춘다
 - **그림 정렬**("하단 박스 수평 정렬"): 같은 흐름의 노드는 하단 변을 맞추고 화살표가 세로 중심선을 지나게 좌표를 바꾼 뒤, 밀려난 주석 위치와 sublabel 폭까지 확인
 - **공식 문서 확인 요청**: 이미 fetch한 원문에서 해당 문장을 찾아 챕터 이름과 함께 답하고, 두 문서가 다르면 둘 다 인용한다
+- **사전 점검만**("블로그 사전 점검", "리뷰 전 점검"): 이미 있는 Markdown 원고를 작업 폴더의 `drafts/`에 두고 5단계와 6단계를 실행해 `gate-report.md`를 준다. 사용자가 가져온 원고의 본문은 묻지 않고 바꾸지 않는다. 반려면 감점 사유와 수정안을 보여 주고, 사용자가 적용을 요청하면 미달 기준의 수정안만 적용해 2회차를 채점한다. 사용자가 처음부터 수정까지 맡겼으면("수정해서 패키징까지") 묻지 않고 적용하되 원본을 `$W/drafts-original.md`로 남기고 바꾼 문장을 알린다. 이 요청에서는 사실 검증(1단계)을 하지 않으므로 단가, 한도, 발표일을 공식 문서와 대조하지 않았다고 결과에 적는다
+- **재채점**("미달 항목 수정했어"): 미달이던 기준만 다시 채점해 2회차 리포트로 갱신하고 zip을 다시 만든다
+- **WordPress 변환만**("워드프레스 변환"): `md_to_wordpress.py`를 실행하고, 변환 시 바꾼 것과 `[!]` 항목을 알린다
+- **게시 후 공지 문구**("게시 완료", "publish 문구", "슬랙 문구"): [references/publishing.md](references/publishing.md)의 순서대로 저자 정보와 게시 URL을 먼저 묻고 완성본을 준다

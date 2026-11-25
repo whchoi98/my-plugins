@@ -22,10 +22,12 @@ the dev harness cannot be bypassed silently.
 | Claude settings | `.claude/settings.json` | Deny list, `Read(./.env)` denied, empty commit/PR attribution, hook registration |
 | Ignore rules | `.gitignore` | `.env`, `.claude/settings.local.json`, archives, `__pycache__/`, blog work folders `<YYYY-MM-DD>-<slug>/` |
 | Shipped MCP config | `.mcp.json` | Must stay `{"mcpServers": {}}`; installers read it as the plugin's MCP config |
-| Shipped commands | `commands/` | Three prompts the user invokes explicitly; they declare `allowed-tools` (Read, Write, Edit, Bash, Glob) for export and import |
+| Shipped commands | `commands/` | Five prompts the user invokes explicitly; they declare `allowed-tools` (Read, Write, Edit, Bash, Glob) for export and import |
 | Dependency installer | `skills/setup/scripts/setup.sh` | Check by default; user-level installs with `install`; system packages only with `--sudo`, through `sudo -n` |
 | Deck font installer | `skills/aws-ppt-skills/scripts/install_fonts.sh` | Copies two bundled fonts to `~/.fonts` and writes a fontconfig alias under `~/.config/fontconfig/` |
-| Blog packaging | `skills/aws-blog-skills/scripts/package_blog.sh` | Deletes only `<out>/<slug>` and `<out>/<slug>.zip` (`${OUT:?}` guard) |
+| Blog packaging | `skills/aws-blog-skills/scripts/package_blog.sh` | Deletes only `<out>/<slug>` and `<out>/<slug>.zip` (`${OUT:?}` guard; a slug that is not a plain file name is refused before anything is deleted); writes no zip when a check, the gate report or the conversion fails |
+| Blog pre-check | `skills/aws-blog-skills/scripts/redundancy_metrics.py`, `check_gate.py` | Standard library only; each reads the file it is given (`check_gate.py --draft` also the draft, measured with `redundancy_metrics.py` next to it) and writes to stdout; no network, no process |
+| WordPress converter | `skills/aws-blog-skills/scripts/md_to_wordpress.py` | Standard library only; reads the draft and checks that its images exist, writes only the `--out` file and nothing when it refuses; uploads nothing. Text taken from source material cannot become markup in the page the reviewer pastes: raw HTML is written as text, attribute values (`href`, `src`, `alt`) are escaped, a link may only use `http`, `https`, `mailto` or a relative path, and the title cannot close the comment at the top |
 | URL checker | `skills/aws-blog-skills/scripts/check_urls.py` | GET only, URLs taken from the given drafts, no credentials |
 | Blog renderer | `skills/aws-blog-skills/scripts/render_diagrams.py` | Opens only local `file://` pages from the given images directory |
 | Diagram import parsers | `skills/aws-diagram-design/scripts/mermaid_extract.py`, `drawio_extract.py`, `excalidraw_extract.py`, `plantuml_extract.py` | Each source is parsed as text and never evaluated, rendered, fetched or executed; draw.io XML with DTD or entity declarations is rejected and decompression is size-limited; a PlantUML include is refused, not read; links and images in a source are counted, not followed |
@@ -191,10 +193,12 @@ User-level writes: `~/.local/bin`, `~/.local/opt/libreoffice`, `~/.local/share/f
 | Claude 설정 | `.claude/settings.json` | deny 목록, `Read(./.env)` 차단, 커밋과 PR attribution 비움, 훅 등록 |
 | 무시 규칙 | `.gitignore` | `.env`, `.claude/settings.local.json`, 압축 파일, `__pycache__/`, 블로그 작업 폴더 `<YYYY-MM-DD>-<slug>/` |
 | 배포되는 MCP 설정 | `.mcp.json` | `{"mcpServers": {}}` 유지. 설치자에게는 플러그인 MCP 설정으로 읽힘 |
-| 배포되는 command | `commands/` | 사용자가 직접 부르는 프롬프트 3개. 내보내기와 가져오기를 위해 `allowed-tools`(Read, Write, Edit, Bash, Glob)를 선언 |
+| 배포되는 command | `commands/` | 사용자가 직접 부르는 프롬프트 5개. 내보내기와 가져오기를 위해 `allowed-tools`(Read, Write, Edit, Bash, Glob)를 선언 |
 | 의존 프로그램 설치기 | `skills/setup/scripts/setup.sh` | 기본은 점검, `install`은 사용자 영역 설치, 시스템 패키지는 `--sudo`일 때만 `sudo -n`으로 |
 | 덱 폰트 설치기 | `skills/aws-ppt-skills/scripts/install_fonts.sh` | 포함된 폰트 두 개를 `~/.fonts`에 복사하고 `~/.config/fontconfig/`에 fontconfig 별칭 기록 |
-| 블로그 패키징 | `skills/aws-blog-skills/scripts/package_blog.sh` | `<out>/<slug>`와 `<out>/<slug>.zip`만 삭제(`${OUT:?}` 가드) |
+| 블로그 패키징 | `skills/aws-blog-skills/scripts/package_blog.sh` | `<out>/<slug>`와 `<out>/<slug>.zip`만 삭제(`${OUT:?}` 가드. 파일 이름 형식이 아닌 slug는 삭제 전에 거부). 검사, 게이트 리포트, 변환 중 하나라도 실패하면 zip을 만들지 않음 |
+| 블로그 사전 점검 | `skills/aws-blog-skills/scripts/redundancy_metrics.py`, `check_gate.py` | 표준 라이브러리만 사용. 지정한 파일을 읽고(`check_gate.py --draft`는 원고도 읽어 옆의 `redundancy_metrics.py`로 다시 측정) 표준 출력에만 씀. 네트워크와 프로세스 실행 없음 |
+| WordPress 변환기 | `skills/aws-blog-skills/scripts/md_to_wordpress.py` | 표준 라이브러리만 사용. 원고를 읽고 이미지 파일이 있는지 확인하며 `--out` 파일만 씀. 거부할 때는 아무것도 쓰지 않음. 업로드하지 않음. 소재에서 온 글자가 리뷰어가 붙여넣는 페이지의 마크업이 될 수 없음: HTML 태그는 글자로 바꾸고, 속성값(`href`, `src`, `alt`)은 이스케이프하고, 링크는 `http`, `https`, `mailto`, 상대 경로만 받고, 제목이 맨 위 주석을 닫을 수 없음 |
 | URL 검사기 | `skills/aws-blog-skills/scripts/check_urls.py` | GET만 사용, 지정한 원고에서 찾은 URL만 요청, 자격 증명 없음 |
 | 블로그 렌더러 | `skills/aws-blog-skills/scripts/render_diagrams.py` | 지정한 images 폴더의 로컬 `file://` 페이지만 열기 |
 | 다이어그램 가져오기 파서 | `skills/aws-diagram-design/scripts/mermaid_extract.py`, `drawio_extract.py`, `excalidraw_extract.py`, `plantuml_extract.py` | 원본을 텍스트로만 파싱하고 평가, 렌더, 내려받기, 실행을 하지 않음. draw.io XML은 DTD와 엔티티 선언이 있으면 거부하고 압축 해제 크기를 제한. PlantUML의 include는 읽지 않고 거부. 원본 안의 링크와 이미지는 개수만 세고 따라가지 않음 |

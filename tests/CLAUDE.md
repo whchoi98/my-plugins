@@ -37,7 +37,12 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   `.aws-diagram-assets` pointer written after copying `diagram_lib.py`, author bio sync, draft skeletons
   free of banned notation, and `lint_prose.py` mirroring `style.md` (including `실측`, the `변경 기록` row
   that names `Changelog` as the word to write, the `절` and `견주다` rows of 2026-11-18 and the `대가가 있다` row of
-  2026-11-22 with their lint hints).
+  2026-11-22 with their lint hints), and the pre-check: steps 6 and 7 of SKILL.md (the two commands, only the
+  criteria below their minimum are corrected, no zip without a report, `--no-gate` only on request, nothing
+  uploaded, the score table shown without being asked each time the draft is scored and in the last response), the six criteria and minimums of `references/precheck.md` against `CRITERIA` and `PASS_TOTAL` in
+  `check_gate.py`, the example report of `precheck.md` run through `check_gate.py` (exit 3), the styles of
+  `references/publishing.md` against `md_to_wordpress.py`, `slug:` in both draft skeletons, and the credit to
+  comeddy/blog-precheck-plugin (`third_party/LICENSE-blog-precheck`, `NOTICE.md`, the five files that follow it).
 - `structure/test-aws-blog-skills-scripts.sh` — runs the aws-blog-skills scripts on fixture drafts in
   `$TEST_TMP`: `lint_prose.py` and `check_structure.py` exit codes, the `실측` and `축` rules (the axis
   metaphor flagged, chart axes and compounds such as `x축`, `압축` not), the `변경 기록` rule (both spellings
@@ -45,8 +50,24 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   of the text in four forms and every form of `견주다` flagged; `절차`, `절반`, SQL clauses, `관형절` and
   `의견 주시면` not; a numbered `절` reported once; `이 챕터에서는` counted as C-6; a numbered `챕터`
   reference flagged, a count of `챕터` not), the word rule of 2026-11-22 (every form of `대가가 있다` flagged with
-  `트레이드 오프가 있다` as the hint; `시간대가 있고` and `기대가 있습니다` not), `package_blog.sh` bundle and
-  no-zip-on-failure, `check_urls.py` OK/FAIL/REDIRECT against a local server, `render_diagrams.py`
+  `트레이드 오프가 있다` as the hint; `시간대가 있고` and `기대가 있습니다` not), `package_blog.sh` bundle
+  (`wordpress.md` and `gate-report.md` inside) and no zip on a failure, without a gate report, on a 반려 report,
+  on a verdict the scores do not support and on an image name the converter refuses (`--no-gate` packages
+  without the report), the score table at the end of the output (`scores:`, the whole block for a pass, the
+  round and the failing criterion for a round 2 hand-over, `scores: none` with `--no-gate`), `redundancy_metrics.py` (each of the six measures with a penalty worked out by hand,
+  table rows, code, the reference list and the bio not counted, `--restated`), `check_gate.py` (totals and
+  verdicts worked out by the fixture writer, not by the checker: the boundary at total 70, a criterion below
+  its minimum under a high total, round 2, a lowered minimum, missing evidence, a missing pair, criterion 4
+  against the script's number), `md_to_wordpress.py` (the comment, no h1, byline or hr, the exact markup of
+  tables, captions, images, code and nested lists, escaped raw HTML, the three slug sources, refused images
+  including a name with U+202F, the second count, nothing written on a failure, the draft template),
+  the optional `slug:` in `check_structure.py`, the inputs that gave a wrong result in the review of the first
+  version (a title that closes the comment, a code span inside `href` or `alt`, `javascript:` links, a fence
+  with an info string, a change of list kind, lost list items, `C#` in a heading, italic before a Korean
+  particle, an image followed by text, a byte-order mark, CRLF, a form feed in code; quotation pairing, a
+  sentence ending in a bracket and similar sentences in the metrics; impossible scores, fewer than three
+  compared posts, tampered metrics and `--draft` in the checker; a path in the slug, `jpg` images and a stale
+  report in the packaging), `check_urls.py` OK/FAIL/REDIRECT against a local server, `render_diagrams.py`
   argument guard, and the diagram generator set up by running SKILL.md step 4's copy lines with an empty
   `HOME`.
 - `structure/test-kor-deslop.sh` — kor-deslop: pattern table integrity (A-J severities, K without,

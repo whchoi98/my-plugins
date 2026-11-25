@@ -91,8 +91,16 @@ if [[ "$FILE_PATH" == skills/aws-blog-skills/references/structure.md || "$FILE_P
     MESSAGES+=("[doc-sync] Draft skeleton changed: keep the author bio identical in references/structure.md and assets/templates/blog-template.md, and BIO_HEAD in scripts/check_structure.py.")
 fi
 
+if [[ "$FILE_PATH" == skills/aws-blog-skills/references/precheck.md || "$FILE_PATH" == skills/aws-blog-skills/scripts/check_gate.py ]]; then
+    MESSAGES+=("[doc-sync] Pre-check changed: keep the criteria and minimums of references/precheck.md equal to CRITERIA and PASS_TOTAL in scripts/check_gate.py, keep the example report one the checker accepts, and keep the report's names and verdict words (the layout follows comeddy/blog-precheck-plugin).")
+fi
+
+if [[ "$FILE_PATH" == skills/aws-blog-skills/references/publishing.md || "$FILE_PATH" == skills/aws-blog-skills/scripts/md_to_wordpress.py ]]; then
+    MESSAGES+=("[doc-sync] WordPress conversion changed: keep the markup scripts/md_to_wordpress.py writes and the table in references/publishing.md the same; the converter uploads nothing and escapes raw HTML.")
+fi
+
 if [[ "$FILE_PATH" == skills/aws-blog-skills/SKILL.md ]]; then
-    MESSAGES+=("[doc-sync] aws-blog-skills SKILL.md: list every references/*.md in the table, keep the step 0 source-material rule and the step 4 .aws-diagram-assets pointer line; run 'bash tests/run-all.sh aws-blog-skills'.")
+    MESSAGES+=("[doc-sync] aws-blog-skills SKILL.md: list every references/*.md in the table, keep the step 0 source-material rule, the step 4 .aws-diagram-assets pointer line, the step 6 pre-check before packaging and the score table in the last response; run 'bash tests/run-all.sh aws-blog-skills'.")
 fi
 
 if [[ "$FILE_PATH" == skills/aws-blog-skills/scripts/* ]]; then

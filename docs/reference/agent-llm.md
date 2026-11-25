@@ -16,7 +16,7 @@ one fires, and reference files only when a step asks for them. Skills chain thro
 ### 2. Components
 | Skill | Entry | What the model does | Read on demand |
 |---|---|---|---|
-| aws-blog-skills | `skills/aws-blog-skills/SKILL.md` | Steps 0-7: scope, fact and URL check, skeleton and draft, style rules and 윤문, diagrams, structure check, packaging, rule registration | `references/` per step: structure, style, humanize-checklist, verification, diagrams, exemplars, collaboration |
+| aws-blog-skills | `skills/aws-blog-skills/SKILL.md` | Steps 0-8: scope, fact and URL check, skeleton and draft, style rules and 윤문, diagrams, structure check, pre-check (six criteria scored into `gate-report.md`, checked by `check_gate.py`; the score table is shown to the user without being asked), packaging (with `wordpress.md` from `md_to_wordpress.py`), rule registration; the notice text after publishing as a follow-up | `references/` per step: structure, style, humanize-checklist, verification, diagrams, exemplars, collaboration, precheck, publishing |
 | aws-diagram | `skills/aws-diagram/SKILL.md` | Map the system to AWS services, look up exact icons with `find_icon.py`, compose SVG, inline icons with `embed.py` | `references/diagram_guide.md` (read in full) |
 | aws-diagram-design | `skills/aws-diagram-design/SKILL.md` | Apply the AWS edition rules (§0 and the block after it), pick a semantic pattern and one of the source's visual types, state the plan, draw HTML/SVG on the 4px grid, render and look, pass the taste gate, export | `references/type-*.md` for the chosen type, `style-guide.md` and `primitive-aws-icons.md` (the edition's), `primitives-core.md`, `layout-budget.md`, `semantic-patterns.md`, `animation.md`, `profiles.md`, export and import references |
 | kor-deslop | `skills/kor-deslop/SKILL.md` | One pass: rule priority, meaning preservation, severity-based fixes, six self-checks, three output modes | `references/patterns.md` (81 patterns and principles, read once per run) |
@@ -49,26 +49,26 @@ one fires, and reference files only when a step asks for them. Skills chain thro
 Charts and comparison figures specific to the blog are drawn by aws-blog-skills itself with `diagram_lib.py`,
 which reads icons and fonts from `../aws-diagram-design/assets` (see [architecture.md](../architecture.md)).
 
-**Token cost** (`claude --plugin-dir . plugin details my-plugins`, 2026-11-24; estimates):
+**Token cost** (`claude --plugin-dir . plugin details my-plugins`, 2026-11-25; estimates):
 
 | Component | Always-on | On invoke |
 |---|---|---|
-| aws-blog-skills | ~520 | ~4.8k |
+| aws-blog-skills | ~620 | ~6.4k |
 | aws-diagram | ~670 | ~3.5k |
-| aws-diagram-design | ~770 | ~18.7k |
+| aws-diagram-design | ~780 | ~18.8k |
 | kor-deslop | ~210 | ~1.4k |
-| aws-ppt-skills | ~420 | ~33.2k |
+| aws-ppt-skills | ~420 | ~33.4k |
 | consulting-ppt-white-ppt | ~580 | ~7.2k |
-| pptx-template-fill | ~560 | ~3.6k |
-| aws-reports | ~530 | ~3.7k |
-| html-report | ~360 | ~2.7k |
+| pptx-template-fill | ~570 | ~3.6k |
+| aws-reports | ~540 | ~3.8k |
+| html-report | ~360 | ~2.8k |
 | techblogs | ~470 | ~6k |
 | aws-infographic | ~390 | ~4.9k |
-| ui-deslop | ~410 | ~15.5k |
+| ui-deslop | ~410 | ~15.6k |
 | eng-deslop | ~370 | ~16.5k |
 | setup | ~400 | ~1.5k |
-| export-diagram, import-drawio, import-excalidraw, import-mermaid, import-plantuml | ~60, ~70, ~80, ~70, ~90 | ~1.8k, ~1.5k, ~1.6k, ~1.7k, ~1.5k |
-| **Total always-on** | **~7.0k** | |
+| export-diagram, import-drawio, import-excalidraw, import-mermaid, import-plantuml | ~60, ~70, ~80, ~70, ~90 | ~1.8k, ~1.5k, ~1.6k, ~1.7k, ~1.6k |
+| **Total always-on** | **~7.2k** | |
 
 References come on top of the on-invoke figure. A chained run pays for each skill that fires: a blog post with
 a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bodies in the same session.
@@ -101,7 +101,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
   the source's text with its fonts, colors and names replaced. A rule of the edition is stated once, in the rules
   block, as what the output is, and the style guide carries the values
   ([ADR-009](../decisions/ADR-009-derived-skill-rebuilt-by-recipe.md)).
-- Mechanical rules are scripts with exit codes (`lint_prose.py`, `check_structure.py`, `check_urls.py`, geometry
+- Mechanical rules are scripts with exit codes (`lint_prose.py`, `check_structure.py`, `check_urls.py`, `check_gate.py`, geometry
   asserts in `diagram_lib.py`, `self_check.py`, `check_deck.py`, `qa_check.py`); SKILL.md keeps judgment and order.
 - Paths: `${CLAUDE_SKILL_DIR}` is substituted in SKILL.md only (aws-blog-skills, setup); the diagram and deck
   skills define `SKILL_DIR` from "Base directory for this skill". Bash state does not persist between calls, so
@@ -160,7 +160,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 ### 2. 구성요소
 | skill | 진입점 | 모델이 하는 일 | 필요할 때 읽는 것 |
 |---|---|---|---|
-| aws-blog-skills | `skills/aws-blog-skills/SKILL.md` | 0~7단계: 범위, 사실과 URL 검증, 골격과 초안, 문장 규칙과 윤문, 다이어그램, 구조 검사, 패키징, 규칙 등록 | 단계별 `references/`: structure, style, humanize-checklist, verification, diagrams, exemplars, collaboration |
+| aws-blog-skills | `skills/aws-blog-skills/SKILL.md` | 0~8단계: 범위, 사실과 URL 검증, 골격과 초안, 문장 규칙과 윤문, 다이어그램, 구조 검사, 사전 점검(여섯 기준을 채점해 `gate-report.md`에 쓰고 `check_gate.py`로 확인. 점수표는 묻지 않아도 사용자에게 제시), 패키징(`md_to_wordpress.py`가 만든 `wordpress.md` 포함), 규칙 등록. 게시 후 공지 문구는 후속 요청으로 처리 | 단계별 `references/`: structure, style, humanize-checklist, verification, diagrams, exemplars, collaboration, precheck, publishing |
 | aws-diagram | `skills/aws-diagram/SKILL.md` | 시스템을 AWS 서비스로 대응시키고, `find_icon.py`로 정확한 아이콘을 찾아 SVG를 짜고, `embed.py`로 아이콘을 내장 | `references/diagram_guide.md`(전체를 읽음) |
 | aws-diagram-design | `skills/aws-diagram-design/SKILL.md` | AWS 판 규칙(§0과 그 뒤 블록)을 적용하고, 의미 패턴과 원본의 시각 유형 중 하나를 골라 계획을 밝힌 뒤 4px 그리드로 HTML/SVG를 그리고, 렌더해서 확인하고 taste gate를 통과시킨 뒤 내보내기 | 고른 유형의 `references/type-*.md`, AWS 판의 `style-guide.md`와 `primitive-aws-icons.md`, `primitives-core.md`, `layout-budget.md`, `semantic-patterns.md`, `animation.md`, `profiles.md`, 내보내기와 가져오기 참조 |
 | kor-deslop | `skills/kor-deslop/SKILL.md` | 한 번에 처리: 규칙 우선순위, 의미 보존, 심각도별 수정, 자체 점검 6항목, 결과 전달 방식 3가지 | `references/patterns.md`(패턴과 원칙 81개, 실행마다 한 번) |
@@ -192,26 +192,26 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 
 블로그 고유의 차트와 비교 그림은 aws-blog-skills가 `diagram_lib.py`로 직접 그리며, 아이콘과 폰트는 `../aws-diagram-design/assets`에서 읽습니다([architecture.md](../architecture.md) 참고).
 
-**토큰 비용**(`claude --plugin-dir . plugin details my-plugins`, 2026-11-24, 추정치):
+**토큰 비용**(`claude --plugin-dir . plugin details my-plugins`, 2026-11-25, 추정치):
 
 | 구성 요소 | 항상 로드 | 호출할 때 |
 |---|---|---|
-| aws-blog-skills | ~520 | ~4.8k |
+| aws-blog-skills | ~620 | ~6.4k |
 | aws-diagram | ~670 | ~3.5k |
-| aws-diagram-design | ~770 | ~18.7k |
+| aws-diagram-design | ~780 | ~18.8k |
 | kor-deslop | ~210 | ~1.4k |
-| aws-ppt-skills | ~420 | ~33.2k |
+| aws-ppt-skills | ~420 | ~33.4k |
 | consulting-ppt-white-ppt | ~580 | ~7.2k |
-| pptx-template-fill | ~560 | ~3.6k |
-| aws-reports | ~530 | ~3.7k |
-| html-report | ~360 | ~2.7k |
+| pptx-template-fill | ~570 | ~3.6k |
+| aws-reports | ~540 | ~3.8k |
+| html-report | ~360 | ~2.8k |
 | techblogs | ~470 | ~6k |
 | aws-infographic | ~390 | ~4.9k |
-| ui-deslop | ~410 | ~15.5k |
+| ui-deslop | ~410 | ~15.6k |
 | eng-deslop | ~370 | ~16.5k |
 | setup | ~400 | ~1.5k |
-| export-diagram, import-drawio, import-excalidraw, import-mermaid, import-plantuml | ~60, ~70, ~80, ~70, ~90 | ~1.8k, ~1.5k, ~1.6k, ~1.7k, ~1.5k |
-| **항상 로드 합계** | **~7.0k** | |
+| export-diagram, import-drawio, import-excalidraw, import-mermaid, import-plantuml | ~60, ~70, ~80, ~70, ~90 | ~1.8k, ~1.5k, ~1.6k, ~1.7k, ~1.6k |
+| **항상 로드 합계** | **~7.2k** | |
 
 참조 파일은 호출 비용에 더해집니다. 이어서 실행하면 실행된 skill마다 비용이 붙습니다. 구조 다이어그램이 있는 블로그 원고는 한 세션에서 aws-blog-skills, aws-diagram-design, kor-deslop 본문을 모두 로드합니다.
 
@@ -225,7 +225,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 - description이 이웃 skill로 안내: aws-diagram과 aws-diagram-design은 다른 종류의 그림에는 "이 플러그인의" 상대 skill을 쓰라고 적고, consulting-ppt-white-ppt는 세미나 덱에 aws-ppt-skills를 안내하며, aws-blog-skills는 블로그 원고에서 kor-deslop보다 자신이 우선한다고 적습니다.
 - ui-deslop과 eng-deslop은 다른 저작자의 프롬프트를 고정한 커밋에서 복사한 것이고 수정하지 않으므로, 이 플러그인이 정하는 것은 `name`과 `description`뿐입니다. 세 deslop skill의 description은 서로를 안내합니다. 한국어 글은 kor-deslop, 영어 글은 eng-deslop, 화면은 ui-deslop으로 갑니다([ADR-008](../decisions/ADR-008-vendored-skills-synced-by-pull-request.md)).
 - aws-diagram-design은 원본의 프롬프트에 변환 규칙으로 AWS 판의 글을 넣은 것입니다. SKILL.md의 §0, AWS 판 규칙, 체크리스트 묶음은 `scripts/upstream/aws-diagram-design/blocks/`의 블록이고, 나머지는 글꼴, 색, 이름을 치환한 원본의 글입니다. AWS 판의 규칙은 규칙 블록 한 곳에 결과물의 모습으로 적고, 값은 스타일 가이드에 둡니다([ADR-009](../decisions/ADR-009-derived-skill-rebuilt-by-recipe.md)).
-- 기계적 규칙은 종료 코드가 있는 스크립트로 둡니다(`lint_prose.py`, `check_structure.py`, `check_urls.py`, `diagram_lib.py`의 기하 assert, `self_check.py`, `check_deck.py`, `qa_check.py`). SKILL.md에는 판단과 작업 순서만 남깁니다.
+- 기계적 규칙은 종료 코드가 있는 스크립트로 둡니다(`lint_prose.py`, `check_structure.py`, `check_urls.py`, `check_gate.py`, `diagram_lib.py`의 기하 assert, `self_check.py`, `check_deck.py`, `qa_check.py`). SKILL.md에는 판단과 작업 순서만 남깁니다.
 - 경로: `${CLAUDE_SKILL_DIR}`는 SKILL.md에서만 치환됩니다(aws-blog-skills, setup). 다이어그램과 덱 skill은 "Base directory for this skill"에서 `SKILL_DIR`을 정합니다. Bash 호출 사이에 셸 상태가 남지 않으므로 모델은 절대 경로를 씁니다([ADR-001](../decisions/ADR-001-claude-code-skill-conventions.md)).
 - kor-deslop은 빼기만 합니다. 사용자 요청, 의미 보존, 패턴 순으로 우선하며, 문장 전체 삭제는 후보로만 알립니다.
 - aws-ppt-skills는 빈 마스터 위에 빌드한 뒤 `apply_template.py`로 슬라이드를 포함된 템플릿으로 옮기므로, 배경, 로고, 바닥글, 쪽 번호의 출처는 템플릿 하나뿐입니다.

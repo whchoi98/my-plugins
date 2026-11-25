@@ -19,10 +19,13 @@ tracked file reaches every user.
    allowed root component: check its three prompts and their `allowed-tools`.
 3. **Bundled scripts** — the skills ship scripts that Claude runs on the user's machine; check each against
    the table in `docs/reference/security.md`:
-   - aws-blog-skills: `package_blog.sh` deletes only `<out>/<slug>` and `<out>/<slug>.zip` (`${OUT:?}` guard);
+   - aws-blog-skills: `package_blog.sh` deletes only `<out>/<slug>` and `<out>/<slug>.zip` (`${OUT:?}` guard, and a
+     slug that is not a plain file name is refused first);
      `check_urls.py` issues only GET requests to URLs found in the given drafts, no credentials;
      `render_diagrams.py` opens only local `file://` pages; `diagram_lib.py` reads the sibling assets and writes
-     only to `BLOG_IMAGES`
+     only to `BLOG_IMAGES`; `redundancy_metrics.py` and `check_gate.py` read one file and print;
+     `md_to_wordpress.py` writes only its `--out` file, uploads nothing, writes raw HTML from the draft as text,
+     escapes attribute values and refuses link schemes other than `http`, `https` and `mailto`
    - aws-diagram-design: `mermaid_extract.py` and `drawio_extract.py` never evaluate or fetch their input and
      reject DTD/entity XML; `self_check.py` still rejects remote assets
    - deck skills: `install_fonts.sh` writes only under `~/.fonts` and `~/.config/fontconfig/`; `qa_check.py`,

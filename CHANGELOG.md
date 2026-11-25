@@ -15,6 +15,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- `aws-blog-skills`: a pre-check before the draft goes to a reviewer (step 6), following the blog-precheck skill of github.com/comeddy/blog-precheck-plugin (MIT, Youngjin Kim). Score the draft on six criteria into `gate-report.md` (minimums: consistency 80, structure 70, notation 70, repetition and filler 60, distinctiveness and evidence 60, readability 60; total 70), correct only the criteria below their minimum and score a second time at most. `references/precheck.md` holds the criteria, what each one looks at in this skill, the report layout and the order of correcting and scoring again
+- `aws-blog-skills`: `scripts/redundancy_metrics.py` measures repetition and filler (repeated paragraphs and sentences, meta sentences, quoted coinages, paragraphs of six sentences or more, stock words). It reads a draft the way `lint_prose.py` does, so table rows, code, captions, the reference list and the author bio are not counted. `--restated N` takes off 5 points for each restatement counted by hand and prints the score of criterion 4
+- `aws-blog-skills`: `scripts/check_gate.py` recomputes the total and the verdict of `gate-report.md`. It fails on a verdict the scores do not support, a changed minimum, a score the scoring rules cannot give, a judged score without a quoted sentence, fewer than three compared posts, a lost point without the original and the corrected text, and a criterion 4 score that does not follow from the pasted script output. With `--draft` it measures the draft again and refuses a report written for another draft or before the draft changed (exit 0 hand over, 3 반려, 1 inconsistent)
+- `aws-blog-skills`: `scripts/md_to_wordpress.py` converts the draft to HTML for the WordPress code editor (`wordpress.md`): title, suggested URL slug and categories in a comment at the top, body from `<h2>`, tables with inline borders, centered captions, `<pre><code class="lang-...">`, local image paths. It uploads nothing, writes raw HTML of the draft as text, escapes attribute values, accepts only `http`, `https`, `mailto` and relative links, refuses base64 images and image names with spaces or special characters, and writes nothing when a second count of the draft's blocks differs from the result. `references/publishing.md` holds the rules, what to hand to the reviewer and the notice text to post after publishing
+- `aws-blog-skills`: the scores are shown without being asked. `check_gate.py` prints the score table (six criteria, minimums, verdict, total) of a consistent report, `package_blog.sh` repeats it at the end of its output under `scores:`, and the last response of a session carries that table with one line per criterion that lost points (SKILL.md steps 6 and 7, `references/precheck.md`)
+- `aws-blog-skills`: optional `slug:` (English URL slug) in the draft frontmatter, checked by `check_structure.py` and read by the converter
+- ADR-010 records why the pre-check is adapted into the skill and enforced by scripts; `third_party/LICENSE-blog-precheck` and `NOTICE.md` credit the source
+
+### Changed
+- `aws-blog-skills`: `package_blog.sh` checks `gate-report.md` with `check_gate.py` against the assembled draft, copies it into the bundle and adds `wordpress.md`. It writes no zip without a gate report, while the verdict is 반려 or when the report no longer matches the draft; `--no-gate` packages without one when the user asks to leave the pre-check out. The slug has to be a plain file name (a path in it is refused before anything is deleted), `jpg`, `jpeg`, `gif` and `webp` images are copied besides `png` and `svg`, and a failed run removes the folder it assembled. The steps are now 0 to 8 (pre-check 6, packaging 7, rule registration 8)
+- `aws-blog-skills`: the formula block of a draft is fenced as `text`, in `references/structure.md` and the draft template
+
 ## [1.10.0] - 2026-11-24
 
 ### Added
@@ -221,6 +234,19 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+### Added
+- `aws-blog-skills`: 리뷰어에게 넘기기 전 사전 점검(6단계) 추가. github.com/comeddy/blog-precheck-plugin의 blog-precheck skill(MIT, Youngjin Kim)을 따름. 여섯 기준으로 채점해 `gate-report.md`에 기록(최저선: 정합성 80, 구조 완결성 70, 표기 규범 70, 중복과 군더더기 60, 차별성과 근거 60, 가독성 60, 총점 70)하고, 미달 기준만 수정해 두 번째 채점까지만 진행. 기준, 이 skill에서 기준마다 보는 것, 리포트 형식, 수정과 재채점 순서는 `references/precheck.md`에 정리
+- `aws-blog-skills`: `scripts/redundancy_metrics.py`가 중복과 군더더기(문단과 문장 반복, 메타 강조 문장, 따옴표 조어, 6문장 이상 문단, 상투어)를 측정. `lint_prose.py`와 같은 방식으로 원고를 읽어 표의 행, 코드, 캡션, 참고 자료, 저자 소개는 세지 않음. `--restated N`으로 직접 센 재진술 1건마다 5점을 빼고 기준 4 점수를 출력
+- `aws-blog-skills`: `scripts/check_gate.py`가 `gate-report.md`의 총점과 판정을 다시 계산. 점수와 맞지 않는 판정, 바뀐 최저선, 채점 규칙으로 나올 수 없는 점수, 인용 문장이 없는 판단 점수, 3개보다 적은 비교 글, 원문과 수정안이 없는 감점, 붙여 넣은 스크립트 출력과 맞지 않는 기준 4 점수가 있으면 실패. `--draft`를 주면 원고를 다시 측정해 다른 원고의 리포트나 원고가 바뀌기 전의 리포트를 거부(종료 코드 0 전달 가능, 3 반려, 1 불일치)
+- `aws-blog-skills`: `scripts/md_to_wordpress.py`가 원고를 WordPress 코드 편집기용 HTML(`wordpress.md`)로 변환. 맨 위 주석에 제목, 추천 URL slug, 카테고리를 적고, 본문은 `<h2>`부터 시작하며, 표에는 인라인 테두리, 캡션은 가운데 정렬, 코드는 `<pre><code class="lang-...">`, 이미지는 로컬 경로로 둠. 업로드하지 않고, 원고의 HTML 태그는 글자로 바꾸며, 속성값은 이스케이프하고, 링크는 `http`, `https`, `mailto`, 상대 경로만 받음. base64 이미지와 공백이나 특수문자가 든 이미지 이름은 거부하고, 원고의 블록 수를 다시 세어 결과와 다르면 아무것도 쓰지 않음. 변환 규칙, 리뷰어에게 넘길 것, 게시 후 공지 문구는 `references/publishing.md`에 정리
+- `aws-blog-skills`: 점수를 묻지 않아도 제시. `check_gate.py`가 일관된 리포트의 점수표(여섯 기준, 최저선, 판정, 총점)를 출력하고, `package_blog.sh`가 출력 끝의 `scores:`에 다시 적으며, 세션의 마지막 응답에 그 표와 감점된 기준별 사유 한 줄을 넣음(SKILL.md 6단계와 7단계, `references/precheck.md`)
+- `aws-blog-skills`: 원고 프론트매터에 선택 항목 `slug:`(영어 URL slug) 추가. `check_structure.py`가 형식을 검사하고 변환기가 읽음
+- 사전 점검을 skill 안에 옮겨 쓰고 스크립트로 판정하는 이유를 ADR-010에 기록. 출처는 `third_party/LICENSE-blog-precheck`와 `NOTICE.md`에 표시
+
+### Changed
+- `aws-blog-skills`: `package_blog.sh`가 `gate-report.md`를 조립한 원고와 대조해 `check_gate.py`로 검사한 뒤 번들에 넣고 `wordpress.md`를 추가. 게이트 리포트가 없거나, 판정이 반려이거나, 리포트가 원고와 맞지 않으면 zip을 만들지 않음. 사용자가 사전 점검을 빼 달라고 할 때는 `--no-gate`로 리포트 없이 패키징. slug는 파일 이름 형식만 받고(경로가 들어 있으면 삭제 전에 거부), `png`와 `svg` 외에 `jpg`, `jpeg`, `gif`, `webp` 이미지도 복사하며, 실패하면 조립하던 폴더를 지움. 단계가 0~8로 변경(사전 점검 6, 패키징 7, 규칙 등록 8)
+- `aws-blog-skills`: 원고의 계산식 코드 블록에 `text` 라벨을 붙이도록 `references/structure.md`와 원고 템플릿 변경
 
 ## [1.10.0] - 2026-11-24
 

@@ -20,7 +20,7 @@ Apply the criteria in `.claude/skills/plugin-review/SKILL.md` to each changed fi
   script paths, `my-plugins:<skill>` calls and no old namespaces, sibling-relative paths, nothing written into
   a skill folder
 - Per-skill rules: aws-blog-skills (reference table, `lint_prose.py` in sync with `style.md`, author bio,
-  no claude.ai-only names), kor-deslop (one pattern count), deck skills (template elements, punctuation,
+  no claude.ai-only names, `precheck.md` in sync with `check_gate.py`, `publishing.md` with `md_to_wordpress.py`), kor-deslop (one pattern count), deck skills (template elements, punctuation,
   `NODE_PATH`), aws-diagram-design and `commands/` (export and import references), setup (sudo gating)
 - Script behavior: exit codes, the no-zip-on-failure rule, `setup.sh` check mode changes nothing
 - Release hygiene: `skills/` and `commands/` changes come with a version bump and a bilingual CHANGELOG entry

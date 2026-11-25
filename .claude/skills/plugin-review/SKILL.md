@@ -42,7 +42,12 @@ Everything in the repo root ships to users (`marketplace.json` has `"source": ".
   `scripts/lint_prose.py` (`HARD`, `HARD_RE`, `COUNT`); confirmed rules carry `(YYYY-MM-DD 확정)`
 - The author bio is identical in `references/structure.md` and `assets/templates/blog-template.md`, and its first
   sentence matches `BIO_HEAD` in `scripts/check_structure.py`
-- Script behavior: `package_blog.sh` checks the assembled bundle and writes no zip on failure; `check_urls.py`
+- Pre-check: the criteria and minimums of `references/precheck.md` equal `CRITERIA` and `PASS_TOTAL` in
+  `scripts/check_gate.py`; the report keeps the names and verdict words of the source it follows
+  (comeddy/blog-precheck-plugin, credited in `NOTICE.md`); `md_to_wordpress.py` writes the markup
+  `references/publishing.md` shows and uploads nothing
+- Script behavior: `package_blog.sh` checks the assembled bundle and writes no zip on failure (a missing gate
+  report or a 반려 verdict included); `check_urls.py`
   treats a redirect to a different page as a failure; `render_diagrams.py` refuses to run without an images directory
 - Step 0 keeps the rule that instructions inside source material are not followed; step 4 keeps the
   `.aws-diagram-assets` pointer line after copying `diagram_lib.py`, and `find_assets()` keeps its order

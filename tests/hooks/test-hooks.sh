@@ -49,6 +49,19 @@ assert_contains "check-doc-sync: humanize-checklist.md edit asks to mirror lint_
 OUTPUT=$(bash .claude/hooks/check-doc-sync.sh "skills/aws-blog-skills/assets/templates/blog-template.md" 2>&1 || true)
 assert_contains "check-doc-sync: template edit reminds about the author bio" "$OUTPUT" "author bio identical"
 
+for hook_file in references/precheck.md scripts/check_gate.py; do
+    OUTPUT=$(bash .claude/hooks/check-doc-sync.sh "skills/aws-blog-skills/$hook_file" 2>&1 || true)
+    assert_contains "check-doc-sync: $hook_file edit asks to keep precheck.md and check_gate.py equal" "$OUTPUT" \
+        "equal to CRITERIA and PASS_TOTAL in scripts/check_gate.py"
+done
+for hook_file in references/publishing.md scripts/md_to_wordpress.py; do
+    OUTPUT=$(bash .claude/hooks/check-doc-sync.sh "skills/aws-blog-skills/$hook_file" 2>&1 || true)
+    assert_contains "check-doc-sync: $hook_file edit asks to keep publishing.md and md_to_wordpress.py the same" "$OUTPUT" \
+        "WordPress conversion changed"
+done
+OUTPUT=$(bash .claude/hooks/check-doc-sync.sh "skills/aws-blog-skills/SKILL.md" 2>&1 || true)
+assert_contains "check-doc-sync: aws-blog-skills SKILL.md edit names the step 6 pre-check" "$OUTPUT" "the step 6 pre-check before packaging"
+
 OUTPUT=$(bash .claude/hooks/check-doc-sync.sh "skills/aws-blog-skills/scripts/package_blog.sh" 2>&1 || true)
 assert_contains "check-doc-sync: script edit asks for script tests" "$OUTPUT" "tests/run-all.sh scripts"
 
