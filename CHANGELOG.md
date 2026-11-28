@@ -15,6 +15,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.12.0] - 2026-11-28
+
 ### Changed
 - `techblogs`: a newly written post opens with the meaning or the insight of its content, not with test results, so that a reader stays in the opening and goes on to the body. The opening is the summary paragraph and the key points of the head and the first section. The summary paragraph states the meaning in its first sentence, then what was tested first-hand, the evidence and the limits; a key point is one takeaway; the first section runs background paragraph, meaning, the reader's situation and the question the body answers, its title and figures show the situation, and result tables and charts go to the sections on the results. `references/storylines.md` has the rule in a new `서두` section (how a meaning differs from a result, how the opening holds a reader, what to leave out, a worked example) and one `서두의 의미` line per storyline; the first step and the opening line of every storyline start with the meaning, and the `measure` storyline no longer opens with its most important number. `scripts/new_post.py` writes that line into the guide of the first section and prints it. `scripts/check_post.py` warns when the summary paragraph, a key point, the excerpt or the Korean first section of a new post holds three measured values or more, or when the title of the Korean first section holds one (numbers with a unit of time, ratio, tokens, requests, money or size; dates, versions, counts of things and code are not counted; republished posts are not checked). SKILL.md settles the meaning with the scope and tells it to the user (step 0), writes the opening in step 2, keeps it through polishing (step 3) and rewrites an opening that warns (step 5). A post from before the rule is changed only when the user asks
 
@@ -209,7 +211,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - The aws-diagram-design references named the export and import commands `/aws-diagram-design:...`, which never existed; they are now `/my-plugins:...`
 - aws-ppt-skills called `/aws-diagram` and `/aws-diagram-design` without a plugin namespace
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/whchoi98/my-plugins/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/whchoi98/my-plugins/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/whchoi98/my-plugins/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/whchoi98/my-plugins/compare/v1.9.0...v1.9.1
@@ -240,6 +243,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 버전은 [Semantic Versioning](https://semver.org/spec/v2.0.0.html)을 따릅니다.
 
 ## [Unreleased]
+
+## [1.12.0] - 2026-11-28
 
 ### Changed
 - `techblogs`: 새로 쓰는 글의 서두가 테스트 결과가 아니라 그 내용의 의미나 인사이트로 시작. 독자가 서두에 머물고 본문으로 넘어가게 하기 위함. 서두는 머리의 요약 문단과 요점, 본문의 첫 챕터. 요약 문단은 첫 문장에 의미를 쓰고 직접 테스트한 사실, 근거, 한계를 붙이며 요점은 한 줄에 독자가 가져갈 판단 하나를 씀. 첫 챕터는 배경 문단, 의미, 독자의 상황, 본문이 답할 질문의 순서로 쓰고 제목과 그림은 상황을 보여 주며 결과 표와 결과 차트는 결과를 다루는 챕터에 둠. `references/storylines.md`에 `서두` 섹션(의미와 결과의 구분, 독자가 머무는 서두를 쓰는 법, 쓰지 않는 것, 예)과 스토리라인마다 `서두의 의미` 줄을 추가. 모든 스토리라인의 첫 단계와 여는 방식이 의미로 시작하고 `measure` 스토리라인은 가장 중요한 수치로 열지 않음. `scripts/new_post.py`가 첫 챕터의 안내 주석에 그 줄을 넣고 출력. `scripts/check_post.py`는 새 글의 요약 문단, 요점 하나, 목록 카드의 요약, 한국어 첫 챕터에 측정값이 셋 이상이거나 한국어 첫 챕터의 제목에 측정값이 있으면 경고(시간, 비율, 토큰 수, 요청 수, 금액, 용량의 단위가 붙은 숫자를 세고 날짜, 버전, 물건의 개수, 코드는 세지 않음, 옮겨 싣는 글은 보지 않음). SKILL.md는 0단계에서 의미를 범위와 함께 정해 사용자에게 알리고 2단계에서 서두를 쓰며 3단계 윤문에서 되돌리지 않고 5단계에서 경고가 난 서두를 다시 씀. 규칙 전에 올린 글은 사용자가 요청할 때만 수정
@@ -435,7 +440,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - aws-diagram-design references가 내보내기와 가져오기 command를 존재한 적 없는 `/aws-diagram-design:...`으로 적던 것을 `/my-plugins:...`로 수정
 - aws-ppt-skills가 `/aws-diagram`, `/aws-diagram-design`을 플러그인 이름 공간 없이 부르던 것을 수정
 
-[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.11.0...HEAD
+[Unreleased]: https://github.com/whchoi98/my-plugins/compare/v1.12.0...HEAD
+[1.12.0]: https://github.com/whchoi98/my-plugins/compare/v1.11.0...v1.12.0
 [1.11.0]: https://github.com/whchoi98/my-plugins/compare/v1.10.0...v1.11.0
 [1.10.0]: https://github.com/whchoi98/my-plugins/compare/v1.9.1...v1.10.0
 [1.9.1]: https://github.com/whchoi98/my-plugins/compare/v1.9.0...v1.9.1
