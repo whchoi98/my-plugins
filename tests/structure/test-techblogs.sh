@@ -127,13 +127,40 @@ assert_contains "techblogs SKILL.md: an analogy does not replace the facts" "$TB
 assert_contains "techblogs SKILL.md: polishing keeps the explanatory analogy" "$TB_SKILL" \
     "2단계에서 넣은 설명용 비유는 윤문하면서 지우지 않는다"
 assert_contains "techblogs SKILL.md: new posts do not all share one skeleton" "$TB_SKILL" "새 글을 모두 같은 뼈대로 쓰지 않는다"
+# Opening (2026-11-28): a new post opens with the meaning or the insight of its content, not with test results
+assert_contains "techblogs SKILL.md: opening with the meaning has its own part of step 2" "$TB_SKILL" '### 의미로 서두 열기'
+assert_contains "techblogs SKILL.md: the opening of a new post starts with the meaning or the insight, not with test results" "$TB_SKILL" \
+    '새로 쓰는 글의 서두는 테스트 결과가 아니라 그 내용의 의미나 인사이트로 시작한다. 서두는 머리의 요약 문단(`thesis`)과 요점(`facts`), 본문의 첫 챕터다.'
+assert_contains "techblogs SKILL.md: the reader stays in the opening and goes on to the body" "$TB_SKILL" \
+    '독자가 서두에서 그 의미를 자기 상황에 비춰 보며 머물고, 근거가 궁금해져 본문으로 넘어가게 한다.'
+assert_contains "techblogs SKILL.md: the summary paragraph states the meaning in its first sentence" "$TB_SKILL" \
+    '요약 문단은 첫 문장에 의미를 쓴다. 그 다음에 무엇을 어디에서 직접 테스트했는지, 근거가 되는 수치, 한계나 조건을 쓴다.'
+assert_contains "techblogs SKILL.md: a key point is one takeaway" "$TB_SKILL" '요점은 한 줄에 독자가 가져갈 판단 하나를 쓴다.'
+assert_contains "techblogs SKILL.md: the order of the first section" "$TB_SKILL" \
+    '첫 챕터는 배경 문단, 의미, 상황(스토리라인의 여는 방식), 본문이 답할 질문 하나의 순서로 쓴다.'
+assert_contains "techblogs SKILL.md: result tables and charts go to the sections on the results" "$TB_SKILL" \
+    '결과 표와 결과 차트는 결과를 다루는 챕터에 둔다.'
+assert_contains "techblogs SKILL.md: two measured values at most in each place of the opening" "$TB_SKILL" \
+    '측정값은 요약 문단, 요점 하나, 목록 카드의 요약, 첫 챕터에 각각 둘까지 쓴다.'
+assert_contains "techblogs SKILL.md: no measured value in the title of the first section" "$TB_SKILL" '첫 챕터의 제목에는 측정값을 넣지 않는다.'
+assert_contains "techblogs SKILL.md: the judgement is not held back" "$TB_SKILL" '판단을 숨기지 않는다. 의미는 서두에서 말하고 근거를 본문으로 미룬다.'
+assert_contains "techblogs SKILL.md: the user is told the meaning the opening states" "$TB_SKILL" \
+    '서두에 쓸 의미 한 문장도 함께 알린다. 사용자가 다른 의미를 말하면 그것으로 서두를 쓴다.'
+assert_contains "techblogs SKILL.md: polishing does not turn the opening back into a summary of numbers" "$TB_SKILL" \
+    '서두의 의미 문단도 지우거나 수치 요약으로 되돌리지 않는다.'
+assert_contains "techblogs SKILL.md: a new post with the opening warning gets its opening rewritten" "$TB_SKILL" \
+    '서두에 측정값이 많다는 `WARN`(요약 문단, 요점, 목록 카드의 요약, 첫 챕터와 그 제목)이 나오면 새 글에서는 서두를 의미로 다시 쓴다.'
+assert_contains "techblogs SKILL.md: the last response names the meaning of the opening" "$TB_SKILL" \
+    '- 새 글이면 고른 스토리라인과 이유, 서두에 쓴 의미 한 문장'
+assert_contains "techblogs SKILL.md: a post from before the rule keeps its opening unless asked" "$TB_SKILL" \
+    '**서두 규칙 전에 올린 글**: 다시 빌드하면 `check_post.py`가 서두의 측정값에 `WARN`을 낼 수 있다. 사용자가 요청하지 않았으면 서두를 다시 쓰지 않고 마지막 응답에 알린다.'
 # Background paragraph (2026-11-22): a new post opens with one or two sentences on the background of the topic or why it is needed
 assert_contains "techblogs SKILL.md: the first section of a new post opens with the background paragraph" "$TB_SKILL" \
     "새로 쓰는 글의 첫 챕터는 배경 문단으로 시작한다"
 assert_contains "techblogs SKILL.md: the background paragraph is one or two sentences, before the storyline's opening" "$TB_SKILL" \
     "첫 챕터의 첫 문단에 한 문장이나 두 문장으로 쓴다"
-assert_contains "techblogs SKILL.md: the background or the need is settled with the scope" "$TB_SKILL" \
-    "핵심 주장 하나, 이 주제의 배경이나 필요, 대상 독자, 스토리라인, 그림 목록을 한 문장씩 확정한다"
+assert_contains "techblogs SKILL.md: the meaning and the background or the need are settled with the scope" "$TB_SKILL" \
+    "핵심 주장 하나, 그 주장이 독자에게 뜻하는 것(서두에 쓸 의미), 이 주제의 배경이나 필요, 대상 독자, 스토리라인, 그림 목록을 한 문장씩 확정한다"
 assert_contains "techblogs SKILL.md: polishing keeps the background paragraph" "$TB_SKILL" \
     "배경 문단도 도입부 상투구로 보고 지우지 않는다"
 assert_contains "techblogs SKILL.md: a post from before the rule gets no background paragraph unless asked" "$TB_SKILL" \
@@ -157,7 +184,7 @@ assert_contains "techblogs SKILL.md: a post from before the rule is not cut or s
 assert_contains "techblogs SKILL.md: the section order follows the chosen storyline" "$TB_SKILL" \
     "챕터의 순서는 0단계에서 고른 스토리라인을 따른다"
 assert_contains "techblogs SKILL.md: the first section does not repeat the conclusion list" "$TB_SKILL" \
-    "본문 첫 챕터에서 같은 결론을 목록으로 되풀이하지 않는다"
+    "본문 첫 챕터에서 같은 내용을 목록으로 되풀이하지 않는다"
 assert_contains "techblogs SKILL.md: the first and last section titles are not fixed" "$TB_SKILL" \
     '첫 챕터와 끝 챕터의 제목을 "들어가며", "마치며"로 고정하지 않는다'
 assert_contains "techblogs SKILL.md: the user is told which storyline was chosen" "$TB_SKILL" \
@@ -280,7 +307,7 @@ PY
 )
 assert_eq "techblogs design-spec.md: the meta.json example parses and has the required keys" "" "$TB_EXAMPLE"
 # The storyline keys: build_post.py is the list; storylines.md has one table row and one section per key, in the
-# same order, each section with its seven lines; SKILL.md and design-spec.md name every key
+# same order, each section with its eight lines; SKILL.md and design-spec.md name every key
 TB_STORY=$("${TB_PY[@]}" - "$TB_BUILD" "$TB_DIR/references/storylines.md" "$TB_SPEC" "$TB_DIR/SKILL.md" 2>&1 <<'PY' || true
 import re, sys
 build, story, spec, skill = (open(p, encoding="utf-8").read() for p in sys.argv[1:5])
@@ -302,11 +329,17 @@ for sec in re.split(r"^## ", story, flags=re.M)[1:]:
     name = sec.split("\n", 1)[0]
     if not re.match(r"[a-z]+: ", name):
         continue
-    for label in ("챕터 흐름", "배경 문단", "여는 방식", "닫는 방식", "비유의 자리", "그림", "피할 것"):
+    for label in ("챕터 흐름", "배경 문단", "서두의 의미", "여는 방식", "닫는 방식", "비유의 자리", "그림", "피할 것"):
         if "- **%s**:" % label not in sec:
             print("storylines.md '%s': no '%s' line" % (name, label))
     if "- **배경 문단**:" in sec and sec.index("- **배경 문단**:") > sec.index("- **여는 방식**:"):
         print("storylines.md '%s': the background paragraph line comes after the opening line" % name)
+    # Opening (2026-11-28): the meaning comes after the background paragraph and before the scene, and no storyline opens with a number
+    if "- **서두의 의미**:" in sec and not sec.index("- **배경 문단**:") < sec.index("- **서두의 의미**:") < sec.index("- **여는 방식**:"):
+        print("storylines.md '%s': the meaning line is not between the background paragraph line and the opening line" % name)
+    how = re.search(r"^- \*\*여는 방식\*\*: (.*)$", sec, re.M)
+    if how and not how.group(1).startswith("의미를 말한 뒤 "):
+        print("storylines.md '%s': the opening line does not start with the meaning" % name)
 ex = re.search(r'"storyline": "([a-z]+)"', spec)
 if not ex or ex.group(1) not in keys:
     print("design-spec.md: the meta.json example has no known storyline")
@@ -325,6 +358,69 @@ assert_contains "techblogs storylines.md: the storyline's opening comes after th
     "스토리라인의 여는 방식은 그 다음에 쓴다"
 assert_contains "techblogs storylines.md: the background paragraph does not announce the order of the post" "$TB_STORYDOC" \
     '글의 순서 안내("이 글에서는 ~를 살펴봅니다")'
+# Opening (2026-11-28): the meaning or the insight first, results in the sections after the first one
+printf '%s\n' "$TB_STORYDOC" | grep -qxF '## 서두' && pass "techblogs storylines.md: the opening has its own section" \
+    || fail "techblogs storylines.md: the opening has its own section" "no '## 서두' heading"
+assert_contains "techblogs storylines.md: the opening is the summary paragraph, the key points and the first section" "$TB_STORYDOC" \
+    '머리의 요약 문단(`thesis`)과 요점(`facts`), 본문의 첫 챕터를 가리키고, 목록 카드에 보이는 요약(`excerpt`)도 같은 원칙을 따른다.'
+assert_contains "techblogs storylines.md: the opening starts with the meaning, results follow as evidence" "$TB_STORYDOC" \
+    '새로 쓰는 글의 서두는 그 내용의 의미나 인사이트로 시작하고, 테스트 결과는 그 뒤에 근거로 둔다.'
+assert_contains "techblogs storylines.md: every storyline opens with the meaning" "$TB_STORYDOC" \
+    '- 서두는 테스트 결과가 아니라 그 내용의 의미나 인사이트로 연다.'
+assert_contains "techblogs storylines.md: what a meaning is" "$TB_STORYDOC" \
+    '결과는 측정하거나 확인한 사실이고, 의미는 그 사실 때문에 독자의 판단이 어떻게 달라지는지다.'
+assert_contains "techblogs storylines.md: the summary paragraph states the meaning first and holds two measured values at most" "$TB_STORYDOC" \
+    '- **요약 문단(`thesis`)**: 첫 문장에 의미를 쓴다.'
+assert_contains "techblogs storylines.md: the first section ends on the question the body answers" "$TB_STORYDOC" \
+    '4. **남는 질문**: 본문이 답할 질문 하나로 맺는다. 그 자리에서 바로 답하지 않는다.'
+assert_contains "techblogs storylines.md: the first section title carries no measured value" "$TB_STORYDOC" \
+    '- 첫 챕터의 제목은 의미나 독자의 상황으로 짓고 측정값을 넣지 않는다.'
+assert_contains "techblogs storylines.md: result charts and tables stay out of the first section" "$TB_STORYDOC" \
+    '결과 차트와 결과 표는 결과를 다루는 챕터에 둔다.'
+assert_contains "techblogs storylines.md: how the opening holds the reader" "$TB_STORYDOC" '### 독자가 머무는 서두'
+assert_contains "techblogs storylines.md: the judgement is stated, the evidence is what waits" "$TB_STORYDOC" \
+    '- 판단을 숨기지 않는다. 의미는 서두에서 말하고 근거(수치, 로그, 명령)를 본문으로 미룬다.'
+assert_contains "techblogs storylines.md: no teaser that does not say what differed" "$TB_STORYDOC" \
+    '무엇이 달랐는지 말하지 않는 문장'
+assert_contains "techblogs storylines.md: the background paragraph is the first paragraph of the opening" "$TB_STORYDOC" \
+    '배경 문단은 서두의 첫 문단이다.'
+# The two example summary paragraphs of the section are what the checker says they are: the first one passes, the second one
+# warns, and the number of measured values the text names is the number the checker counts
+TB_OPENEX=$("${TB_PY[@]}" - "$TB_CHECK" "$TB_DIR/references/storylines.md" 2>&1 <<'PY' || true
+import importlib.util, re, sys
+spec = importlib.util.spec_from_file_location("check_post", sys.argv[1])
+cp = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(cp)
+doc = open(sys.argv[2], encoding="utf-8").read()
+sec = doc.split("\n## 서두\n", 1)[-1].split("\n## ", 1)[0]
+quotes = re.findall(r"^> (.+)$", sec, re.M)
+if len(quotes) != 2:
+    sys.exit("expected two example paragraphs in the section, found %d" % len(quotes))
+good, bad = (cp.measures(q) for q in quotes)
+if len(good) > cp.OPEN_MAX:
+    print("the example to follow has %d measured values: %s" % (len(good), good))
+if len(bad) <= cp.OPEN_MAX:
+    print("the example to avoid has only %d measured values" % len(bad))
+words = "한 두 세 네 다섯 여섯 일곱 여덟 아홉 열".split()
+if not 1 <= len(bad) <= 10 or "측정값 %s 개를" % words[len(bad) - 1] not in sec:
+    print("the text does not name the %d measured values of the example to avoid" % len(bad))
+if "셋 이상" not in sec or cp.OPEN_MAX != 2:
+    print("OPEN_MAX is %d but the section says a warning starts at three" % cp.OPEN_MAX)
+PY
+)
+assert_eq "techblogs storylines.md: the example summary paragraphs agree with check_post.py" "" "$(printf '%s' "$TB_OPENEX" | tr '\n' ' ')"
+assert_contains "techblogs design-spec.md: the first section of a new post is the body of the opening" "$(cat "$TB_SPEC" 2>/dev/null)" \
+    '새 글의 첫 챕터는 서두의 본문이다. 배경 문단, 의미, 상황, 본문이 답할 질문 하나의 순서로 쓰고 제목(`h2`)에는 측정값을 넣지 않는다.'
+assert_contains "techblogs design-spec.md: the summary paragraph of a new post states the meaning first" "$(cat "$TB_SPEC" 2>/dev/null)" \
+    '새 글은 첫 문장에 의미를 쓰고 직접 테스트한 사실, 근거, 한계를 붙이며 측정값은 둘까지 쓴다'
+assert_contains "techblogs design-spec.md: a key point of a new post is one takeaway" "$(cat "$TB_SPEC" 2>/dev/null)" \
+    '새 글은 한 줄에 독자가 가져갈 판단 하나를 쓰고 측정값은 요점 하나에 둘까지 붙인다'
+assert_contains "techblogs design-spec.md: the checker warns about measured values in the opening" "$(cat "$TB_SPEC" 2>/dev/null)" \
+    '- 새 글의 서두에 측정값이 셋 이상이면 WARN이다(서두). 요약 문단(`thesis`), 요점(`facts`) 하나, 목록 카드의 요약(`excerpt`), 한국어 첫 챕터를 각각 세고, 한국어 첫 챕터의 제목은 측정값이 하나만 있어도 WARN이다.'
+assert_contains "techblogs design-spec.md: what counts as a measured value" "$(cat "$TB_SPEC" 2>/dev/null)" \
+    '"5분 28초"는 하나로 세고 날짜, 버전, 물건의 개수(개, 대), 코드 안의 숫자는 세지 않는다. 한국어 쪽만 본다.'
+assert_contains "techblogs design-spec.md: whether the opening states a meaning is left to the writer" "$(cat "$TB_SPEC" 2>/dev/null)" \
+    '- 서두의 내용(요약 문단의 첫 문장과 첫 챕터가 의미를 말하는가'
 assert_contains "techblogs design-spec.md: the first section of a new post opens with the background paragraph" \
     "$(cat "$TB_SPEC" 2>/dev/null)" '새 글의 첫 챕터는 `div.prose`의 첫 요소가 배경 문단이다'
 assert_contains "techblogs design-spec.md: the checker warns about the background paragraph" "$(cat "$TB_SPEC" 2>/dev/null)" \
@@ -478,6 +574,37 @@ if [ "$TB_RC" -eq 0 ] && [ -f "$TB_OUT/$TB_SLUG-report.html" ]; then
             'ko 첫 챕터가 문단으로 시작하지 않습니다. 새 글의 첫 챕터는 배경 문단(주제의 배경이나 필요, 한두 문장)으로 시작합니다' 0
     tb_case leadenp && tb_resub "$TB_R" '(id="en-s1">.*?<div class="prose">\s*)<p>.*?</p>\s*' '\1' \
         && tb_check "an English first section that does not start with a paragraph warns" 'en 첫 챕터가 문단으로 시작하지 않습니다' 0
+    # Opening (2026-11-28): two measured values at most in the summary paragraph, in one key point, in the excerpt and in the
+    # Korean first section, and none in its title. The fixture has two in its summary paragraph and in its key point and passes.
+    tb_case openthesis && tb_edit "$TB_R" '나누면 전체 시간이 40분에서 26분으로 줄어듭니다.' '나누면 20분이던 읽기가 줄어 전체 시간이 40분에서 26분으로 줄어듭니다.' \
+        && tb_check "a summary paragraph with three measured values warns and lists them" \
+            '요약 문단(thesis)에 측정값이 3개 있습니다(20분, 40분, 26분). 서두는 의미로 열고 측정값은 한 곳에 2개까지 쓰며 나머지는 결과를 다루는 챕터에 둡니다. 이전에 올린 글은 사용자가 요청할 때 고칩니다.' 0
+    tb_case openfact && tb_edit "$TB_R" '전체 실행 시간 40분에서 26분' '전체 실행 시간 40분에서 26분, 35% 단축' \
+        && tb_check "a key point with three measured values warns and names the point" \
+            '요점(facts) 1번에 측정값이 2개 넘게 있습니다. 요점은 한 줄에 독자가 가져갈 판단 하나를 씁니다.' 0
+    tb_case openexcerpt && tb_edit "$TB_R" '실행 시간을 줄인 예시입니다.' '실행 시간을 40분에서 26분으로 35% 줄인 예시입니다.' \
+        && tb_check "an excerpt with three measured values warns" '목록 카드의 요약(excerpt)에 측정값이 3개 있습니다(40분, 26분, 35%).' 0
+    tb_case opentitle && tb_edit "$TB_R" '<h2>문제와 측정</h2>' '<h2>40분 걸리는 배치</h2>' \
+        && tb_check "a measured value in the title of the Korean first section warns" \
+            'ko 첫 챕터의 제목에 측정값이 있습니다(40분). 첫 챕터의 제목은 의미나 독자의 상황으로 짓습니다.' 0 \
+        && assert_not_contains "check_post: two measured values in the first section (title and paragraph) are within the limit; the caption number in '그림 1. 배치' is not a value" \
+            "$("${TB_PY[@]}" "$TB_CHECK" "$TB_R" 2>&1)" "ko 첫 챕터에 측정값이"
+    tb_case openchapter && tb_edit "$TB_R" '<p>단계별로 시간을 재면 읽기 단계가 전체의 절반을 차지합니다.</p>' '<p>단계별로 시간을 재면 읽기 20분, 집계 12분입니다.</p>' \
+        && tb_check "a Korean first section with three measured values warns" 'ko 첫 챕터에 측정값이 3개 있습니다(40분, 20분, 12분).' 0
+    tb_case openmany && tb_edit "$TB_R" '<p>단계별로 시간을 재면 읽기 단계가 전체의 절반을 차지합니다.</p>' '<p>읽기 20분, 집계 12분, 쓰기 8분, 합계 40분입니다.</p>' \
+        && tb_check "more than four measured values are listed as the first four and the rest" 'ko 첫 챕터에 측정값이 5개 있습니다(40분, 20분, 12분, 8분 등).' 0
+    tb_case opencompound && tb_edit "$TB_R" '나누면 전체 시간이 40분에서 26분으로 줄어듭니다.' '나누면 전체 시간이 40분에서 26분 30초로 줄어듭니다.' \
+        && tb_check "minutes followed by seconds are one measured value" '결과: ERROR 0 / WARN 0' 0
+    tb_case opendate && tb_edit "$TB_R" '나누면 전체 시간이 40분에서 26분으로 줄어듭니다.' '나누면 2026년 1월 15일 기준 버전 2.1.7과 서버 6개, 워커 4대에서 전체 시간이 40분에서 26분으로 줄어듭니다.' \
+        && tb_check "a date, a version and counts of things are not measured values" '결과: ERROR 0 / WARN 0' 0
+    tb_case opencode && tb_edit "$TB_R" '<p>단계별로 시간을 재면 읽기 단계가' '<p><code>--timeout 30초 --retry 5회 --limit 10%</code>로 단계별로 시간을 재면 읽기 단계가' \
+        && tb_check "numbers inside inline code are not counted" '결과: ERROR 0 / WARN 0' 0
+    tb_case opencells && tb_edit "$TB_R" '<td>읽기</td>' '<td>읽기:</td>' '<td>집계</td>' '<td>집계:</td>' '<td>쓰기</td>' '<td>쓰기:</td>' \
+            '느림' '분할 필요' '정상' '분리 완료' \
+        && tb_check "a number in one table cell and a word in the next do not make a measured value" '결과: ERROR 0 / WARN 0' 0
+    tb_case openen && tb_edit "$TB_R" 'cuts the run from 40 minutes to 26.' 'cuts the run from 40 minutes to 26, by 35% and 840초, in 3회.' \
+        && assert_not_contains "check_post: measured values are counted on the Korean side only" \
+            "$("${TB_PY[@]}" "$TB_CHECK" "$TB_R" 2>&1)" "측정값"
     tb_case altdot && tb_resub "$TB_R" 'alt="([^"]{3})' 'alt="\\1·' \
         && tb_check "middle dot in an image alt" '은 그림 alt에도 쓰지 않습니다' 1
     tb_case descdash && tb_resub "$TB_R" '<meta name="description" content="([^"]{3})' '<meta name="description" content="\\1—' \
@@ -555,6 +682,12 @@ tb_edit "$TB_WK/out/$TB_SLUG-report.html" '실행된다고 가정합니다.</p>'
 TB_MSG=$("${TB_PY[@]}" "$TB_CHECK" "$TB_WK/out/$TB_SLUG-report.html" 2>&1); TB_RC=$?
 assert_not_contains "check_post: a republished post is not checked for the background paragraph" "$TB_MSG" "첫 챕터"
 assert_contains "check_post: a republished post with a long first paragraph has no ERROR and no WARN" "$TB_MSG" "결과: ERROR 0 / WARN 0"
+# A republished post keeps the opening of the original: no count of measured values
+tb_edit "$TB_WK/out/$TB_SLUG-report.html" '나누면 전체 시간이 40분에서 26분으로 줄어듭니다.' '나누면 20분이던 읽기가 줄어 전체 시간이 40분에서 26분으로 줄어듭니다.' \
+    '<h2>문제와 측정</h2>' '<h2>40분 걸리는 배치</h2>'
+TB_MSG=$("${TB_PY[@]}" "$TB_CHECK" "$TB_WK/out/$TB_SLUG-report.html" 2>&1); TB_RC=$?
+assert_not_contains "check_post: a republished post is not checked for measured values in the opening" "$TB_MSG" "측정값"
+assert_contains "check_post: a republished post with numbers in its opening has no ERROR and no WARN" "$TB_MSG" "결과: ERROR 0 / WARN 0"
 
 # --- Reading time: a new post stays within 15 minutes; build_post.py and check_post.py count the same characters ---
 # tb_fill_ko TOTAL [pre]: add filler to ko.body.html of TB_WK. Without "pre" the Korean body ends up with TOTAL
@@ -788,16 +921,27 @@ for tb_k in qa troubleshoot measure compare build anatomy change retro; do
         || fail "new_post $tb_k: the background guide is the line of this storyline in storylines.md" "guide: ${tb_bg:-none}"
     assert_contains "new_post $tb_k: the output says the first section opens with the background paragraph" "$TB_NP" \
         "첫 챕터는 배경 문단(주제의 배경이나 필요, 한두 문장)으로 시작합니다: $tb_bg"
+    # Opening (2026-11-28): the guide of the first section and the output carry the meaning line of this storyline
+    tb_mean=$(sed -n "/^## $tb_k: /,/^## /p" "$TB_DIR/references/storylines.md" | sed -n 's/^- \*\*서두의 의미\*\*: //p' | head -1)
+    tb_how=$(sed -n "/^## $tb_k: /,/^## /p" "$TB_DIR/references/storylines.md" | sed -n 's/^- \*\*여는 방식\*\*: //p' | head -1)
+    [ -n "$tb_mean" ] && [ -n "$tb_how" ] && grep -qF -- " 서두의 의미: $tb_mean 여는 방식: $tb_how -->" "$TB_W/np-$tb_k/ko.body.html" \
+        && grep -qF -- " 서두의 의미: $tb_mean 여는 방식: $tb_how -->" "$TB_W/np-$tb_k/en.body.html" \
+        && pass "new_post $tb_k: the first section guide names the meaning of the opening, then how the storyline opens" \
+        || fail "new_post $tb_k: the first section guide names the meaning of the opening, then how the storyline opens" "meaning: ${tb_mean:-none}"
+    assert_eq "new_post $tb_k: the meaning is named in the first section only" "1" \
+        "$(grep -cF -- " 서두의 의미: " "$TB_W/np-$tb_k/ko.body.html" 2>/dev/null)"
+    assert_contains "new_post $tb_k: the output says the opening starts with the meaning, with two measured values at most in each place" "$TB_NP" \
+        "서두(요약 문단, 요점, 첫 챕터)는 테스트 결과가 아니라 의미로 엽니다. 측정값은 한 곳에 둘까지 쓰고 나머지는 결과를 다루는 챕터에 둡니다: $tb_mean"
     assert_contains "new_post $tb_k: the output states the reading-time limit" "$TB_NP" \
         "읽는 시간은 15분 이하로 씁니다(한국어 본문 약 10,500자, 코드 상자 제외). 넘으면 줄이거나 연재로 나눕니다."
 done
 assert_eq "new_post: the troubleshoot template has the six steps of storylines.md" "6" \
     "$(grep -c 'id="ko-s' "$TB_W/np-troubleshoot/ko.body.html" 2>/dev/null)"
 TB_BODY=$(cat "$TB_W/np-troubleshoot/ko.body.html" 2>/dev/null)
-assert_contains "new_post: the first section carries the step and how the storyline opens" "$TB_BODY" \
-    '<!-- 안내: 1번째 챕터. 증상(에러 원문, 화면, 발생 시각) 여는 방식: 증상을 그대로 보여 준다.'
+assert_contains "new_post: the first section carries the step, the meaning of the opening and how the storyline opens" "$TB_BODY" \
+    '<!-- 안내: 1번째 챕터. 이 장애가 드러낸 것과 증상(에러 원문, 화면, 발생 시각) 서두의 의미: 이 장애가 드러낸 잘못된 가정과 같은 구성을 쓰는 독자가 확인할 것 여는 방식: 의미를 말한 뒤 증상을 그대로 보여 준다.'
 assert_contains "new_post: the background paragraph comes first in the first section, then the step" "$TB_BODY" \
-    $'<div class="prose">\n<!-- 안내: 배경 문단. 한두 문장으로 쓴다. 증상이 생긴 시스템이 맡은 일과 이 증상 때문에 멈추거나 틀어지는 것 -->\n<p>TODO</p>\n<!-- 안내: 1번째 챕터. 증상('
+    $'<div class="prose">\n<!-- 안내: 배경 문단. 한두 문장으로 쓴다. 증상이 생긴 시스템이 맡은 일과 이 증상 때문에 멈추거나 틀어지는 것 -->\n<p>TODO</p>\n<!-- 안내: 1번째 챕터. 이 장애가 드러낸 것과 증상('
 assert_eq "new_post: only the first section has the place of the background paragraph" "1" \
     "$(sed -n '/id="ko-s1"/,/<\/section>/p' "$TB_W/np-troubleshoot/ko.body.html" 2>/dev/null | grep -cF '<!-- 안내: 배경 문단.')"
 assert_contains "new_post: the last section carries how the storyline closes" "$TB_BODY" '<!-- 안내: 6번째 챕터. 재발을 막는 장치 닫는 방식: '

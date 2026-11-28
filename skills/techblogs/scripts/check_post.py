@@ -24,6 +24,15 @@ BANNED = {"·": "가운뎃점", "—": "엠 대시", "–": "엔 대시"}
 LEAD_MAX = 2  # 배경 문단의 문장 수 (references/storylines.md의 "배경 문단")
 READ_CHARS_PER_MIN = 700  # 읽는 시간: 한국어 본문의 글자 수를 이 값으로 나눈다 (build_post.py와 같은 값)
 MAX_MINUTES = 15  # 새 글 하나의 읽는 시간 한도 (SKILL.md의 "읽는 시간 15분 이하로 쓰기")
+OPEN_MAX = 2  # 서두의 한 곳(요약 문단, 요점 하나, 목록 카드의 요약, 첫 챕터)에 쓰는 측정값의 수 (references/storylines.md의 "서두")
+# 측정값: 시간, 비율, 토큰 수, 요청 수, 금액, 용량의 단위가 붙은 숫자. "5분 28초"처럼 이어진 것은 하나로 센다.
+# 날짜(년, 월, 일), 버전(2.1.7), 물건의 개수(개, 대, 가지)는 단위 목록에 없어서 세지 않는다.
+# 한 글자 단위(초, 분, 배, 건, 회, 원)는 숫자나 "만" 같은 자릿수 말에 붙은 것만 센다. 캡션의 "그림 1. 배치"와
+# "버전 2 배포"는 측정값이 아니다.
+_VALUE = (r"\d+(?:[.,]\d+)*(?:\s?(?:[kKM]|천|만|억))?"
+          r"(?:\s?(?:ms|%|USD|KB|MB|GB|TB|rps|RPS|TPS|QPS|밀리초|퍼센트|토큰|달러|바이트|시간)"
+          r"|(?:(?<=[kKM천만억])\s)?(?:초|분|배|건|회|원))")
+MEASURE = re.compile(r"(?<![\w.])%s(?:\s%s)*" % (_VALUE, _VALUE))
 # 낱말 규칙: (정규식, 메시지에 보일 낱말, 대신 쓸 말). 낱말이 None이면 찾은 글자를 그대로 보인다.
 # ../aws-blog-skills/references/style.md의 금지어 표와 같고, 정규식은 lint_prose.py의 HARD_RE와 같다.
 # lint_prose.py는 표를 읽지 않으므로 표, 캡션, 참고 자료의 종류 이름은 여기서 본다.
@@ -112,6 +121,21 @@ def topic(word):
 def sentences(text):
     """Count the sentences of a Korean paragraph: the pieces between sentence ends that hold Hangul."""
     return len([p for p in re.split(r"(?<=[.?!])\s+", squash(text)) if HANGUL.search(p)])
+
+
+def strings(node, skip=("pre", "code")):
+    """The text pieces of a node, one per text run, so that neighbouring elements (table cells) do not run together."""
+    for k in node.kids:
+        if isinstance(k, str):
+            yield k
+        elif k.tag not in skip:
+            yield from strings(k, skip)
+
+
+def measures(node_or_text):
+    """The measured values in a node or a text: numbers with a unit of time, ratio, tokens, requests, money or size."""
+    text = node_or_text if isinstance(node_or_text, str) else " ".join(strings(node_or_text))
+    return [squash(m.group(0)) for m in MEASURE.finditer(squash(text))]
 
 
 def read_minutes(col):
@@ -283,6 +307,38 @@ def main():
         elif lang == "ko" and sentences(first.text(skip=("pre", "code"))) > LEAD_MAX:
             W("ko 첫 챕터의 첫 문단이 %d문장입니다. 배경 문단은 한두 문장으로 씁니다. 이전에 올린 글은 사용자가 요청할 때 "
               "고칩니다: %s" % (sentences(first.text(skip=("pre", "code"))), squash(first.text())[:60]))
+    # 서두: 새 글은 테스트 결과가 아니라 그 내용의 의미로 연다. 요약 문단, 요점 하나, 목록 카드의 요약, 한국어 첫 챕터에
+    # 측정값이 OPEN_MAX개를 넘거나 한국어 첫 챕터의 제목에 측정값이 있으면 알린다. 의미를 말하는지는 쓰는 사람이 본다.
+    if not republished:
+        tail = ("서두는 의미로 열고 측정값은 한 곳에 %d개까지 쓰며 나머지는 결과를 다루는 챕터에 둡니다. 이전에 올린 글은 "
+                "사용자가 요청할 때 고칩니다" % OPEN_MAX)
+        spots = []
+        for p in root.find("p", "thesis"):
+            for sp in p.find("span", "l-ko"):
+                spots.append(("요약 문단(thesis)", sp))
+        many = []
+        for n, li in enumerate([li for ul in root.find("ul", "facts") for li in ul.find("li")], 1):
+            if any(len(measures(sp)) > OPEN_MAX for sp in li.find("span", "l-ko")):
+                many.append(str(n))
+        if many:
+            W("요점(facts) %s번에 측정값이 %d개 넘게 있습니다. 요점은 한 줄에 독자가 가져갈 판단 하나를 씁니다. %s."
+              % (", ".join(many), OPEN_MAX, tail))
+        for m in root.find("meta"):
+            if m.attrs.get("name") == "description":
+                spots.append(("목록 카드의 요약(excerpt)", m.attrs.get("content", "")))
+        first = [n for n in cols["ko"].kids if isinstance(n, Node) and n.tag == "section"][:1]
+        for s in first:
+            spots.append(("ko 첫 챕터", s))
+        for name, where in spots:
+            found = measures(where)
+            if len(found) > OPEN_MAX:
+                W("%s에 측정값이 %d개 있습니다(%s%s). %s." % (name, len(found), ", ".join(found[:4]),
+                                                      " 등" if len(found) > 4 else "", tail))
+        for s in first:
+            for h in s.find("h2"):
+                if measures(h):
+                    W("ko 첫 챕터의 제목에 측정값이 있습니다(%s). 첫 챕터의 제목은 의미나 독자의 상황으로 짓습니다. 이전에 올린 글은 "
+                      "사용자가 요청할 때 고칩니다." % ", ".join(measures(h)))
     # 읽는 시간: 새 글은 15분을 넘기지 않는다. 넘으면 줄이거나 연재로 나눈다. 옮겨 싣는 글은 원문의 분량을 유지한다.
     if not republished and read_minutes(cols["ko"]) > MAX_MINUTES:
         W("읽는 시간이 %d분입니다. 새 글은 %d분을 넘기지 않습니다. 겹치는 내용을 줄이거나 연재(1부, 2부)로 나눕니다. "

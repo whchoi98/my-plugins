@@ -106,6 +106,13 @@ a plugin component there. Everything under `.claude/` is only active when this r
     opens with the background paragraph (one or two sentences on the background of the topic or why it is needed):
     the rule lives in `references/storylines.md` (one `배경 문단` line per storyline, which `scripts/new_post.py`
     reads), SKILL.md step 2, `references/design-spec.md` and the WARN of `scripts/check_post.py` together.
+    A new post opens with the meaning or the insight of its content, not with test results (user rule of
+    2026-11-28): the opening is the summary paragraph and key points of the head and the first section, and each
+    of its places holds two measured values at most. The rule lives in `references/storylines.md` (the `서두`
+    section, one `서두의 의미` line per storyline, which `scripts/new_post.py` reads, and every `여는 방식` line
+    starting with the meaning), SKILL.md steps 0, 2, 3 and 5, `references/design-spec.md` and the WARN of
+    `scripts/check_post.py` (`OPEN_MAX`, `MEASURE`) together; the two example paragraphs of the `서두` section
+    are what the checker says they are.
     A new post stays within a reading time of 15 minutes (overlap is cut first, then the post is split into a
     series): SKILL.md steps 0, 2 and 5, `references/storylines.md`, `references/design-spec.md`, the WARN of
     `scripts/check_post.py` and the line `scripts/new_post.py` prints change together, and `READ_CHARS_PER_MIN`

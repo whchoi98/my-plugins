@@ -101,6 +101,11 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   opening line, design-spec.md; `new_post.py` puts the place of the paragraph with that line first in the first section).
   The reading-time rule of 2026-11-22 (a new post within 15 minutes, overlap cut first, then a series): SKILL.md
   steps 0, 2 and 5, storylines.md, design-spec.md and the line `new_post.py` prints.
+  The opening rule of 2026-11-28 (a new post opens with the meaning or the insight of its content, results from the
+  second section on): SKILL.md steps 0, 2, 3, 5 and 6, the `서두` section of storylines.md with its two example
+  paragraphs counted by `check_post.py` (the one to follow passes, the one to avoid warns, the count the text names is
+  the count of the checker), the `서두의 의미` line of every storyline between its background line and its opening
+  line, every opening line starting with the meaning, design-spec.md, and the guide and the line `new_post.py` writes.
   The fixture `fixtures/techblogs/work/` is built in `$TEST_TMP` and passes `check_post.py` (ERROR 0, WARN 0) and
   `lint_prose.py`; then one edit of the built copy per `check_post.py` rule (`<style>`, `<script>`, leftover token, TODO,
   inline `style`, layout hooks, section ids, menu links, component and section counts, caption numbers, image file,
@@ -109,7 +114,10 @@ no model calls. Network: only a local HTTP server on 127.0.0.1 for the URL check
   with `절차`, `절반` and an SQL clause left alone, `대가가 있다` with `시간대가 있고` and `기대가 있습니다` left
   alone, and the background paragraph: a Korean first paragraph of three
   sentences or a first section that does not start with a paragraph, with inline code, the dots of a date, the
-  English sentence count and republished posts left alone), front matter,
+  English sentence count and republished posts left alone, and the opening: three measured values in the summary
+  paragraph, in a key point, in the excerpt or in the Korean first section, or one in its title, with minutes followed
+  by seconds as one value and dates, versions, counts of things, caption numbers, inline code, neighbouring table
+  cells, the English side and republished posts left alone), front matter,
   the reading time (a Korean body of 10,780 characters builds as 15 minutes and passes, 10,920 builds as 16 and
   warns with that number; `minutes` written by hand, a long code box and a republished post do not change it),
   `--blog`). `build_post.py` stops on unfinished input and on an `--out` inside the skill folder (tried on a copy of

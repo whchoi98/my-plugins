@@ -62,7 +62,7 @@ which reads icons and fonts from `../aws-diagram-design/assets` (see [architectu
 | pptx-template-fill | ~570 | ~3.6k |
 | aws-reports | ~540 | ~3.8k |
 | html-report | ~360 | ~2.8k |
-| techblogs | ~470 | ~6k |
+| techblogs | ~470 | ~6.9k |
 | aws-infographic | ~390 | ~4.9k |
 | ui-deslop | ~410 | ~15.6k |
 | eng-deslop | ~370 | ~16.5k |
@@ -205,7 +205,7 @@ a structure diagram loads aws-blog-skills, aws-diagram-design and kor-deslop bod
 | pptx-template-fill | ~570 | ~3.6k |
 | aws-reports | ~540 | ~3.8k |
 | html-report | ~360 | ~2.8k |
-| techblogs | ~470 | ~6k |
+| techblogs | ~470 | ~6.9k |
 | aws-infographic | ~390 | ~4.9k |
 | ui-deslop | ~410 | ~15.6k |
 | eng-deslop | ~370 | ~16.5k |

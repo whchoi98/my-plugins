@@ -12,7 +12,8 @@ The second form writes a work folder for a new post:
   meta.json       the storyline key, the slug and the date; every other field is "TODO"
   ko.body.html    one section per step of the storyline's section flow, each with a guide comment;
                   the first section starts with the place of the background paragraph (one or two
-                  sentences on the background of the topic or why it is needed)
+                  sentences on the background of the topic or why it is needed), and its guide names
+                  the meaning the opening states before any result
   en.body.html    the same sections for the English body
   images/         empty
 The section flow is read from ../references/storylines.md, so the templates and the document cannot
@@ -55,7 +56,7 @@ def split_flow(text):
 
 
 def load():
-    """Read the storylines: key, name, the material it fits, the signals, flow, background, opening and closing."""
+    """Read the storylines: key, name, the material it fits, the signals, flow, background, meaning, opening and closing."""
     try:
         text = open(STORYLINES_MD, encoding="utf-8").read()
     except OSError as e:
@@ -72,8 +73,8 @@ def load():
         if not m or m.group(1) not in rows:
             continue
         item = dict(rows[m.group(1)], key=m.group(1))
-        for label, field in (("챕터 흐름", "flow"), ("배경 문단", "background"), ("여는 방식", "opening"),
-                             ("닫는 방식", "closing")):
+        for label, field in (("챕터 흐름", "flow"), ("배경 문단", "background"), ("서두의 의미", "meaning"),
+                             ("여는 방식", "opening"), ("닫는 방식", "closing")):
             lm = re.search(r"^- \*\*%s\*\*: (.+)$" % label, body, re.M)
             if not lm:
                 die("storylines.md의 %s에 '%s' 줄이 없습니다." % (item["key"], label))
@@ -102,7 +103,8 @@ def body(lang, item):
     for n, step in enumerate(item["flow"], 1):
         extra = ""
         if n == 1:
-            extra = " 여는 방식: " + item["opening"]
+            # The first section is the opening: the meaning of the content first, results in later sections.
+            extra = " 서두의 의미: " + item["meaning"] + " 여는 방식: " + item["opening"]
         elif n == total:
             extra = " 닫는 방식: " + item["closing"]
         parts.append(section(lang, n, total, step, extra, item["background"] if n == 1 else ""))
@@ -161,6 +163,8 @@ def main():
     for n, step in enumerate(item["flow"], 1):
         print("  %d. %s" % (n, step))
     print("첫 챕터는 배경 문단(주제의 배경이나 필요, 한두 문장)으로 시작합니다: " + item["background"])
+    print("서두(요약 문단, 요점, 첫 챕터)는 테스트 결과가 아니라 의미로 엽니다. 측정값은 한 곳에 둘까지 쓰고 나머지는 결과를 다루는 "
+          "챕터에 둡니다: " + item["meaning"])
     print("읽는 시간은 15분 이하로 씁니다(한국어 본문 약 10,500자, 코드 상자 제외). 넘으면 줄이거나 연재로 나눕니다.")
     print("TODO와 안내 주석을 모두 채우고 지운 뒤 build_post.py를 실행합니다. 챕터는 소재에 맞게 더하거나 뺄 수 있습니다.")
 
